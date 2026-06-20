@@ -1,48 +1,52 @@
-# Aplikasi Laboratorium Cek Kesehatan
+## Diagnōs - ealth Check Laboratory Application
+A modern and comprehensive mobile application designed to simplify laboratory test bookings, track test results, and monitor health conditions. This app helps users manage their health with easy access to various lab tests, home services, digital health reports, and AI-powered health insights.
+------------------------------
+## 🌟 Key Features
+## 1. 🧪 Comprehensive Lab Test Catalog
 
-Aplikasi mobile modern dan komprehensif yang dirancang untuk mempermudah pemesanan pemeriksaan laboratorium, pelacakan hasil tes, dan pemantauan kondisi kesehatan. Aplikasi ini membantu pengguna mengelola kesehatan mereka dengan akses mudah ke berbagai tes lab, layanan kunjungan rumah (home service), laporan kesehatan digital, dan wawasan kesehatan berbasis AI.
+* Search & Filter: Easily search for specific tests (e.g., Blood Panel, Lipid Profile, HbA1c, Thyroid Panel) or filter by category (Cardiovascular, Diabetes, Kidney Function, etc.).
+* Test Details: Complete descriptions of what each test measures, preparation requirements (e.g., fasting duration), and estimated turnaround time.
+* Health Packages: Curated test packages for specific health goals (e.g., Basic Health Package, Men's/Women's Executive, Pre-Marital Screening).
 
----
+## 2. 📅 Smart Booking System
 
-## 🌟 Fitur Utama
+* In-Clinic/Branch Booking: Schedule appointments at the nearest laboratory branch.
+* Home Service: Summon a licensed medical practitioner to collect blood/urine samples directly at your home or office.
+* Real-Time Scheduling: Select preferred dates and time slots with instant confirmation.
+* Family Profiles: Book and manage test schedules for family members under a single account.
 
-### 1. 🧪 Katalog Tes Lab Lengkap
-* **Pencarian & Filter:** Cari tes spesifik dengan mudah (misalnya, Panel Darah, Profil Lipid, HbA1c, Panel Tiroid) atau filter berdasarkan kategori (Kardiovaskular, Diabetes, Fungsi Ginjal, dll.).
-* **Detail Tes:** Deskripsi lengkap tentang apa yang diukur oleh setiap tes, persyaratan persiapan (misalnya, durasi puasa), dan perkiraan waktu hasil selesai.
-* **Paket Kesehatan:** Paket tes yang dikurasi untuk tujuan kesehatan tertentu (misalnya, Paket Kesehatan Dasar, Eksekutif Pria/Wanita, Skrining Pra-Nikah).
+## 3. 📊 Digital Lab Results & Analytics
 
-### 2. 📅 Sistem Pemesanan Pintar (Booking)
-* **Pemesanan di Klinik/Cabang:** Jadwalkan janji temu di cabang laboratorium terdekat.
-* **Layanan Kunjungan Rumah (Home Service):** Panggil petugas medis berlisensi untuk mengambil sampel darah/urin langsung di rumah atau kantor Anda.
-* **Jadwal Real-Time:** Pilih tanggal dan slot waktu yang diinginkan dengan konfirmasi instan.
-* **Profil Keluarga:** Pesan dan kelola jadwal pemeriksaan untuk anggota keluarga di bawah satu akun.
+* Secure PDF Access: View and download official, digitally signed lab results.
+* Historical Trends & Graphs: Visualize your health progress over time (e.g., monitoring cholesterol levels over the past 12 months) with interactive charts.
+* Reference Range Values: Easy-to-understand color indicators (Low, Normal, High) for each test parameter.
+* Share with Doctor: Send test results directly via email or secure links to your personal physician.
 
-### 3. 📊 Hasil Lab Digital & Analisis
-* **Akses PDF Aman:** Lihat dan unduh hasil lab resmi yang telah ditandatangani secara digital.
-* **Tren & Grafik Riwayat:** Visualisasikan perkembangan kesehatan Anda dari waktu ke waktu (misalnya, memantau kadar kolesterol selama 12 bulan terakhir) dengan grafik interaktif.
-* **Rentang Nilai Rujukan:** Indikator warna yang mudah dipahami (Rendah, Normal, Tinggi) untuk setiap parameter tes.
-* **Bagikan ke Dokter:** Kirim hasil tes secara langsung melalui email atau tautan aman ke dokter pribadi Anda.
+## 4. 🧠 Smart Health Insights (AI-Powered)
 
-### 4. 🧠 Wawasan Kesehatan Pintar (Didukung AI)
-* **Ringkasan Hasil:** Penjelasan sederhana untuk istilah medis yang rumit.
-* **Rekomendasi Tindakan:** Tips kesehatan (nutrisi, gaya hidup, olahraga) berdasarkan hasil tes Anda (bukan sebagai pengganti saran medis formal).
-* **Asesmen Risiko:** Deteksi dini indikator penyakit kronis berdasarkan kombinasi hasil lab dan profil pengguna.
+* Result Summary: Simple explanations for complex medical terms.
+* Actionable Recommendations: Health tips (nutrition, lifestyle, exercise) based on your test results (not a substitute for formal medical advice).
+* Risk Assessment: Early detection of chronic disease indicators based on a combination of lab results and user profiles.
 
-### 5. 💳 Pembayaran Aman & Beragam
-* **Berbagai Metode Pembayaran:** Mendukung Kartu Kredit/Debit, Transfer Bank, E-Wallet (GoPay, OVO, ShopeePay), dan Virtual Account.
-* **Integrasi Asuransi:** Verifikasi klaim dan penagihan langsung untuk penyedia asuransi kesehatan atau korporasi yang bekerja sama.
+## 5. 💳 Secure & Diverse Payments
 
-### 6. 🔔 Pengingat & Notifikasi Pintar
-* **Pengingat Puasa:** Notifikasi otomatis untuk mengingatkan pengguna kapan harus mulai berpuasa sebelum pemeriksaan.
-* **Notifikasi Hasil Selesai:** Pemberitahuan instan begitu hasil lab Anda siap diakses.
-* **Pengingat Rutin:** Pengingat berkala untuk melakukan tes ulang berdasarkan riwayat medis atau kondisi kronis tertentu.
+* Multiple Payment Methods: Supports Credit/Debit Cards, Bank Transfers, E-Wallets (GoPay, OVO, ShopeePay), and Virtual Accounts.
+* Insurance Integration: Direct billing and claim verification for partner health insurance providers or corporations.
 
----
+## 6. 🔔 Smart Reminders & Notifications
 
-## 🛠️ Rencana Teknologi & Arsitektur
+* Fasting Reminders: Automated notifications to remind users when to start fasting before an examination.
+* Result Ready Notifications: Instant alerts as soon as your lab results are ready to access.
+* Routine Reminders: Periodic reminders to take retests based on medical history or specific chronic conditions.
 
-* **Aplikasi Mobile:** Kotlin / Jetpack Compose (Android)
-* **Backend:** Node.js (Express) / Go (Golang)
-* **Database:** PostgreSQL (data terstruktur), Redis (caching)
-* **API:** RESTful / gRPC
-* **Cloud & Hosting:** Google Cloud Platform (GCP) atau AWS
+------------------------------
+## 🛠️ Technology & Architecture Plan
+
+* Mobile Application: Kotlin (Android)
+<!-- * Backend: Node.js (Express) / Go (Golang)
+* Database: PostgreSQL (structured data), Redis (caching)
+* API: RESTful / gRPC
+* Cloud & Hosting: Google Cloud Platform (GCP) or AWS -->
+
+------------------------------
+
