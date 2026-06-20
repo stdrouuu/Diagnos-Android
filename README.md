@@ -28,12 +28,7 @@ A modern and comprehensive mobile application designed to simplify laboratory te
 * Actionable Recommendations: Health tips (nutrition, lifestyle, exercise) based on your test results (not a substitute for formal medical advice).
 * Risk Assessment: Early detection of chronic disease indicators based on a combination of lab results and user profiles.
 
-## 5. 💳 Secure & Diverse Payments
-
-* Multiple Payment Methods: Supports Credit/Debit Cards, Bank Transfers, E-Wallets (GoPay, OVO, ShopeePay), and Virtual Accounts.
-* Insurance Integration: Direct billing and claim verification for partner health insurance providers or corporations.
-
-## 6. 🔔 Smart Reminders & Notifications
+## 5. 🔔 Smart Reminders & Notifications
 
 * Fasting Reminders: Automated notifications to remind users when to start fasting before an examination.
 * Result Ready Notifications: Instant alerts as soon as your lab results are ready to access.
