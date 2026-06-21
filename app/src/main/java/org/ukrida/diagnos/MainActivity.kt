@@ -19,6 +19,7 @@ import org.ukrida.diagnos.di.Injection
 import org.ukrida.diagnos.ui.screen.LoginScreen
 import org.ukrida.diagnos.ui.screen.MainScreen
 import org.ukrida.diagnos.ui.screen.RegisterScreen
+import org.ukrida.diagnos.ui.screen.WelcomeScreen
 import org.ukrida.diagnos.ui.theme.DiagnosTheme
 import org.ukrida.diagnos.viewmodel.UserViewModel
 
@@ -37,8 +38,16 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = if (isLoggedIn) "main" else "login"
+                    startDestination = if (isLoggedIn) "main" else "welcome"
                 ) {
+                    // ================= WELCOME =================
+                    composable("welcome") {
+                        WelcomeScreen(
+                            onNavigateLogin = {
+                                navController.navigate("login")
+                            }
+                        )
+                    }
                     // ================= LOGIN =================
                     composable("login") {
                         LoginScreen(
@@ -47,7 +56,7 @@ class MainActivity : ComponentActivity() {
                                 role = userRole
                                 isLoggedIn = true
                                 navController.navigate("main") {
-                                    popUpTo("login") { inclusive = true }
+                                    popUpTo("welcome") { inclusive = true }
                                 }
                             },
                             onNavigateRegister = {

@@ -3,33 +3,49 @@ package org.ukrida.diagnos.ui.screen
 // username: brandon or lebron
 // password: 123456 or 123456
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.ukrida.diagnos.R
 import org.ukrida.diagnos.viewmodel.UserViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     viewModel: UserViewModel,
     onLoginSuccess: (String) -> Unit,
     onNavigateRegister: () -> Unit
 ) {
-
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     val user = viewModel.currentUser.value
 
@@ -42,93 +58,229 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF1565C0),
-                        Color(0xFF42A5F5)
-                    )
-                )
-            ),
-        contentAlignment = Alignment.Center
+            .background(Color.White)
+            .statusBarsPadding()
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.TopCenter
     ) {
-
-        Card(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
+                .fillMaxHeight()
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(48.dp))
 
-            Column(
+            // Logo
+            Box(
                 modifier = Modifier
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .size(80.dp)
+                    .padding(bottom = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-
-                Text(
-                    text = "Login Aplikasi",
-                    fontSize = 28.sp,
-                    style = MaterialTheme.typography.headlineMedium
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(60.dp),
+                    contentScale = ContentScale.Fit
                 )
+            }
 
-                Text(
-                    text = "Silakan masuk untuk melanjutkan",
-                    color = Color.Gray
+            // Title "Selamat Datang !"
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3))) {
+                        append("Selamat ")
+                    }
+                    withStyle(style = SpanStyle(color = Color(0xFF48C0B5))) {
+                        append("Datang !")
+                    }
+                },
+                fontSize = 38.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = (-1.4).sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            // Subtitle
+            Text(
+                text = "Masuk untuk melanjutkan perjalanan kesehatan Anda bersama kami.",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp,
+                modifier = Modifier
+                    .widthIn(max = 280.dp)
+                    .padding(bottom = 32.dp)
+            )
+
+            // Card Container
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 20.dp,
+                        shape = RoundedCornerShape(40.dp),
+                        clip = false,
+                        ambientColor = Color.Black.copy(alpha = 0.05f),
+                        spotColor = Color.Black.copy(alpha = 0.05f)
+                    ),
+                shape = RoundedCornerShape(40.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = CardDefaults.outlinedCardBorder().copy(
+                    brush = Brush.linearGradient(
+                        listOf(Color(0xFFE5E7EB), Color(0xFFE5E7EB))
+                    ),
+                    width = 2.dp
                 )
-
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Username") },
-                    leadingIcon = {
-                        Icon(Icons.Default.Person, null)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    leadingIcon = {
-                        Icon(Icons.Default.Lock, null)
-                    },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-
-                Button(
-                    onClick = {
-                        viewModel.login(username, password)
-                    },
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .padding(horizontal = 24.dp, vertical = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    Text("LOGIN")
-                }
+                    // USERNAME
+                    Column {
+                        Text(
+                            text = "USERNAME",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4B5563),
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        TextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            placeholder = { Text("Masukkan username", color = Color(0xFF9CA3AF)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Username",
+                                    tint = Color(0xFF9CA3AF)
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFFF4F4F5),
+                                unfocusedContainerColor = Color(0xFFF4F4F5),
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                    // PASSWORD
+                    Column {
+                        Text(
+                            text = "PASSWORD",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4B5563),
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        TextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            placeholder = { Text("Masukkan password", color = Color(0xFF9CA3AF)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = "Password",
+                                    tint = Color(0xFF9CA3AF)
+                                )
+                            },
+                            trailingIcon = {
+                                val image = if (passwordVisible)
+                                    Icons.Default.Visibility
+                                else Icons.Default.VisibilityOff
 
-                    Text("Belum punya akun? ")
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(imageVector = image, contentDescription = "Toggle password visibility", tint = Color(0xFF9CA3AF))
+                                }
+                            },
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFFF4F4F5),
+                                unfocusedContainerColor = Color(0xFFF4F4F5),
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-                    Text(
-                        text = "Daftar",
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable {
-                            onNavigateRegister()
-                        }
-                    )
+                    // Lupa Password?
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text(
+                            text = "Lupa Password?",
+                            fontSize = 12.sp,
+                            color = Color(0xFF9CA3AF),
+                            modifier = Modifier.clickable {
+                                // Action for forgot password if needed
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Button Masuk
+                    Button(
+                        onClick = {
+                            viewModel.login(username, password)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF3CAEA3),
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .shadow(
+                                elevation = 12.dp,
+                                shape = RoundedCornerShape(16.dp),
+                                clip = false,
+                                ambientColor = Color(0xFF3CAEA3),
+                                spotColor = Color(0xFF3CAEA3)
+                            )
+                    ) {
+                        Text(
+                            text = "Masuk",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Daftar sekarang
+            Text(
+                text = "Daftar sekarang",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFFF87171), // red-400
+                modifier = Modifier
+                    .clickable {
+                        onNavigateRegister()
+                    }
+                    .padding(bottom = 24.dp)
+            )
         }
     }
 }

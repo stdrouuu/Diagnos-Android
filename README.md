@@ -41,4 +41,3 @@ Diagnōs is a modern medical mobile application specifically engineered to strea
 * Database: PostgreSQL (structured data), Redis (caching)
 * API: RESTful / gRPC
 * Cloud & Hosting: Google Cloud Platform (GCP) or AWS -->
-
