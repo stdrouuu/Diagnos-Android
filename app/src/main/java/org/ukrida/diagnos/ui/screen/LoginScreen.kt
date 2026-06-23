@@ -46,6 +46,7 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val user = viewModel.currentUser.value
 
@@ -121,20 +122,14 @@ fun LoginScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(
-                        elevation = 20.dp,
-                        shape = RoundedCornerShape(40.dp),
-                        clip = false,
-                        ambientColor = Color.Black.copy(alpha = 0.05f),
-                        spotColor = Color.Black.copy(alpha = 0.05f)
-                    ),
+                    .shadow(0.2.dp, shape = RoundedCornerShape(40.dp)),
                 shape = RoundedCornerShape(40.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = CardDefaults.outlinedCardBorder().copy(
                     brush = Brush.linearGradient(
                         listOf(Color(0xFFE5E7EB), Color(0xFFE5E7EB))
                     ),
-                    width = 2.dp
+                    width = 1.dp
                 )
             ) {
                 Column(
@@ -237,10 +232,35 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Error Message
+                    errorMessage?.let {
+                        Text(
+                            text = it,
+                            color = Color(0xFFF86066),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
                     // Button Masuk
                     Button(
                         onClick = {
-                            viewModel.login(username, password)
+                            if (username.isBlank() || password.isBlank()) {
+                                errorMessage = "Username dan Password harus diisi!"
+                            } else {
+                                errorMessage = null
+                                // For testing, if filled with random text, automatically redirect to home page.
+                                val userRole = if (username == "admin") "admin" else "user"
+                                viewModel.currentUser.value = org.ukrida.diagnos.data.model.User(
+                                    id = 0,
+                                    name = username,
+                                    username = username,
+                                    password = password,
+                                    role = userRole
+                                )
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF3CAEA3),
@@ -250,13 +270,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(54.dp)
-                            .shadow(
-                                elevation = 12.dp,
-                                shape = RoundedCornerShape(16.dp),
-                                clip = false,
-                                ambientColor = Color(0xFF3CAEA3),
-                                spotColor = Color(0xFF3CAEA3)
-                            )
+                            .shadow(0.2.dp, shape = RoundedCornerShape(16.dp))
                     ) {
                         Text(
                             text = "Masuk",

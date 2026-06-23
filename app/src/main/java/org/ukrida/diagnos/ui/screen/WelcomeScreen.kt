@@ -81,13 +81,7 @@ fun WelcomeScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.66f)
                         .height(48.dp)
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(16.dp),
-                            clip = false,
-                            ambientColor = Color(0xFF42B2A6),
-                            spotColor = Color(0xFF42B2A6)
-                        )
+                        .shadow(0.2.dp, shape = RoundedCornerShape(16.dp))
                 ) {
                     Text(
                         text = "Masuk",

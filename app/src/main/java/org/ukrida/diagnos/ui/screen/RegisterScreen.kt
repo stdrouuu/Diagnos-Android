@@ -5,65 +5,67 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Photo
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
+import org.ukrida.diagnos.R
 import org.ukrida.diagnos.data.model.User
 import org.ukrida.diagnos.viewmodel.UserViewModel
 import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: UserViewModel,
     onRegisterSuccess: () -> Unit
 ) {
-
     val context = LocalContext.current
 
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var isTermsChecked by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     // ROLE DEFAULT USER
     val role = "user"
@@ -82,7 +84,6 @@ fun RegisterScreen(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-
         uri?.let {
             imageUri = it
         }
@@ -92,7 +93,6 @@ fun RegisterScreen(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-
         if (success) {
             imageUri = cameraImageUri
         }
@@ -102,200 +102,430 @@ fun RegisterScreen(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
-
         if (granted) {
-
             val file = File(
                 context.cacheDir,
                 "camera_photo.jpg"
             )
-
             cameraImageUri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.provider",
                 file
             )
-
             cameraImageUri?.let {
                 cameraLauncher.launch(it)
             }
         }
     }
-    Column(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
-            .systemBarsPadding()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .background(Color(0xFFFAFAFA))
+            .statusBarsPadding()
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        Text(
-            text = "Pendaftaran Pengguna",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        // ================= PREVIEW FOTO =================
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (imageUri != null) {
-                AsyncImage(
-                    model = imageUri,
-                    contentDescription = "Foto Profil",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+            // Navigation Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = { onRegisterSuccess() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF4B5563)
+                    )
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.logoname),
+                    contentDescription = "Diagnos",
+                    modifier = Modifier.height(28.dp),
+                    contentScale = ContentScale.Fit
                 )
+                Spacer(modifier = Modifier.width(48.dp))
+            }
 
-            } else {
-                Surface(
-                    modifier = Modifier.size(150.dp),
-                    shape = CircleShape,
-                    tonalElevation = 4.dp
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Title "Daftar Akun"
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3))) {
+                        append("Daftar ")
+                    }
+                    withStyle(style = SpanStyle(color = Color(0xFF86E2D5))) {
+                        append("Akun")
+                    }
+                },
+                fontSize = 36.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = (-1.2).sp,
+                textAlign = TextAlign.Center
+            )
+
+            // Subtitle
+            Text(
+                text = "Mulai perjalanan kesehatan yang terpersonalisasi bersama kami.",
+                fontSize = 13.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                lineHeight = 18.sp,
+                modifier = Modifier
+                    .widthIn(max = 280.dp)
+                    .padding(top = 8.dp, bottom = 24.dp)
+            )
+
+            // Card Container
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(0.2.dp, shape = RoundedCornerShape(40.dp)),
+                shape = RoundedCornerShape(40.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = CardDefaults.outlinedCardBorder().copy(
+                    brush = Brush.linearGradient(
+                        listOf(Color(0xFFE5E7EB), Color(0xFFE5E7EB))
+                    ),
+                    width = 1.dp
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 28.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Profile Photo Upload Section
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .size(96.dp)
+                            .clip(CircleShape)
+                            .shadow(0.2.dp, shape = CircleShape)
+                            .background(Color.White, CircleShape)
+                            .border(2.dp, Color.White, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(60.dp)
-                        )
+                        if (imageUri != null) {
+                            AsyncImage(
+                                model = imageUri,
+                                contentDescription = "Foto Profil",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(id = R.drawable.images),
+                                contentDescription = "Foto Profil Placeholder",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Camera & Gallery Buttons Row
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { galleryLauncher.launch("image/*") },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF4B5563)),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Photo,
+                                contentDescription = "Galeri",
+                                tint = Color(0xFF3CAEA3),
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Galeri", fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                when {
+                                    ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.CAMERA
+                                    ) == PackageManager.PERMISSION_GRANTED -> {
+                                        val file = File(
+                                            context.cacheDir,
+                                            "camera_photo.jpg"
+                                        )
+                                        cameraImageUri = FileProvider.getUriForFile(
+                                            context,
+                                            "${context.packageName}.provider",
+                                            file
+                                        )
+                                        cameraImageUri?.let {
+                                            cameraLauncher.launch(it)
+                                        }
+                                    }
+                                    else -> {
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                }
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF4B5563)),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = "Kamera",
+                                tint = Color(0xFF3CAEA3),
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Kamera", fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // INPUTS FORM
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Nama Lengkap
+                        Column {
+                            Text(
+                                text = "NAMA LENGKAP",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            TextField(
+                                value = name,
+                                onValueChange = { name = it },
+                                placeholder = { Text("Nama sesuai identitas", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = "Nama",
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFF4F5F7),
+                                    unfocusedContainerColor = Color(0xFFF4F5F7),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // Username
+                        Column {
+                            Text(
+                                text = "USERNAME",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            TextField(
+                                value = username,
+                                onValueChange = { username = it },
+                                placeholder = { Text("username_unik", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.AlternateEmail,
+                                        contentDescription = "Username",
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFF4F5F7),
+                                    unfocusedContainerColor = Color(0xFFF4F5F7),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // Kata Sandi
+                        Column {
+                            Text(
+                                text = "KATA SANDI",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            TextField(
+                                value = password,
+                                onValueChange = { password = it },
+                                placeholder = { Text("Minimal 8 karakter", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = "Kata Sandi",
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                },
+                                trailingIcon = {
+                                    val image = if (passwordVisible)
+                                        Icons.Default.Visibility
+                                    else Icons.Default.VisibilityOff
+
+                                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                        Icon(imageVector = image, contentDescription = "Toggle password visibility", tint = Color(0xFF9CA3AF))
+                                    }
+                                },
+                                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                singleLine = true,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFF4F5F7),
+                                    unfocusedContainerColor = Color(0xFFF4F5F7),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // Terms and Conditions checkbox
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp)
+                        ) {
+                            Checkbox(
+                                checked = isTermsChecked,
+                                onCheckedChange = { isTermsChecked = it },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = Color(0xFF3CAEA3),
+                                    uncheckedColor = Color(0xFF9CA3AF)
+                                ),
+                                modifier = Modifier.offset(y = (-8).dp)
+                            )
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("Saya menyetujui ")
+                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
+                                        append("Syarat & Ketentuan")
+                                    }
+                                    append(" serta ")
+                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
+                                        append("Kebijakan Privasi")
+                                    }
+                                    append(" Diagnōs.")
+                                },
+                                fontSize = 12.sp,
+                                color = Color(0xFF6B7280),
+                                lineHeight = 16.sp,
+                                modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        // ================= BUTTON GALERI =================
-        Button(
-            onClick = {
-                galleryLauncher.launch("image/*")
-            },
-            modifier = Modifier.fillMaxWidth().height(55.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4A9A4D),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Icon(Icons.Default.Photo, null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Pilih dari Galeri")
-        }
+            Spacer(modifier = Modifier.height(28.dp))
 
-        // ================= BUTTON KAMERA =================
-        Button(
-            onClick = {
-                when {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.CAMERA
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        val file = File(
-                            context.cacheDir,
-                            "camera_photo.jpg"
-                        )
-                        cameraImageUri = FileProvider.getUriForFile(
-                            context,
-                            "${context.packageName}.provider",
-                            file
-                        )
-                        cameraImageUri?.let {
-                            cameraLauncher.launch(it)
-                        }
-                    }
-                    else -> {
-                        permissionLauncher.launch(
-                            Manifest.permission.CAMERA
-                        )
-                    }
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-                .height(55.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4A9A4D),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Icon(Icons.Default.CameraAlt, null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Ambil Foto")
-        }
-        // ================= NAMA =================
-        OutlinedTextField(
-            value = name,
-            onValueChange = {
-                name = it
-            },
-            label = {
-                Text("Nama Lengkap")
-            },
-            leadingIcon = {
-                Icon(Icons.Default.Badge, null)
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        // ================= USERNAME =================
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-            },
-            label = {
-                Text("Username")
-            },
-            leadingIcon = {
-                Icon(Icons.Default.Person, null)
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // ================= PASSWORD =================
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-            },
-            label = {
-                Text("Password")
-            },
-            leadingIcon = {
-                Icon(Icons.Default.Lock, null)
-            },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        // ================= BUTTON REGISTER =================
-        Button(
-            onClick = {
-                val user = User(
-                    id = 0,
-                    name = name,
-                    username = username,
-                    password = password,
-                    // ROLE DEFAULT
-                    role = role,
-                    photo = imageUri?.toString()
+            // Error Message validation display
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = Color(0xFFF86066),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
-                viewModel.insert(user)
-                onRegisterSuccess()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4A9A4D),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text("DAFTAR")
+            }
+
+            // Button Daftar
+            Button(
+                onClick = {
+                    if (name.isBlank() || username.isBlank() || password.isBlank()) {
+                        errorMessage = "Semua field input harus diisi!"
+                    } else if (!isTermsChecked) {
+                        errorMessage = "Anda harus menyetujui Syarat & Ketentuan!"
+                    } else {
+                        errorMessage = null
+                        val user = User(
+                            id = 0,
+                            name = name,
+                            username = username,
+                            password = password,
+                            role = role,
+                            photo = imageUri?.toString()
+                        )
+                        viewModel.insert(user)
+                        onRegisterSuccess() // Redirect back to login page
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF39B3A3),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .shadow(0.2.dp, shape = RoundedCornerShape(16.dp))
+            ) {
+                Text(
+                    text = "Daftar",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.5.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Redirect back to login page link
+            Row(
+                modifier = Modifier.padding(bottom = 24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Sudah memiliki akun? ",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "Masuk di sini",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF3CAEA3),
+                    modifier = Modifier.clickable { onRegisterSuccess() }
+                )
+            }
         }
     }
 }
