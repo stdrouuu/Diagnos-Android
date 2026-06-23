@@ -52,7 +52,7 @@ data class LabTest(
 )
 
 @Composable
-fun ListTestScreen() {
+fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
     var searchQuery by remember { mutableStateOf("") }
 
     val allTests = remember {
@@ -168,7 +168,7 @@ fun ListTestScreen() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             filteredTests.forEach { test ->
-                LabTestCardItem(test)
+                LabTestCardItem(test, onPesanClick = { onNavigateToDetail(test.id) })
             }
 
             // Promo banner card (static)
@@ -181,7 +181,7 @@ fun ListTestScreen() {
 }
 
 @Composable
-fun LabTestCardItem(test: LabTest) {
+fun LabTestCardItem(test: LabTest, onPesanClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -280,7 +280,7 @@ fun LabTestCardItem(test: LabTest) {
                         )
                     }
                     Button(
-                        onClick = { /* Pesan action */ },
+                        onClick = onPesanClick,
                         colors = ButtonDefaults.buttonColors(containerColor = test.buttonColor),
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)

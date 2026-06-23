@@ -9,7 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,9 +20,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import org.ukrida.diagnos.R
 import org.ukrida.diagnos.ui.navigation.BottomNav
 import org.ukrida.diagnos.viewmodel.UserViewModel
+import org.ukrida.diagnos.viewmodel.BookingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,10 +36,16 @@ fun MainScreen(
     userViewModel: UserViewModel
 ) {
     val innerNavController = rememberNavController()
+    val bookingViewModel = remember { BookingViewModel() }
+    val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: "home"
+    val showTopBar = currentRoute == "home" || currentRoute == "listtest" || currentRoute == "user"
+
     Scaffold(
         // ================= TOP BAR =================
         topBar = {
-            Box(
+            if (showTopBar) {
+                Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
@@ -64,6 +74,7 @@ fun MainScreen(
                         contentScale = ContentScale.Fit
                     )
                 }
+                }
             }
         },
 
@@ -77,7 +88,10 @@ fun MainScreen(
         NavHost(
             navController = innerNavController,
             startDestination = "home",
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(
+                top = if (showTopBar) padding.calculateTopPadding() else 0.dp,
+                bottom = padding.calculateBottomPadding()
+            )
         ) {
 
             composable("home") {
@@ -90,11 +104,58 @@ fun MainScreen(
             }
 
             composable("listtest") {
-                ListTestScreen()
+                ListTestScreen(
+                    onNavigateToDetail = { testId ->
+                        innerNavController.navigate("detailtest/$testId")
+                    }
+                )
             }
 
             composable("user") {
                 UserScreen(userViewModel, innerNavController)
+            }
+
+            composable(
+                route = "detailtest/{testId}",
+                arguments = listOf(navArgument("testId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val testId = backStackEntry.arguments?.getInt("testId") ?: 1
+                DetailTestScreen(
+                    testId = testId,
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToSchedule = {
+                        innerNavController.navigate("bookschedule")
+                    }
+                )
+            }
+
+            composable("bookschedule") {
+                BookScheduleScreen(
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToReview = {
+                        innerNavController.navigate("orderreview")
+                    }
+                )
+            }
+
+            composable("orderreview") {
+                OrderReviewScreen(
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToProfile = {
+                        innerNavController.navigate("user") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    }
+                )
             }
         }
     }

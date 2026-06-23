@@ -12,10 +12,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.AssignmentInd
+import androidx.compose.material.icons.filled.Biotech
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -170,21 +170,20 @@ fun HomeScreen(
         ) {
             // Action 1
             QuickActionButton(
-                icon = Icons.Default.Science,
-                label = "Lihat Hasil Tes Lab",
+                icon = Icons.Default.Biotech,
+                label = "Input\nHasil Lab",
                 modifier = Modifier.weight(1f)
             )
-            // Action 2 (with Gratis badge)
+            // Action 2
             QuickActionButton(
-                icon = Icons.Default.Forum,
-                label = "Konsultasi WA",
-                modifier = Modifier.weight(1f),
-                showGratisBadge = true
+                icon = Icons.Default.Person,
+                label = "Cek\nHasil Lab",
+                modifier = Modifier.weight(1f)
             )
             // Action 3
             QuickActionButton(
-                icon = Icons.AutoMirrored.Filled.Assignment,
-                label = "Riwayat Pemeriksaan",
+                icon = Icons.Default.AssignmentInd,
+                label = "Riwayat\nPemeriksaan",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -294,18 +293,18 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 PopularTestCard(
-                    title = "Cek Jantung Dasar",
+                    title = "Cek Hematologi (Lengkap)",
                     desc = "Total, LDL, HDL & Trigliserida",
                     buttonColor = Color(0xFFF86066)
                 )
                 PopularTestCard(
-                    title = "Cek Gula Darah Lengkap",
-                    desc = "Total, LDL, HDL & Trigliserida",
+                    title = "Hitung Jenis Leukosit",
+                    desc = "Pemeriksaan Basofil, Eosinofil, Neutrofil, Limfosit, dan Monosit.",
                     buttonColor = Color(0xFFFFA92A)
                 )
                 PopularTestCard(
-                    title = "Cek Kolesterol Total",
-                    desc = "Total, LDL, HDL & Trigliserida",
+                    title = "Cek Darah Rutin & Nilai-Nilai MC",
+                    desc = "Pemeriksaan Hemoglobin, Hematokrit, Eritrosit, Leukosit total, Trombosit, nilai-nilai MC",
                     buttonColor = Color(0xFF40B5A7)
                 )
             }

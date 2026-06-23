@@ -53,7 +53,11 @@ fun BottomNav(navController: NavHostController, role: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { screen ->
-                val selected = currentRoute == screen.route
+                val selected = when (screen) {
+                    Screen.Home -> currentRoute == Screen.Home.route
+                    Screen.ListTest -> currentRoute == Screen.ListTest.route || currentRoute.startsWith("detailtest") || currentRoute == "bookschedule" || currentRoute == "orderreview"
+                    Screen.User -> currentRoute == Screen.User.route
+                }
                 val interactionSource = remember { MutableInteractionSource() }
 
                 Box(
