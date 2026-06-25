@@ -23,7 +23,7 @@ import org.ukrida.diagnos.ui.screen.WelcomeScreen
 import org.ukrida.diagnos.ui.theme.DiagnosTheme
 import org.ukrida.diagnos.viewmodel.UserViewModel
 
-class MainActivity : ComponentActivity() {
+class   MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -78,7 +78,15 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             role = role,
                             navController = navController,
-                            userViewModel = userViewModel
+                            userViewModel = userViewModel,
+                            onLogout = {
+                                isLoggedIn = false
+                                role = ""
+                                userViewModel.currentUser.value = null
+                                navController.navigate("welcome") {
+                                    popUpTo("main") { inclusive = true }
+                                }
+                            }
                         )
                     }
                 }

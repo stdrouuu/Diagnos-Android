@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.outlined.SentimentDissatisfied
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -167,8 +168,51 @@ fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            filteredTests.forEach { test ->
-                LabTestCardItem(test, onPesanClick = { onNavigateToDetail(test.id) })
+            if (filteredTests.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .background(Color(0xFFF2F4F7), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.SentimentDissatisfied,
+                                contentDescription = "Pemeriksaan tidak ditemukan",
+                                tint = Color(0xFF98A2B3),
+                                modifier = Modifier.size(54.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text(
+                            text = "Pemeriksaan tidak ditemukan",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1D2939),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Coba gunakan kata kunci tes atau tanggal lain.",
+                            fontSize = 14.sp,
+                            color = Color(0xFF667085),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                filteredTests.forEach { test ->
+                    LabTestCardItem(test, onPesanClick = { onNavigateToDetail(test.id) })
+                }
             }
 
             // Promo banner card (static)

@@ -1,3 +1,4 @@
+// Repository untuk mengelola sumber data User, menghubungkan ViewModel dengan ApiService
 package org.ukrida.diagnos.data.repository
 
 import org.ukrida.diagnos.data.api.ApiService

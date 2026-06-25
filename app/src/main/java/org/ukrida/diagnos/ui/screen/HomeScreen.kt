@@ -1,3 +1,4 @@
+// View: Layar Beranda (Home) utama yang menampilkan ringkasan data dan menu cepat
 package org.ukrida.diagnos.ui.screen
 
 import androidx.compose.foundation.Image
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AssignmentInd
 import androidx.compose.material.icons.filled.Biotech
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -48,11 +50,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ukrida.diagnos.R
 import org.ukrida.diagnos.viewmodel.UserViewModel
+import org.ukrida.diagnos.viewmodel.BookingViewModel
 
 @Composable
 fun HomeScreen(
     userViewModel: UserViewModel,
-    onNavigateToListTest: () -> Unit
+    bookingViewModel: BookingViewModel,
+    onNavigateToListTest: () -> Unit,
+    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onNavigateToResult: (Int) -> Unit
 ) {
     val currentUser = userViewModel.currentUser.value
     val userName = currentUser?.name ?: "Guest"
@@ -170,21 +177,33 @@ fun HomeScreen(
         ) {
             // Action 1
             QuickActionButton(
-                icon = Icons.Default.Biotech,
-                label = "Input\nHasil Lab",
-                modifier = Modifier.weight(1f)
+                icon = Icons.Default.Inventory,
+                label = "Lihat\nStatus Pesanan",
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    onNavigateToHistory()
+                }
             )
             // Action 2
             QuickActionButton(
                 icon = Icons.Default.Person,
-                label = "Cek\nHasil Lab",
-                modifier = Modifier.weight(1f)
+                label = "Pemeriksaan \nTerakhir",
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    val lastTestId = if (bookingViewModel.isOrderCompleted && bookingViewModel.selectedTest != null) {
+                        bookingViewModel.selectedTest!!.id
+                    } else {
+                        1
+                    }
+                    onNavigateToResult(lastTestId)
+                }
             )
             // Action 3
             QuickActionButton(
                 icon = Icons.Default.AssignmentInd,
                 label = "Riwayat\nPemeriksaan",
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onClick = onNavigateToHistory
             )
         }
 
@@ -203,37 +222,29 @@ fun HomeScreen(
                 // Banner 1
                 PromoBannerCard(
                     title = buildAnnotatedString {
-                        append("Hadiah Terindah adalah ")
+                        append("Cek Darah di ")
                         withStyle(style = SpanStyle(color = Color(0xFF3CB7A6), fontWeight = FontWeight.ExtraBold)) {
-                            append("Tubuh yang Sehat!")
+                            append("\nKlinik Cinta Kasih!")
                         }
                     },
-                    discountText = "Hemat 12%",
-                    discountDesc = "Semua Pemeriksaan Lab",
-                    minTransaction = "*Min. Transaksi Rp2Jt"
+                    discountText = "Hemat 15%",
+                    discountDesc = "Semua Skrining Lab Lengkap",
+                    minTransaction = "*Min. Transaksi Rp1.5Jt",
+                    imageRes = R.drawable.kesehatan
                 )
                 // Banner 2
                 PromoBannerCard(
                     title = buildAnnotatedString {
-                        append("Cek Kesehatan Berkala ")
+                        append("Proteksi Keluarga Bersama ")
                         withStyle(style = SpanStyle(color = Color(0xFF3CB7A6), fontWeight = FontWeight.ExtraBold)) {
-                            append("Mulai Sekarang!")
+                            append("Cinta Care")
                         }
                     },
-                    discountText = "Hemat 15%",
-                    discountDesc = "Khusus Pengguna Baru",
-                    minTransaction = "*Tanpa Min. Transaksi"
+                    discountText = "Hemat 20%",
+                    discountDesc = "Paket Pemeriksaan Lansia",
+                    minTransaction = "*Termasuk Konsultasi Dokter",
+                    imageRes = R.drawable.lansia
                 )
-            }
-
-            // Dots indicator
-            Row(
-                modifier = Modifier.padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(modifier = Modifier.size(6.dp).background(Color(0xFF3CB7A6), CircleShape))
-                Box(modifier = Modifier.size(6.dp).background(Color(0xFFE5E7EB), CircleShape))
             }
         }
 
@@ -295,17 +306,20 @@ fun HomeScreen(
                 PopularTestCard(
                     title = "Cek Hematologi (Lengkap)",
                     desc = "Total, LDL, HDL & Trigliserida",
-                    buttonColor = Color(0xFFF86066)
+                    buttonColor = Color(0xFFF86066),
+                    onPesanClick = { onNavigateToDetail(1) }
                 )
                 PopularTestCard(
                     title = "Hitung Jenis Leukosit",
                     desc = "Pemeriksaan Basofil, Eosinofil, Neutrofil, Limfosit, dan Monosit.",
-                    buttonColor = Color(0xFFFFA92A)
+                    buttonColor = Color(0xFFFFA92A),
+                    onPesanClick = { onNavigateToDetail(2) }
                 )
                 PopularTestCard(
                     title = "Cek Darah Rutin & Nilai-Nilai MC",
                     desc = "Pemeriksaan Hemoglobin, Hematokrit, Eritrosit, Leukosit total, Trombosit, nilai-nilai MC",
-                    buttonColor = Color(0xFF40B5A7)
+                    buttonColor = Color(0xFF40B5A7),
+                    onPesanClick = { onNavigateToDetail(3) }
                 )
             }
         }
@@ -317,11 +331,12 @@ fun QuickActionButton(
     icon: ImageVector,
     label: String,
     modifier: Modifier = Modifier,
-    showGratisBadge: Boolean = false
+    showGratisBadge: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.clickable { /* Action quick button */ }
+        modifier = modifier.clickable { onClick() }
     ) {
         Box(
             contentAlignment = Alignment.Center
@@ -374,7 +389,8 @@ fun PromoBannerCard(
     title: androidx.compose.ui.text.AnnotatedString,
     discountText: String,
     discountDesc: String,
-    minTransaction: String
+    minTransaction: String,
+    imageRes: Int
 ) {
     Card(
         modifier = Modifier
@@ -408,15 +424,10 @@ fun PromoBannerCard(
                         .padding(8.dp)
                 ) {
                     Text(
-                        text = buildAnnotatedString {
-                            append("Hemat ")
-                            withStyle(style = SpanStyle(color = Color(0xFFF86066), fontWeight = FontWeight.ExtraBold, fontSize = 14.sp)) {
-                                append(discountText.substringAfter("Hemat "))
-                            }
-                        },
+                        text = discountText,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1F2937)
+                        color = Color(0xFFF86066)
                     )
                     Text(
                         text = discountDesc,
@@ -435,15 +446,14 @@ fun PromoBannerCard(
             Box(
                 modifier = Modifier
                     .weight(5f)
-                    .fillMaxHeight()
-                    .background(Color(0xFFF3F4F6)),
+                    .fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo2),
-                    contentDescription = "Cloud Character",
-                    modifier = Modifier.size(90.dp),
-                    contentScale = ContentScale.Fit
+                    painter = painterResource(id = imageRes),
+                    contentDescription = "Promo Image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
         }
@@ -454,7 +464,8 @@ fun PromoBannerCard(
 fun PopularTestCard(
     title: String,
     desc: String,
-    buttonColor: Color
+    buttonColor: Color,
+    onPesanClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -488,7 +499,7 @@ fun PopularTestCard(
                 )
             }
             Button(
-                onClick = { /* Pesan action */ },
+                onClick = onPesanClick,
                 colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier

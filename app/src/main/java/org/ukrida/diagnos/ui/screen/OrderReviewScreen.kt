@@ -364,7 +364,7 @@ fun OrderReviewScreen(
                                     color = Color(0xFF1F2937)
                                 )
                                 Text(
-                                    text = "Bawa surat rujukan fisik pada\nhari pemeriksaan.",
+                                    text = "Jangan lupa membawa surat rujukan anda\npada hari pemeriksaan.",
                                     fontSize = 10.sp,
                                     color = Color(0xFF9CA3AF),
                                     fontStyle = FontStyle.Italic,

@@ -27,19 +27,30 @@ import org.ukrida.diagnos.R
 import org.ukrida.diagnos.ui.navigation.BottomNav
 import org.ukrida.diagnos.viewmodel.UserViewModel
 import org.ukrida.diagnos.viewmodel.BookingViewModel
+import org.ukrida.diagnos.ui.screen.HistoryScreen
+import org.ukrida.diagnos.ui.screen.ResultScreen
+import org.ukrida.diagnos.viewmodel.HistoryViewModel
+import org.ukrida.diagnos.viewmodel.ResultViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     role: String,
     navController: NavHostController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    onLogout: () -> Unit
 ) {
     val innerNavController = rememberNavController()
     val bookingViewModel = remember { BookingViewModel() }
+    val historyViewModel = remember { HistoryViewModel() }
+    val resultViewModel = remember { ResultViewModel() }
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
+
+    LaunchedEffect(bookingViewModel.isOrderCompleted) {
+        historyViewModel.syncWithBooking(bookingViewModel)
+    }
     val currentRoute = navBackStackEntry?.destination?.route ?: "home"
-    val showTopBar = currentRoute == "home" || currentRoute == "listtest" || currentRoute == "user"
+    val showTopBar = currentRoute == "home" || currentRoute == "listtest"
 
     Scaffold(
         // ================= TOP BAR =================
@@ -97,8 +108,45 @@ fun MainScreen(
             composable("home") {
                 HomeScreen(
                     userViewModel = userViewModel,
+                    bookingViewModel = bookingViewModel,
                     onNavigateToListTest = {
                         innerNavController.navigate("listtest")
+                    },
+                    onNavigateToDetail = { testId ->
+                        innerNavController.navigate("detailtest/$testId")
+                    },
+                    onNavigateToHistory = {
+                        innerNavController.navigate("history")
+                    },
+                    onNavigateToResult = { testId ->
+                        innerNavController.navigate("result/$testId")
+                    }
+                )
+            }
+
+            composable("history") {
+                HistoryScreen(
+                    viewModel = historyViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToResult = { testId ->
+                        innerNavController.navigate("result/$testId")
+                    }
+                )
+            }
+
+            composable(
+                route = "result/{testId}",
+                arguments = listOf(navArgument("testId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val testId = backStackEntry.arguments?.getInt("testId") ?: 1
+                ResultScreen(
+                    testId = testId,
+                    resultViewModel = resultViewModel,
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
                     }
                 )
             }
@@ -112,7 +160,19 @@ fun MainScreen(
             }
 
             composable("user") {
-                UserScreen(userViewModel, innerNavController)
+                ProfileScreen(
+                    viewModel = userViewModel,
+                    navController = innerNavController,
+                    bookingViewModel = bookingViewModel,
+                    onLogout = onLogout
+                )
+            }
+
+            composable("profileedit") {
+                ProfileEditScreen(
+                    viewModel = userViewModel,
+                    navController = innerNavController
+                )
             }
 
             composable(

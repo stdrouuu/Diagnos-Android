@@ -1,3 +1,4 @@
+// View: Layar Login untuk autentikasi pengguna
 package org.ukrida.diagnos.ui.screen
 
 // username: brandon or lebron
@@ -43,6 +44,7 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
     onNavigateRegister: () -> Unit
 ) {
+    var selectedRole by remember { mutableStateOf("user") } // "user" or "admin"
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -137,6 +139,52 @@ fun LoginScreen(
                         .padding(horizontal = 24.dp, vertical = 32.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
+                    // Role Selector (User vs Admin)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFF4F4F5), RoundedCornerShape(12.dp))
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(38.dp)
+                                .background(
+                                    if (selectedRole == "user") Color.White else Color.Transparent,
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .clickable { selectedRole = "user" },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "User",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (selectedRole == "user") Color(0xFF3CAEA3) else Color(0xFF71717A)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(38.dp)
+                                .background(
+                                    if (selectedRole == "admin") Color.White else Color.Transparent,
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .clickable { selectedRole = "admin" },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Admin",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (selectedRole == "admin") Color(0xFF3CAEA3) else Color(0xFF71717A)
+                            )
+                        }
+                    }
+
                     // USERNAME
                     Column {
                         Text(
@@ -195,7 +243,7 @@ fun LoginScreen(
                             trailingIcon = {
                                 val image = if (passwordVisible)
                                     Icons.Default.Visibility
-                                else Icons.Default.VisibilityOff
+                                  else Icons.Default.VisibilityOff
 
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(imageVector = image, contentDescription = "Toggle password visibility", tint = Color(0xFF9CA3AF))
@@ -251,14 +299,12 @@ fun LoginScreen(
                                 errorMessage = "Username dan Password harus diisi!"
                             } else {
                                 errorMessage = null
-                                // For testing, if filled with random text, automatically redirect to home page.
-                                val userRole = if (username == "admin") "admin" else "user"
                                 viewModel.currentUser.value = org.ukrida.diagnos.data.model.User(
                                     id = 0,
                                     name = username,
                                     username = username,
                                     password = password,
-                                    role = userRole
+                                    role = selectedRole
                                 )
                             }
                         },
@@ -284,17 +330,25 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Daftar sekarang
-            Text(
-                text = "Daftar sekarang",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFFF87171), // red-400
-                modifier = Modifier
-                    .clickable {
+            Row(
+                modifier = Modifier.padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = "Belum punya akun? ",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Daftar sekarang",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFF87171),
+                    modifier = Modifier.clickable {
                         onNavigateRegister()
                     }
-                    .padding(bottom = 24.dp)
-            )
+                )
+            }
         }
     }
 }

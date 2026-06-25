@@ -1,3 +1,4 @@
+// Model data untuk entitas Tes Laboratorium (Lab Test)
 package org.ukrida.diagnos.data.model
 
 data class LabTest(

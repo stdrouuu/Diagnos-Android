@@ -54,9 +54,9 @@ fun BottomNav(navController: NavHostController, role: String) {
         ) {
             items.forEach { screen ->
                 val selected = when (screen) {
-                    Screen.Home -> currentRoute == Screen.Home.route
+                    Screen.Home -> currentRoute == Screen.Home.route || currentRoute == "history" || currentRoute.startsWith("result")
                     Screen.ListTest -> currentRoute == Screen.ListTest.route || currentRoute.startsWith("detailtest") || currentRoute == "bookschedule" || currentRoute == "orderreview"
-                    Screen.User -> currentRoute == Screen.User.route
+                    Screen.User -> currentRoute == Screen.User.route || currentRoute == "profileedit"
                 }
                 val interactionSource = remember { MutableInteractionSource() }
 

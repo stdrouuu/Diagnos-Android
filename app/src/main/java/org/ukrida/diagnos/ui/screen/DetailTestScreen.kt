@@ -398,77 +398,56 @@ if (test == null) {
         }
     }
 
-    // Slide-up Modal Dialog representation in Compose
+    // Slide-up Modal Bottom Sheet
     if (showDescriptionModal) {
-        Dialog(
+        val sheetState = rememberModalBottomSheetState()
+        ModalBottomSheet(
             onDismissRequest = { showDescriptionModal = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            sheetState = sheetState,
+            containerColor = Color.White,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
         ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))
-                    .clickable { showDescriptionModal = false },
-                contentAlignment = Alignment.BottomCenter
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .navigationBarsPadding()
             ) {
-                Card(
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Deskripsi Lengkap",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF1F2937)
+                    )
+                    IconButton(onClick = { showDescriptionModal = false }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Tutup",
+                            tint = Color(0xFF9CA3AF)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Content (Scrollable text)
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7f)
-                        .clickable(enabled = false) {}, // Prevent clicks closing modal
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 32.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp)
-                    ) {
-                        // Drag Handle
-                        Box(
-                            modifier = Modifier
-                                .size(width = 48.dp, height = 4.dp)
-                                .background(Color(0xFFE5E7EB), RoundedCornerShape(2.dp))
-                                .align(Alignment.CenterHorizontally)
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // Header
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Deskripsi Lengkap",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF1F2937)
-                            )
-                            IconButton(onClick = { showDescriptionModal = false }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Tutup",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Content (Scrollable text)
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
-                        ) {
-                            Text(
-                                text = test.fullDescription,
-                                fontSize = 12.sp,
-                                color = Color(0xFF4B5563),
-                                lineHeight = 20.sp
-                            )
-                        }
-                    }
+                    Text(
+                        text = test.fullDescription,
+                        fontSize = 12.sp,
+                        color = Color(0xFF4B5563),
+                        lineHeight = 20.sp
+                    )
                 }
             }
         }

@@ -50,12 +50,12 @@ fun WelcomeScreen(
                     painter = painterResource(id = R.drawable.logofull),
                     contentDescription = "Diagnos Logo",
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .height(120.dp),
-                    contentScale = ContentScale.Inside
+                        .fillMaxWidth(0.55f)
+                        .height(240.dp),
+                    contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Subtitle
                 Text(
@@ -64,11 +64,10 @@ fun WelcomeScreen(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     letterSpacing = 0.5.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Button Masuk
                 Button(

@@ -1,3 +1,4 @@
+// View: Layar Registrasi untuk pendaftaran akun pengguna baru
 package org.ukrida.diagnos.ui.screen
 
 import android.Manifest
@@ -51,6 +52,13 @@ import org.ukrida.diagnos.R
 import org.ukrida.diagnos.data.model.User
 import org.ukrida.diagnos.viewmodel.UserViewModel
 import java.io.File
+import android.app.DatePickerDialog
+import java.util.Calendar
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ArrowDropDown
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +74,11 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var isTermsChecked by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("Laki-laki") }
+    var dob by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
 
     // ROLE DEFAULT USER
     val role = "user"
@@ -414,6 +427,231 @@ fun RegisterScreen(
                                 ),
                                 modifier = Modifier.fillMaxWidth()
                             )
+                                                }
+
+                        // Alamat Email
+                        Column {
+                            Text(
+                                text = "ALAMAT EMAIL",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            TextField(
+                                value = email,
+                                onValueChange = { email = it },
+                                placeholder = { Text("contoh@email.com", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Email,
+                                        contentDescription = "Email",
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFF4F5F7),
+                                    unfocusedContainerColor = Color(0xFFF4F5F7),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // Nomor Telepon
+                        Column {
+                            Text(
+                                text = "NOMOR TELEPON",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color(0xFFF4F5F7), RoundedCornerShape(16.dp))
+                                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "+62",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF4B5563)
+                                    )
+                                }
+                                TextField(
+                                    value = phone,
+                                    onValueChange = { phone = it },
+                                    placeholder = { Text("812 3456 7890", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Phone,
+                                            contentDescription = "Telepon",
+                                            tint = Color(0xFF9CA3AF)
+                                        )
+                                    },
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = Color(0xFFF4F5F7),
+                                        unfocusedContainerColor = Color(0xFFF4F5F7),
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+
+                        // Jenis Kelamin
+                        Column {
+                            Text(
+                                text = "JENIS KELAMIN",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            var genderExpanded by remember { mutableStateOf(false) }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFF4F5F7), RoundedCornerShape(16.dp))
+                                    .clickable { genderExpanded = true }
+                                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = gender,
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = null,
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = genderExpanded,
+                                    onDismissRequest = { genderExpanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Laki-laki") },
+                                        onClick = {
+                                            gender = "Laki-laki"
+                                            genderExpanded = false
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Perempuan") },
+                                        onClick = {
+                                            gender = "Perempuan"
+                                            genderExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        // Tanggal Lahir
+                        Column {
+                            Text(
+                                text = "TANGGAL LAHIR",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            val calendar = Calendar.getInstance()
+                            val datePickerDialog = DatePickerDialog(
+                                context,
+                                { _, year, month, dayOfMonth ->
+                                    dob = "$year-${month + 1}-$dayOfMonth"
+                                },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFF4F5F7), RoundedCornerShape(16.dp))
+                                    .clickable { datePickerDialog.show() }
+                                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (dob.isEmpty()) "Pilih Tanggal Lahir" else dob,
+                                        color = if (dob.isEmpty()) Color(0xFF9CA3AF) else Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.DateRange,
+                                        contentDescription = null,
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                }
+                            }
+                        }
+
+                        // Alamat Lengkap
+                        Column {
+                            Text(
+                                text = "ALAMAT LENGKAP",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF6B7280),
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                            TextField(
+                                value = address,
+                                onValueChange = { address = it },
+                                placeholder = { Text("Alamat lengkap tempat tinggal...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Home,
+                                        contentDescription = "Alamat",
+                                        tint = Color(0xFF9CA3AF)
+                                    )
+                                },
+                                singleLine = false,
+                                minLines = 3,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFF4F5F7),
+                                    unfocusedContainerColor = Color(0xFFF4F5F7),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
 
                         // Terms and Conditions checkbox
@@ -470,7 +708,7 @@ fun RegisterScreen(
             // Button Daftar
             Button(
                 onClick = {
-                    if (name.isBlank() || username.isBlank() || password.isBlank()) {
+                    if (name.isBlank() || username.isBlank() || password.isBlank() || email.isBlank() || phone.isBlank() || dob.isBlank() || address.isBlank()) {
                         errorMessage = "Semua field input harus diisi!"
                     } else if (!isTermsChecked) {
                         errorMessage = "Anda harus menyetujui Syarat & Ketentuan!"
@@ -482,7 +720,12 @@ fun RegisterScreen(
                             username = username,
                             password = password,
                             role = role,
-                            photo = imageUri?.toString()
+                            photo = imageUri?.toString(),
+                            email = email,
+                            phone = phone,
+                            gender = if (gender == "Laki-laki") "L" else "P",
+                            dob = dob,
+                            address = address
                         )
                         viewModel.insert(user)
                         onRegisterSuccess() // Redirect back to login page
