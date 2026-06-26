@@ -68,10 +68,12 @@ fun BottomNav(navController: NavHostController, role: String) {
                             interactionSource = interactionSource,
                             indication = null
                         ) {
-                            if (currentRoute != screen.route) {
+                            val currentDest = navController.currentBackStackEntry?.destination?.route
+                            if (currentDest != screen.route) {
                                 navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.startDestinationId)
+                                    popUpTo(navController.graph.startDestinationId) { saveState = true }
                                     launchSingleTop = true
+                                    restoreState = true
                                 }
                             }
                         },

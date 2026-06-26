@@ -170,6 +170,10 @@ fun MainScreen(
                     viewModel = userViewModel,
                     navController = innerNavController,
                     bookingViewModel = bookingViewModel,
+                    historyViewModel = historyViewModel,
+                    onNavigateToHistory = {
+                        innerNavController.navigate("history")
+                    },
                     onLogout = onLogout
                 )
             }

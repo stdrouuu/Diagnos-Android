@@ -634,7 +634,7 @@ fun OrderReviewScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Pesanan Anda telah kami terima. Silakan menunggu konfirmasi jadwal lab. Status pesanan (Menunggu, Dikonfirmasi, dll) dapat Anda pantau di halaman profil.",
+                        text = "Pesanan Anda telah kami terima. Status pesanan dapat Anda pantau di halaman profil.",
                         fontSize = 12.sp,
                         color = Color(0xFF6B7280),
                         textAlign = TextAlign.Center,

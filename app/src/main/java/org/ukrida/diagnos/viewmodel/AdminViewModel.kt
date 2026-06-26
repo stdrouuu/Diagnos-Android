@@ -24,7 +24,8 @@ class AdminViewModel : ViewModel() {
                 resultStatus = "Menunggu Hasil",
                 gender = "Perempuan",
                 dob = "14 Maret 1993",
-                address = "Jl. Melati No. 12, Jakarta Selatan"
+                address = "Jl. Melati No. 12, Jakarta Selatan",
+                clinicName = "Klinik Citra Kasih Jakarta Selatan"
             ),
             AdminBooking(
                 id = "DG-9913",
@@ -38,7 +39,8 @@ class AdminViewModel : ViewModel() {
                 resultStatus = "Hasil Siap",
                 gender = "Laki-laki",
                 dob = "22 Agustus 1985",
-                address = "Jl. Sudirman Kav. 21, Jakarta Pusat"
+                address = "Jl. Sudirman Kav. 21, Jakarta Pusat",
+                clinicName = "Klinik Citra Kasih PIK"
             ),
             AdminBooking(
                 id = "DG-9914",
@@ -52,7 +54,8 @@ class AdminViewModel : ViewModel() {
                 resultStatus = "Menunggu Hasil",
                 gender = "Perempuan",
                 dob = "05 Desember 1990",
-                address = "Gg. Kelinci No. 8, Bandung"
+                address = "Gg. Kelinci No. 8, Bandung",
+                clinicName = "Klinik Citra Kasih Jakarta Utara"
             ),
             AdminBooking(
                 id = "DG-9915",
@@ -66,7 +69,8 @@ class AdminViewModel : ViewModel() {
                 resultStatus = "Menunggu Hasil",
                 gender = "Laki-laki",
                 dob = "17 Juli 1978",
-                address = "Jl. Merdeka No. 102, Surabaya"
+                address = "Jl. Merdeka No. 102, Surabaya",
+                clinicName = "Klinik Citra Kasih PIK"
             ),
             AdminBooking(
                 id = "DG-9916",
@@ -80,7 +84,8 @@ class AdminViewModel : ViewModel() {
                 resultStatus = "Menunggu Hasil",
                 gender = "Perempuan",
                 dob = "29 Oktober 1997",
-                address = "Perum Gading Indah Blok C/4, Jakarta Utara"
+                address = "Perum Gading Indah Blok C/4, Jakarta Utara",
+                clinicName = "Klinik Citra Kasih Jakarta Utara"
             )
         )
     )

@@ -403,6 +403,7 @@ fun AdminOrderScreen(
                         DetailRow(label = "Email", value = booking.email)
                         DetailRow(label = "Telepon", value = booking.phone)
                         DetailRow(label = "Tes", value = booking.testName, valueColor = Color(0xFF42B5A7), highlight = true)
+                        DetailRow(label = "Klinik Cabang", value = booking.clinicName, highlight = true)
                         DetailRow(label = "Jadwal", value = "${booking.date} · ${booking.time}", highlight = true)
                     }
                 }
@@ -565,7 +566,7 @@ fun OrderBookingCard(booking: AdminBooking, onDetailClick: () -> Unit) {
                         color = Color(0xFF1A2E35)
                     )
                     Text(
-                        text = booking.testName,
+                        text = "${booking.testName} · ${booking.clinicName}",
                         fontSize = 10.sp,
                         color = Color.Gray,
                         maxLines = 1,

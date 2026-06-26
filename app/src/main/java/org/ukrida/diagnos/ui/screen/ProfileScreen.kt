@@ -33,6 +33,7 @@ import coil.compose.AsyncImage
 import org.ukrida.diagnos.R
 import org.ukrida.diagnos.viewmodel.UserViewModel
 import org.ukrida.diagnos.viewmodel.BookingViewModel
+import org.ukrida.diagnos.viewmodel.HistoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +41,8 @@ fun ProfileScreen(
     viewModel: UserViewModel,
     navController: NavHostController,
     bookingViewModel: BookingViewModel = remember { BookingViewModel() },
+    historyViewModel: HistoryViewModel = remember { HistoryViewModel() },
+    onNavigateToHistory: () -> Unit = {},
     onLogout: () -> Unit
 ) {
     val currentUser = viewModel.currentUser.value
@@ -187,27 +190,22 @@ fun ProfileScreen(
                 ) {
                     Column {
                         // Status Pesanan
-                        val hasActiveOrder = bookingViewModel.isOrderCompleted
+                        // Status Pesanan — driven by pendingOrder (not historyList)
+                        val pendingOrder = historyViewModel.pendingOrder.value
                         ProfileMenuItem(
                             icon = Icons.Default.Inventory,
                             title = "Status Pesanan",
-                            badgeText = if (hasActiveOrder) "Diproses" else "Tidak Ada",
-                            badgeColor = if (hasActiveOrder) Color(0xFFFEF3C7) else Color(0xFFF3F4F6),
-                            badgeTextColor = if (hasActiveOrder) Color(0xFFD97706) else Color(0xFF6B7280),
-                            onClick = {
-                                if (hasActiveOrder) {
-                                    showHistoryDialog = true
-                                }
-                            }
+                            badgeText = if (pendingOrder != null) "Menunggu" else "Tidak Ada",
+                            badgeColor = if (pendingOrder != null) Color(0xFFFEF3C7) else Color(0xFFF3F4F6),
+                            badgeTextColor = if (pendingOrder != null) Color(0xFFD97706) else Color(0xFF6B7280),
+                            onClick = { if (pendingOrder != null) showHistoryDialog = true }
                         )
                         HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
-                        // Riwayat Pesanan
+                        // Riwayat Pesanan — only shows completed orders via history page
                         ProfileMenuItem(
                             icon = Icons.Default.ReceiptLong,
                             title = "Riwayat Pesanan",
-                            onClick = {
-                                showHistoryDialog = true
-                            }
+                            onClick = { onNavigateToHistory() }
                         )
                     }
                 }
@@ -329,90 +327,72 @@ fun ProfileScreen(
         }
     }
 
-    // ================= riwayat pesanan dialog =================
+    // ================= status pesanan dialog (Menunggu) =================
     if (showHistoryDialog) {
-        val hasActiveOrder = bookingViewModel.isOrderCompleted
-        AlertDialog(
-            onDismissRequest = { showHistoryDialog = false },
-            title = {
-                Text(
-                    text = "Riwayat Pesanan",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = Color(0xFF1F2937)
-                )
-            },
-            text = {
-                if (hasActiveOrder) {
-                    val test = bookingViewModel.selectedTest
+        val order = historyViewModel.pendingOrder.value
+        if (order != null) {
+            AlertDialog(
+                onDismissRequest = { showHistoryDialog = false },
+                title = {
+                    Text(
+                        text = "Status Pesanan",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color(0xFF1F2937)
+                    )
+                },
+                text = {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Tes Lab:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(text = test?.title ?: "Cek Hematologi", color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(end = 8.dp))
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text("Tes Lab:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
+                            Text(order.title, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(start = 8.dp))
                         }
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Klinik:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(text = bookingViewModel.selectedClinic, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text("Klinik:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
+                            Text(order.clinicName, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(start = 8.dp))
                         }
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Jadwal:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(text = "${bookingViewModel.selectedDate} | ${bookingViewModel.selectedTimeSlot}", color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text("Jadwal:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
+                            Text(order.date, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(start = 8.dp))
                         }
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Harga:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(text = test?.price ?: "Rp 2.000.000", color = Color(0xFF3CB7A6), fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                        }
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Status:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text("Status:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
                             Box(
                                 modifier = Modifier
                                     .background(Color(0xFFFEF3C7), RoundedCornerShape(6.dp))
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    .padding(horizontal = 10.dp, vertical = 3.dp)
                             ) {
                                 Text(
-                                    text = "Diproses",
+                                    text = "Menunggu",
                                     color = Color(0xFFD97706),
                                     fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.ExtraBold
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Pesanan Anda sedang menunggu konfirmasi dari klinik. Hasil akan tersedia setelah pemeriksaan selesai.",
+                            fontSize = 11.sp,
+                            color = Color(0xFF9CA3AF),
+                            lineHeight = 16.sp
+                        )
                     }
-                } else {
-                    Text(
-                        text = "Belum ada riwayat pemeriksaan atau pesanan yang dikonfirmasi.",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showHistoryDialog = false }) {
-                    Text(text = "Tutup", color = Color(0xFF3CB7A6), fontWeight = FontWeight.Bold)
-                }
-            },
-            shape = RoundedCornerShape(24.dp),
-            containerColor = Color.White
-        )
+                },
+                confirmButton = {
+                    TextButton(onClick = { showHistoryDialog = false }) {
+                        Text(text = "Tutup", color = Color(0xFF3CB7A6), fontWeight = FontWeight.Bold)
+                    }
+                },
+                shape = RoundedCornerShape(24.dp),
+                containerColor = Color.White
+            )
+        }
     }
+
 
     // ================= help dialog =================
     if (showHelpDialog) {

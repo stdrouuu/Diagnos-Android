@@ -12,5 +12,7 @@ data class AdminBooking(
     var resultStatus: String, // "Menunggu Hasil", "Hasil Siap"
     val gender: String,
     val dob: String,
-    val address: String
+    val address: String,
+    val clinicName: String
 )
+
