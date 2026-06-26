@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -70,10 +71,11 @@ fun BottomNav(navController: NavHostController, role: String) {
                         ) {
                             val currentDest = navController.currentBackStackEntry?.destination?.route
                             if (currentDest != screen.route) {
+                                val isAlreadyInBackStack = navController.currentBackStack.value.any { it.destination.route == screen.route }
                                 navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                                     launchSingleTop = true
-                                    restoreState = true
+                                    restoreState = !isAlreadyInBackStack
                                 }
                             }
                         },
