@@ -1,81 +1,99 @@
 package org.ukrida.diagnos.ui.screen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import org.ukrida.diagnos.R
 import org.ukrida.diagnos.ui.navigation.BottomNav
 import org.ukrida.diagnos.viewmodel.UserViewModel
-
+import org.ukrida.diagnos.viewmodel.BookingViewModel
+import org.ukrida.diagnos.ui.screen.HistoryScreen
+import org.ukrida.diagnos.ui.screen.ResultScreen
+import org.ukrida.diagnos.viewmodel.HistoryViewModel
+import org.ukrida.diagnos.viewmodel.ResultViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     role: String,
     navController: NavHostController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    onLogout: () -> Unit
 ) {
     val innerNavController = rememberNavController()
+    val bookingViewModel = remember { BookingViewModel() }
+    val historyViewModel = remember { HistoryViewModel() }
+    val resultViewModel = remember { ResultViewModel() }
+    val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
+
+    LaunchedEffect(bookingViewModel.isOrderCompleted) {
+        historyViewModel.syncWithBooking(bookingViewModel)
+    }
+    val currentRoute = navBackStackEntry?.destination?.route ?: "home"
+    val showTopBar = currentRoute == "home" || currentRoute == "listtest"
+
     Scaffold(
         // ================= TOP BAR =================
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text("Diagnos App")
-                },
-                actions = {
-                    // ================= LOGOUT BUTTON =================
-                    IconButton(
-                        onClick = {
-                            // HAPUS DATA LOGIN
-                            userViewModel.currentUser.value = null
-
-                            // PINDAH KE LOGIN
-                            navController.navigate("login") {
-
-                                // hapus seluruh backstack
-                                popUpTo(navController.graph.startDestinationId) {
-                                    inclusive = true
-                                }
-
-                                launchSingleTop = true
-                            }
-                        }
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Logout,
-                            contentDescription = "Logout",
-                            tint = Color.Red
-                        )
-                    }
-                },
-
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+            if (showTopBar) {
+                Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .height(64.dp)
+                    .background(Color.White)
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                // Left: Logo
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier.height(40.dp),
+                    contentScale = ContentScale.Fit
                 )
-            )
+
+                // Center: Logo name
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logoname),
+                        contentDescription = "Diagnos Logo Name",
+                        modifier = Modifier.height(28.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                }
+            }
         },
 
         // ================= BOTTOM NAV =================
         bottomBar = {
-            BottomNav(innerNavController, role)
+            if (currentRoute != "history" && !currentRoute.startsWith("result")) {
+                BottomNav(innerNavController, role)
+            }
         }
 
     ) { padding ->
@@ -83,35 +101,129 @@ fun MainScreen(
         NavHost(
             navController = innerNavController,
             startDestination = "home",
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(
+                top = if (showTopBar) padding.calculateTopPadding() else 0.dp,
+                bottom = padding.calculateBottomPadding()
+            )
         ) {
 
             composable("home") {
-                HomeScreen()
+                HomeScreen(
+                    userViewModel = userViewModel,
+                    bookingViewModel = bookingViewModel,
+                    historyViewModel = historyViewModel,
+                    onNavigateToListTest = {
+                        innerNavController.navigate("listtest")
+                    },
+                    onNavigateToDetail = { testId ->
+                        innerNavController.navigate("detailtest/$testId")
+                    },
+                    onNavigateToHistory = {
+                        innerNavController.navigate("history")
+                    },
+                    onNavigateToResult = { testId ->
+                        innerNavController.navigate("result/$testId")
+                    },
+                    onNavigateToProfile = {
+                        innerNavController.navigate("user")
+                    }
+                )
             }
 
-            composable("product") {
-                // ProductScreen(productViewModel)
+            composable("history") {
+                HistoryScreen(
+                    viewModel = historyViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToResult = { testId ->
+                        innerNavController.navigate("result/$testId")
+                    }
+                )
             }
 
-            if (role == "admin") {
+            composable(
+                route = "result/{testId}",
+                arguments = listOf(navArgument("testId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val testId = backStackEntry.arguments?.getInt("testId") ?: 1
+                ResultScreen(
+                    testId = testId,
+                    resultViewModel = resultViewModel,
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    }
+                )
+            }
 
-                composable("user") {
-                    UserScreen(userViewModel, innerNavController)
-                }
+            composable("listtest") {
+                ListTestScreen(
+                    onNavigateToDetail = { testId ->
+                        innerNavController.navigate("detailtest/$testId")
+                    }
+                )
+            }
+
+            composable("user") {
+                ProfileScreen(
+                    viewModel = userViewModel,
+                    navController = innerNavController,
+                    bookingViewModel = bookingViewModel,
+                    onLogout = onLogout
+                )
+            }
+
+            composable("profileedit") {
+                ProfileEditScreen(
+                    viewModel = userViewModel,
+                    navController = innerNavController
+                )
+            }
+
+            composable(
+                route = "detailtest/{testId}",
+                arguments = listOf(navArgument("testId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val testId = backStackEntry.arguments?.getInt("testId") ?: 1
+                DetailTestScreen(
+                    testId = testId,
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToSchedule = {
+                        innerNavController.navigate("bookschedule")
+                    }
+                )
+            }
+
+            composable("bookschedule") {
+                BookScheduleScreen(
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToReview = {
+                        innerNavController.navigate("orderreview")
+                    }
+                )
+            }
+
+            composable("orderreview") {
+                OrderReviewScreen(
+                    bookingViewModel = bookingViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToProfile = {
+                        innerNavController.navigate("user") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    }
+                )
             }
         }
     }
 }
 
-@Composable
-fun HomeScreen() {
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Text("Home")
-    }
-}

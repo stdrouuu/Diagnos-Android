@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnos - Admin Panel Mobile</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            diagnosTeal: '#42B5A7',
+            diagnosTealDark: '#35968a',
+            diagnosTealLight: '#EBF8F7',
+            diagnosPink: '#FF788F',
+            diagnosPinkDark: '#e55f76',
+            diagnosPinkLight: '#FFF0F2',
+            neutralDark: '#1A2E35',
+            neutralLight: '#F4F7F6',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Styling for custom mobile container look on desktop */
+    @media (min-width: 640px) {
+      .mobile-device {
+        width: 412px;
+        height: 892px;
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 12px solid #1a2221;
+        position: relative;
+        overflow: hidden;
+      }
+      .mobile-device::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140px;
+        height: 25px;
+        background: #1a2221;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        z-index: 100;
+      }
+    }
+    
+    /* Smooth scroll and custom styling */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #42B5A7;
+      border-radius: 4px;
+    }
+    body {
+      background: radial-gradient(circle, #f0faf9 0%, #d4edea 100%);
+    }
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen flex items-center justify-center py-4 px-2">
+
+  <div class="w-full h-screen sm:h-auto mobile-device bg-neutralLight flex flex-col relative text-neutralDark selection:bg-diagnosTeal selection:text-white">
+    
+    <!-- Toast/Notification container -->
+    <div id="toast" class="absolute top-8 left-1/2 transform -translate-x-1/2 z-50 w-5/6 max-w-sm bg-white border-l-4 border-diagnosTeal shadow-xl rounded-lg p-3 flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-4">
+      <div class="flex items-center gap-2">
+        <span id="toastIcon" class="text-diagnosTeal font-bold">✓</span>
+        <p id="toastMessage" class="text-xs font-semibold text-neutralDark"></p>
+      </div>
+      <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600 text-sm font-bold ml-2">×</button>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="w-full h-full flex flex-col overflow-hidden relative" id="app">
+      
+      <!-- LOGIN VIEW -->
+      <div id="loginView" class="w-full h-full flex flex-col justify-between p-8 bg-gradient-to-b from-white to-diagnosTealLight overflow-y-auto">
+        <div class="flex flex-col items-center mt-8">
+          <div class="w-16 h-16 bg-diagnosTeal rounded-2xl flex items-center justify-center shadow-lg mb-4">
+            <!-- Lab flask SVG icon -->
+            <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+          </div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-diagnosTeal">diagnos</h1>
+          <p class="text-xs text-gray-500 mt-1 font-medium tracking-wide">PANEL ADMIN MITRA KLINIK</p>
+        </div>
+
+        <div class="w-full bg-white p-6 rounded-3xl shadow-xl shadow-teal-900/5 my-6">
+          <h2 class="text-xl font-bold mb-1 text-gray-800">Masuk Aplikasi</h2>
+          <p class="text-xs text-gray-400 mb-5">Gunakan akun admin untuk mengakses dasbor.</p>
+          
+          <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" for="username">Username</label>
+              <div class="relative">
+                <input type="text" id="username" value="admin" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-diagnosTeal/40 focus:border-diagnosTeal transition-all" required>
+                <span class="absolute right-3.5 top-3.5 text-gray-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                </span>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" for="password">Password</label>
+              <div class="relative">
+                <input type="password" id="password" value="password123" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-diagnosTeal/40 focus:border-diagnosTeal transition-all" required>
+                <span class="absolute right-3.5 top-3.5 text-gray-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </span>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full mt-2 py-4 bg-diagnosTeal hover:bg-diagnosTealDark text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 active:scale-95 transition-all text-sm">
+              Masuk Sekarang
+            </button>
+          </form>
+          
+          <div class="mt-4 text-center">
+            <span class="text-xs text-gray-400">Lupa password? Hubungi support diagnos.</span>
+          </div>
+        </div>
+
+        <div class="text-center text-xs text-gray-400">
+          <p class="font-bold text-diagnosTeal">diagnos &copy; 2026</p>
+          <p class="text-[10px] mt-0.5">SaaS Platform Diagnosis Lab Mitra Indonesia</p>
+        </div>
+      </div>
+
+      <!-- PANEL SHELL VIEW (Hidden by default, shown when loggedIn is true) -->
+      <div id="panelShell" class="w-full h-full flex flex-col relative hidden bg-neutralLight">
+        
+        <!-- SIDEBAR DRAWER (Referencing image_272513.png layout style) -->
+        <div id="sidebarDrawer" class="absolute inset-y-0 left-0 w-[280px] bg-white shadow-2xl z-40 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
+          <div>
+            <!-- Header of Sidebar -->
+            <div class="p-6 bg-diagnosTeal text-white">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-base leading-tight">diagnos</h3>
+                  <p class="text-xs text-teal-100 opacity-95">Panel Admin</p>
+                </div>
+              </div>
+              
+              <!-- Administrator Profile Tag in Sidebar -->
+              <div class="mt-6 p-3.5 bg-white/10 rounded-2xl flex flex-col">
+                <span class="text-xs font-bold text-white leading-none">Administrator</span>
+                <span class="text-[11px] text-teal-100 mt-1 opacity-90">admin@diagnos.id</span>
+              </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="p-4 space-y-1">
+              <button onclick="switchScreen('beranda')" id="nav-beranda" class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-semibold transition-all text-gray-600 hover:bg-gray-50">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                Beranda
+              </button>
+
+              <button onclick="switchScreen('pemesanan')" id="nav-pemesanan" class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-semibold transition-all text-gray-600 hover:bg-gray-50">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                Pemesanan
+              </button>
+
+              <button onclick="switchScreen('iklan_mitra')" id="nav-iklan_mitra" class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-semibold transition-all text-gray-600 hover:bg-gray-50">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+                Iklan Mitra <span class="text-[10px] font-bold px-2 py-0.5 bg-diagnosPink text-white rounded-full ml-auto shadow">PROMO</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Exit Menu in Sidebar -->
+          <div class="p-4 border-t border-gray-100">
+            <button onclick="handleLogout()" class="w-full flex items-center gap-4 px-4 py-4 rounded-xl text-sm font-bold text-diagnosPink hover:bg-diagnosPinkLight transition-all">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              Keluar
+            </button>
+          </div>
+        </div>
+
+        <!-- Sidebar overlay backdrop -->
+        <div id="sidebarOverlay" onclick="toggleSidebar(false)" class="absolute inset-0 bg-black/40 z-30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+        <!-- HEADER (Common for all panel sections) -->
+        <header class="w-full bg-white px-5 py-4 border-b border-gray-100 flex items-center justify-between z-20 shrink-0">
+          <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar(true)" class="p-2.5 bg-gray-50 hover:bg-gray-100 active:scale-95 rounded-xl transition-all">
+              <!-- Hamburger Icon -->
+              <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div>
+              <h2 id="headerTitle" class="font-extrabold text-lg text-gray-800 tracking-tight">Beranda</h2>
+              <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Juni 2026</p>
+            </div>
+          </div>
+          
+          <!-- Admin badge top right -->
+          <div class="w-9 h-9 bg-diagnosTeal text-white font-bold text-sm flex items-center justify-center rounded-xl shadow-md shadow-teal-500/10 border-2 border-white">
+            AD
+          </div>
+        </header>
+
+        <!-- MAIN MAIN CONTENT BOX WITH SCROLL -->
+        <div class="flex-1 overflow-y-auto pb-24" id="screenContainer">
+          
+          <!-- 1. BERANDA VIEW (Referencing image_2724d7.png layout) -->
+          <div id="view-beranda" class="p-5 space-y-5">
+            
+            <!-- Hero banner card -->
+            <div class="bg-gradient-to-br from-diagnosTeal to-[#36a396] text-white p-6 rounded-3xl shadow-xl shadow-teal-500/10 relative overflow-hidden">
+              <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+              <p class="text-[11px] font-bold text-teal-100 tracking-wide uppercase">Selamat datang kembali,</p>
+              <h2 class="text-2xl font-black mt-1 leading-tight tracking-tight">Administrator</h2>
+              <p class="text-xs text-teal-50 mt-1 opacity-90 font-medium">Senin, 20 Juni 2026</p>
+            </div>
+
+            <!-- Dashboard Metric Grid (Optimized from image_2724d7.png with layout alignment) -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Active offerings stats (No longer CRUD, static counter of supported offerings) -->
+              <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="w-9 h-9 bg-diagnosTealLight rounded-xl flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5 text-diagnosTeal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 id="stat-total-tes" class="text-3xl font-extrabold tracking-tight">6</h4>
+                  <p class="text-xs font-bold text-gray-700 mt-0.5">Layanan Tes</p>
+                  <p class="text-[10px] text-gray-400 font-medium">SaaS Aktif</p>
+                </div>
+              </div>
+
+              <!-- Pemesanan Card -->
+              <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="w-9 h-9 bg-diagnosPinkLight rounded-xl flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5 text-diagnosPink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 id="stat-total-pemesanan" class="text-3xl font-extrabold tracking-tight">6</h4>
+                  <p class="text-xs font-bold text-gray-700 mt-0.5">Pemesanan</p>
+                  <p class="text-[10px] text-gray-400 font-medium">Semua Waktu</p>
+                </div>
+              </div>
+
+              <!-- Pending / Menunggu Card -->
+              <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="w-9 h-9 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 id="stat-menunggu" class="text-3xl font-extrabold tracking-tight">2</h4>
+                  <p class="text-xs font-bold text-gray-700 mt-0.5">Menunggu</p>
+                  <p class="text-[10px] text-amber-500 font-semibold">Perlu Konfirmasi</p>
+                </div>
+              </div>
+
+              <!-- Selesai Card -->
+              <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 id="stat-selesai" class="text-3xl font-extrabold tracking-tight">1</h4>
+                  <p class="text-xs font-bold text-gray-700 mt-0.5">Selesai</p>
+                  <p class="text-[10px] text-emerald-500 font-semibold">Tes Selesai</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1.5. CHART PERFORMANCE WIDGET (Rekomendasi Tambahan) -->
+            <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-extrabold text-gray-800 text-sm tracking-tight">Performa Pemesanan</h3>
+                  <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Statistik Mingguan</p>
+                </div>
+                <!-- Timeframe Selection Toggles -->
+                <div class="bg-gray-50 p-1 rounded-xl flex gap-1 border border-gray-100">
+                  <button id="chart-toggle-this" onclick="toggleChartTimeframe('MingguIni')" class="px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all bg-white text-diagnosTeal shadow-sm">Minggu Ini</button>
+                  <button id="chart-toggle-prev" onclick="toggleChartTimeframe('MingguLalu')" class="px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all text-gray-400 hover:text-gray-600">Minggu Lalu</button>
+                </div>
+              </div>
+
+              <!-- Main SVG Canvas Render Box -->
+              <div class="relative w-full h-40 bg-[#FAFDFC] rounded-2xl border border-teal-50/20 p-2 overflow-hidden flex flex-col justify-between" id="performance-chart-box">
+                <!-- Dynamically injected SVG graphics -->
+              </div>
+              <div class="text-center text-[10px] text-gray-400/90 font-medium leading-none">
+                💡 Ketuk salah satu titik node untuk menampilkan detail interaktif.
+              </div>
+            </div>
+
+            <!-- Pemesanan Terbaru (Latest Booking section from image_2724d7.png placed above Iklan Berjalan) -->
+            <div>
+              <div class="flex items-center justify-between mb-3.5 px-1">
+                <h3 class="font-extrabold text-gray-800 text-base">Pemesanan Terbaru</h3>
+                <button onclick="switchScreen('pemesanan')" class="text-xs font-bold text-diagnosTeal hover:underline">Lihat Semua</button>
+              </div>
+              
+              <div class="space-y-3" id="latest-bookings-list">
+                <!-- Dynamically populated from script -->
+              </div>
+            </div>
+
+            <!-- Iklan Berjalan (Horizontal Slider - Referencing image_2646fc.png style but optimized with Plus Jakarta Sans - Placed at the very bottom) -->
+            <div>
+              <div class="flex items-center justify-between mb-3.5 px-1">
+                <h3 class="font-extrabold text-gray-800 text-base">Iklan Berjalan</h3>
+                <button onclick="switchScreen('iklan_mitra')" class="text-xs font-bold text-diagnosTeal hover:underline transition-all">Kelola</button>
+              </div>
+              
+              <div class="flex overflow-x-auto gap-4 pb-2 scrollbar-none snap-x snap-mandatory" id="running-ads-slider">
+                <!-- Dynamically populated horizontal advertisement cards -->
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- 2. PEMESANAN VIEW (Matches image_2724f4.png style with update triggers) -->
+          <div id="view-pemesanan" class="p-5 space-y-4 hidden">
+            <div>
+              <h3 class="font-extrabold text-gray-800 text-base" id="bookingCountText">Pemesanan</h3>
+              <p class="text-xs text-gray-400">Kelola validasi status & hasil lab pasien.</p>
+            </div>
+
+            <!-- Filter tabs from image_2724f4.png (Semua, Menunggu, Dikonfirmasi, Selesai, Dibatalkan) -->
+            <div class="flex gap-2 overflow-x-auto py-1 scrollbar-none">
+              <button onclick="filterBookings('Semua')" id="tab-Semua" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-diagnosTeal text-white shadow shadow-teal-500/10">Semua</button>
+              <button onclick="filterBookings('Menunggu')" id="tab-Menunggu" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white text-gray-500 hover:bg-gray-50">Menunggu</button>
+              <button onclick="filterBookings('Dikonfirmasi')" id="tab-Dikonfirmasi" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white text-gray-500 hover:bg-gray-50">Dikonfirmasi</button>
+              <button onclick="filterBookings('Selesai')" id="tab-Selesai" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white text-gray-500 hover:bg-gray-50">Selesai</button>
+              <button onclick="filterBookings('Dibatalkan')" id="tab-Dibatalkan" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white text-gray-500 hover:bg-gray-50">Dibatalkan</button>
+            </div>
+
+            <div class="space-y-4 animate-fade-in" id="bookings-list-container">
+              <!-- Dynamically populated from JS state according to image_2724f4.png layout -->
+            </div>
+          </div>
+
+          <!-- 3. IKLAN MITRA VIEW -->
+          <div id="view-iklan_mitra" class="p-5 space-y-4 hidden">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-extrabold text-gray-800 text-base">Promosi Mitra Utama</h3>
+                <p class="text-xs text-gray-400">Partner: <span class="font-bold text-diagnosTeal" id="main-partner-name">Laboratorium Diagnos Pusat</span></p>
+              </div>
+              <button onclick="openAdModal()" class="flex items-center gap-1 bg-diagnosTeal hover:bg-diagnosTealDark text-white font-bold text-xs py-2.5 px-3.5 rounded-xl shadow-md transition-all active:scale-95">
+                <span class="text-base leading-none">+</span> Tambah Iklan
+              </button>
+            </div>
+
+
+            <div class="space-y-4" id="ads-list-container">
+              <!-- Dynamically populated advertisements list with previews -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR (Highly responsive premium mobile UI navigation) -->
+        <div class="absolute bottom-0 inset-x-0 bg-white border-t border-gray-100 py-2.5 px-6 flex items-center justify-around z-30 shadow-2xl">
+          <!-- Navigation Option: Beranda -->
+          <button onclick="switchScreen('beranda')" id="botnav-beranda" class="flex flex-col items-center gap-1 text-diagnosTeal transition-all transform active:scale-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span class="text-[10px] font-extrabold tracking-tight">Beranda</span>
+          </button>
+
+          <!-- Navigation Option: Pemesanan -->
+          <button onclick="switchScreen('pemesanan')" id="botnav-pemesanan" class="flex flex-col items-center gap-1 text-gray-400 transition-all transform active:scale-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            <span class="text-[10px] font-semibold tracking-tight">Pemesanan</span>
+          </button>
+
+          <!-- Navigation Option: Iklan Mitra -->
+          <button onclick="switchScreen('iklan_mitra')" id="botnav-iklan_mitra" class="flex flex-col items-center gap-1 text-gray-400 transition-all transform active:scale-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            </svg>
+            <span class="text-[10px] font-semibold tracking-tight">Iklan Mitra</span>
+          </button>
+        </div>
+
+      </div>
+      
+      <!-- MODAL CONTAINER FOR LIHAT DETAIL: BOOKING STATUS (PEMESANAN MATCHING image_26c013.png) -->
+      <div id="bookingDetailModal" class="absolute inset-0 bg-black/50 z-50 flex items-end justify-center transition-all opacity-0 pointer-events-none duration-300">
+        <div class="bg-white w-full rounded-t-[32px] p-6 pb-8 overflow-y-auto transform translate-y-full transition-transform duration-300 flex flex-col space-y-4">
+          
+          <!-- Top indicator and header -->
+          <div class="flex flex-col items-center w-full">
+            <div class="w-12 h-1 bg-gray-200 rounded-full mb-3"></div>
+            <div class="flex justify-between items-center w-full pb-1">
+              <h3 class="text-base font-extrabold text-gray-800">Detail Pemesanan</h3>
+              <button onclick="closeBookingModal()" class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center font-bold text-gray-400 hover:text-gray-600 hover:bg-gray-100">✕</button>
+            </div>
+          </div>
+
+          <!-- Metadata Grey Information Box matching image_26c013.png exactly -->
+          <div class="bg-[#F8FAFC] p-4 rounded-2xl border border-gray-100/70 space-y-3.5">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-400 font-medium">Pasien</span>
+              <span class="font-extrabold text-gray-800 text-right" id="detail-patient-name">-</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-400 font-medium">Email</span>
+              <span class="font-semibold text-gray-700 text-right" id="detail-patient-email">-</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-400 font-medium">Telepon</span>
+              <span class="font-semibold text-gray-700 text-right" id="detail-patient-phone">-</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-400 font-medium">Tes</span>
+              <span class="font-extrabold text-[#42B5A7] text-right" id="detail-test-name">-</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-gray-400 font-medium">Jadwal</span>
+              <span class="font-extrabold text-gray-800 text-right" id="detail-schedule">-</span>
+            </div>
+          </div>
+
+          <!-- Interactive 2x2 grid selector with custom colors and disabled layouts matching image annotations -->
+          <div class="space-y-2.5">
+            <h4 class="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Perbarui Status</h4>
+            
+            <div class="grid grid-cols-2 gap-2.5">
+              <!-- Menunggu Button (Warm Amber Active, Greyed out if already Confirmed/Selesai/Batal) -->
+              <button id="btn-status-Menunggu" onclick="setSelectedStatus('Menunggu')" 
+                class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-center">
+                Menunggu
+              </button>
+
+              <!-- Dikonfirmasi Button (diagnosTeal Active style) -->
+              <button id="btn-status-Dikonfirmasi" onclick="setSelectedStatus('Dikonfirmasi')" 
+                class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-center">
+                Dikonfirmasi
+              </button>
+
+              <!-- Selesai Button (Emerald Green Active style) -->
+              <button id="btn-status-Selesai" onclick="setSelectedStatus('Selesai')" 
+                class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-center">
+                Selesai
+              </button>
+
+              <!-- Dibatalkan Button (Pink Active style, disabled as grey if already progressed past Menunggu) -->
+              <button id="btn-status-Dibatalkan" onclick="setSelectedStatus('Dibatalkan')" 
+                class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-center">
+                Dibatalkan
+              </button>
+            </div>
+          </div>
+
+          <!-- Hasil Tersedia toggle switch row matching image_26c013.png exactly -->
+          <div class="p-4 bg-white border border-gray-100 rounded-2xl flex items-center justify-between shadow-sm">
+            <div class="space-y-0.5">
+              <h4 class="text-xs font-bold text-gray-800">Hasil Tersedia</h4>
+              <p class="text-[10px] text-gray-400">Aktifkan jika hasil lab sudah siap</p>
+            </div>
+            <!-- Interactive Switch -->
+            <button onclick="toggleResultAvailable()" id="result-toggle-container" class="w-12 h-6 rounded-full bg-gray-200 relative p-1 transition-all duration-300">
+              <div id="result-toggle-knob" class="w-4 h-4 rounded-full bg-white transition-all duration-300 transform translate-x-0"></div>
+            </button>
+          </div>
+
+          <!-- Safeguard validation message preview box -->
+          <div id="safeguard-warning-box" class="hidden p-3 bg-red-50 rounded-xl text-[11px] text-red-600 leading-normal font-medium border border-red-100/50">
+            ⚠️ Status Terkonfirmasi tidak diperbolehkan kembali ke antrean Menunggu atau dibatalkan.
+          </div>
+
+          <!-- Bottom Action Controls -->
+          <div class="pt-2 flex flex-col gap-2">
+            <button onclick="saveSelectedStatusChange()" class="w-full py-4 bg-diagnosTeal hover:bg-diagnosTealDark text-white font-bold rounded-xl text-xs shadow-lg shadow-teal-500/15 transition-all text-center">
+              Simpan Perubahan
+            </button>
+            <button onclick="closeBookingModal()" class="w-full py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-500 font-semibold rounded-xl text-xs transition-all text-center">
+              Tutup
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MODAL CONTAINER FOR CRUD: IKLAN MITRA -->
+      <div id="adModal" class="absolute inset-0 bg-black/50 z-50 flex items-end justify-center transition-all opacity-0 pointer-events-none duration-300">
+        <div class="bg-white w-full max-h-[85%] rounded-t-[32px] p-6 overflow-y-auto transform translate-y-full transition-transform duration-300 flex flex-col space-y-4">
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+            <h3 id="adModalTitle" class="text-base font-extrabold text-gray-800">Tambah Promosi Iklan</h3>
+            <button onclick="closeAdModal()" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center font-bold text-gray-400 hover:text-gray-600 hover:bg-gray-100">×</button>
+          </div>
+
+          <!-- Live Image/Preset Illustration Preview Container -->
+          <div class="space-y-1.5">
+            <span class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Preview Gambar Iklan</span>
+            <div id="ad-live-preview-box" class="w-full h-32 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 relative flex items-center justify-center">
+              <!-- Dynamically populated live illustration -->
+            </div>
+          </div>
+          
+          <form id="adForm" onsubmit="saveAd(event)" class="space-y-3.5">
+            <input type="hidden" id="edit-ad-id">
+            
+            <div>
+              <label class="block text-[11px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">Judul Promosi / Jenis Iklan</label>
+              <input type="text" id="ad-title" placeholder="Contoh: Promo Cek Kolesterol Lengkap" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-diagnosPink" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">Biaya Iklan (IDR)</label>
+                <input type="number" id="ad-payment" placeholder="Contoh: 1500000" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-diagnosPink" required>
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">Durasi Kampanye</label>
+                <input type="text" id="ad-duration" placeholder="Contoh: 30 Hari (Aktif)" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-diagnosPink" required>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <!-- Triggering updateLiveAdPreview() dynamically on Color selection change -->
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">Warna Tag Iklan</label>
+                <select id="ad-theme" onchange="updateLiveAdPreview()" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-diagnosPink">
+                  <option value="Pink">Pink Promosi</option>
+                  <option value="Teal">Teal Diagnos</option>
+                  <option value="Blue">Blue Premium</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">Status Tagihan</label>
+                <select id="ad-pay-status" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-diagnosPink">
+                  <option value="Lunas">Lunas (Aktif)</option>
+                  <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
+                  <option value="Kedaluwarsa">Kedaluwarsa</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+              <button type="button" onclick="closeAdModal()" class="w-1/3 py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-500 font-bold rounded-xl text-xs transition-all">
+                Batal
+              </button>
+              <!-- Green Palette ('hijau palette' #42B5A7) Action Save Button -->
+              <button type="submit" class="w-2/3 py-3.5 bg-diagnosTeal hover:bg-diagnosTealDark text-white font-bold rounded-xl text-xs shadow-lg shadow-teal-500/15 transition-all">
+                Simpan Promosi
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // State management for Diagnos Admin Dashboard
+    let state = {
+      loggedIn: false,
+      activeScreen: 'login',
+      activeBookingFilter: 'Semua',
+      selectedBookingIdForDetail: null,
+      selectedStatusValue: 'Menunggu',
+      isResultAvailable: false,
+      // Active Chart Data Toggles
+      chartTimeframe: 'MingguIni',
+      selectedChartIndex: 3, // Default selected Thursday
+      chartDataSets: {
+        MingguIni: [4, 8, 5, 12, 9, 15, 10], // Mon to Sun bookings volumes
+        MingguLalu: [6, 4, 11, 7, 14, 8, 12]
+      },
+      chartLabels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+      bookings: [
+        { id: 'DG-9912', patientName: 'Rina Kusuma', email: 'rina.k@gmail.com', phone: '0812-3456-7890', testName: 'Darah Lengkap (CBC)', date: '20 Jun 2026', time: '08:00', status: 'Dikonfirmasi', resultStatus: 'Menunggu Hasil' },
+        { id: 'DG-9913', patientName: 'Budi Santoso', email: 'budi.s@outlook.com', phone: '0821-9876-5432', testName: 'Gula Darah Puasa', date: '20 Jun 2026', time: '09:30', status: 'Selesai', resultStatus: 'Hasil Siap' },
+        { id: 'DG-9914', patientName: 'Siti Rahayu', email: 'siti.rahayu@yahoo.com', phone: '0813-1111-2222', testName: 'Panel Lipid', date: '21 Jun 2026', time: '10:00', status: 'Menunggu', resultStatus: 'Menunggu Hasil' },
+        { id: 'DG-9915', patientName: 'Agus Wijaya', email: 'agus@email.com', phone: '0815-4567-8901', testName: 'Hormon Tiroid (TSH)', date: '22 Jun 2026', time: '08:30', status: 'Dibatalkan', resultStatus: 'Menunggu Hasil' },
+        { id: 'DG-9916', patientName: 'Dewi Lestari', email: 'dewi.les@gmail.com', phone: '0857-3333-4444', testName: 'Urinalisis', date: '22 Jun 2026', time: '11:00', status: 'Dibatalkan', resultStatus: 'Menunggu Hasil' },
+        { id: 'DG-9917', patientName: 'Joko Widodo', email: 'joko.wid@gmail.com', phone: '0811-9999-8888', testName: 'Fungsi Ginjal (Ureum)', date: '19 Jun 2026', time: '14:00', status: 'Dibatalkan', resultStatus: 'Menunggu Hasil' }
+      ],
+      // SINGLE Partner: "Laboratorium Diagnos Pusat" with multiple promotional campaign advertisements (Jenis Iklan)
+      partnerName: 'Laboratorium Diagnos Pusat',
+      advertisements: [
+        { id: 'ad1', title: 'Paket Hemat Cek Kolesterol Lengkap', payment: 1200000, duration: '30 Hari', status: 'Lunas', theme: 'Pink', imagePreset: 'cholesterol' },
+        { id: 'ad2', title: 'Skrining Diabetes Melitus Sejak Dini', payment: 3500000, duration: '60 Hari', status: 'Lunas', theme: 'Teal', imagePreset: 'diabetes' },
+        { id: 'ad3', title: 'Voucher Layanan MCU Karyawan', payment: 850000, duration: '14 Hari', status: 'Menunggu Pembayaran', theme: 'Blue', imagePreset: 'mcu' }
+      ]
+    };
+
+    // Vector preset backgrounds matching modern medicine colors
+    const imagePresets = {
+      cholesterol: `<svg viewBox="0 0 400 160" class="w-full h-full object-cover" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#FF788F"/>
+        <g opacity="0.15">
+          <circle cx="100" cy="80" r="120" fill="#fff" />
+          <circle cx="320" cy="40" r="60" fill="#fff" />
+        </g>
+        <path d="M40 80 Q 90 40, 140 100 T 240 70 T 360 110" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="140" cy="100" r="10" fill="#fff"/>
+        <circle cx="240" cy="70" r="10" fill="#fff"/>
+        <text x="30" y="45" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="15">PROMO KOLESTEROL & JANTUNG</text>
+        <text x="30" y="135" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="11">Cek Sejak Dini Sehat Selamanya</text>
+      </svg>`,
+      diabetes: `<svg viewBox="0 0 400 160" class="w-full h-full object-cover" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#42B5A7"/>
+        <g opacity="0.15">
+          <rect x="-40" y="-40" width="200" height="200" rx="40" fill="#fff" transform="rotate(25)" />
+          <circle cx="340" cy="120" r="70" fill="#fff" />
+        </g>
+        <path d="M50 120 C 120 120, 150 40, 220 40 C 290 40, 310 120, 350 120" fill="none" stroke="white" stroke-dasharray="10 6" stroke-width="4"/>
+        <rect x="200" y="25" width="40" height="30" rx="6" fill="white"/>
+        <path d="M214 40 L226 40 M220 34 L220 46" stroke="#42B5A7" stroke-width="3" stroke-linecap="round"/>
+        <text x="30" y="45" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="16">SKRINING DIABETES MELITUS</text>
+        <text x="30" y="140" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="11">Dapatkan Estimasi Kurang Dari 2 Jam</text>
+      </svg>`,
+      mcu: `<svg viewBox="0 0 400 160" class="w-full h-full object-cover" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#3b82f6"/>
+        <g opacity="0.15">
+          <polygon points="250,0 400,0 400,160 200,160" fill="#fff" />
+          <circle cx="80" cy="120" r="50" fill="#fff" />
+        </g>
+        <!-- Laboratory Flask graphic -->
+        <g transform="translate(300, 35) scale(1.8)" stroke="white" stroke-width="2.5" fill="none">
+          <path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        </g>
+        <text x="30" y="45" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="16">MEDIKAL CHECK UP (MCU)</text>
+        <text x="30" y="135" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="11">Promo Spesial Karyawan & UMKM Mitra</text>
+      </svg>`,
+      hormon: `<svg viewBox="0 0 400 160" class="w-full h-full object-cover" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#a855f7"/>
+        <g opacity="0.15">
+          <circle cx="200" cy="80" r="100" fill="#fff" />
+        </g>
+        <text x="30" y="45" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="16">PEMERIKSAAN HORMON TIROID</text>
+        <text x="30" y="135" fill="white" font-family="'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="11">Fungsi Tubuh Maksimal & Sehat</text>
+      </svg>`
+    };
+
+    window.onload = function() {
+      // Setup Initial State & Rendering
+      renderDashboard();
+      renderBookingsList();
+      renderAdsList();
+    };
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+      
+      toastMsg.textContent = message;
+      if (type === 'success') {
+        toast.className = toast.className.replace('border-diagnosPink', 'border-diagnosTeal');
+        toastIcon.textContent = '✓';
+        toastIcon.className = 'text-diagnosTeal font-bold';
+      } else {
+        toast.className = toast.className.replace('border-diagnosTeal', 'border-diagnosPink');
+        toastIcon.textContent = '⚠';
+        toastIcon.className = 'text-diagnosPink font-bold';
+      }
+      
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(hideToast, 4000);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      
+      if (u === 'admin' && p === 'password123') {
+        state.loggedIn = true;
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('panelShell').classList.remove('hidden');
+        showToast('Selamat Datang, Admin Diagnos!');
+        switchScreen('beranda');
+      } else {
+        showToast('Username atau Password salah!', 'error');
+      }
+    }
+
+    function handleLogout() {
+      state.loggedIn = false;
+      toggleSidebar(false);
+      document.getElementById('panelShell').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+      showToast('Berhasil keluar dari panel admin.', 'success');
+    }
+
+    function toggleSidebar(open) {
+      const drawer = document.getElementById('sidebarDrawer');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (open) {
+        drawer.classList.remove('-translate-x-full');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.add('opacity-100');
+      } else {
+        drawer.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        overlay.classList.remove('opacity-100');
+      }
+    }
+
+    function switchScreen(screenName) {
+      state.activeScreen = screenName;
+      toggleSidebar(false);
+      
+      // Update Bottom Navigation active indicators
+      const tabs = ['beranda', 'pemesanan', 'iklan_mitra'];
+      tabs.forEach(s => {
+        const botBtn = document.getElementById(`botnav-${s}`);
+        const view = document.getElementById(`view-${s}`);
+        const sideBtn = document.getElementById(`nav-${s}`);
+        
+        if (s === screenName) {
+          // Bottom Active Style
+          botBtn.className = "flex flex-col items-center gap-1 text-diagnosTeal transition-all transform scale-105 font-bold";
+          // Sidebar Active Style
+          if (sideBtn) {
+            sideBtn.className = "w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold bg-diagnosTealLight text-diagnosTeal transition-all";
+          }
+          view.classList.remove('hidden');
+        } else {
+          // Bottom Inactive Style
+          botBtn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition-all transform active:scale-90 font-medium";
+          // Sidebar Inactive Style
+          if (sideBtn) {
+            sideBtn.className = "w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all";
+          }
+          view.classList.add('hidden');
+        }
+      });
+
+      // Capitalize first letter of screenName for header
+      let displayTitle = screenName.replace('_', ' ');
+      displayTitle = displayTitle.charAt(0).toUpperCase() + displayTitle.slice(1);
+      document.getElementById('headerTitle').textContent = displayTitle;
+      
+      // Update list data
+      if (screenName === 'beranda') {
+        renderDashboard();
+      } else if (screenName === 'pemesanan') {
+        renderBookingsList();
+      } else if (screenName === 'iklan_mitra') {
+        renderAdsList();
+      }
+    }
+
+    function toggleChartTimeframe(timeframe) {
+      state.chartTimeframe = timeframe;
+      state.selectedChartIndex = 3; // Reset to center
+      
+      const btnThis = document.getElementById('chart-toggle-this');
+      const btnPrev = document.getElementById('chart-toggle-prev');
+      
+      if (timeframe === 'MingguIni') {
+        btnThis.className = "px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all bg-white text-diagnosTeal shadow-sm";
+        btnPrev.className = "px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all text-gray-400 hover:text-gray-600";
+      } else {
+        btnThis.className = "px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all text-gray-400 hover:text-gray-600";
+        btnPrev.className = "px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all bg-white text-diagnosTeal shadow-sm";
+      }
+      
+      renderPerformanceChart();
+    }
+
+    function selectChartNode(index) {
+      state.selectedChartIndex = index;
+      renderPerformanceChart();
+    }
+
+    // Dynamic Bezier Line Graph generator with pure vector SVG markup
+    function renderPerformanceChart() {
+      const chartBox = document.getElementById('performance-chart-box');
+      if (!chartBox) return;
+
+      const data = state.chartDataSets[state.chartTimeframe];
+      const labels = state.chartLabels;
+      const maxVal = Math.max(...data) * 1.25; // 25% padding on top
+
+      // Dimensions mapping
+      const w = 345;
+      const h = 135;
+      const padLeft = 25;
+      const padRight = 25;
+      const padTop = 30;
+      const padBottom = 20;
+
+      const plotW = w - padLeft - padRight;
+      const plotH = h - padTop - padBottom;
+
+      // Coordinate generator
+      let points = [];
+      for (let i = 0; i < data.length; i++) {
+        const x = padLeft + (plotW / (data.length - 1)) * i;
+        const normY = data[i] / maxVal;
+        const y = padTop + plotH * (1 - normY);
+        points.push({ x, y, val: data[i], label: labels[i] });
+      }
+
+      // Generate curved bezier line path data
+      let pathD = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        const cpX1 = points[i - 1].x + (points[i].x - points[i - 1].x) / 2;
+        const cpY1 = points[i - 1].y;
+        const cpX2 = points[i - 1].x + (points[i].x - points[i - 1].x) / 2;
+        const cpY2 = points[i].y;
+        pathD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${points[i].x} ${points[i].y}`;
+      }
+
+      // Area path below curves for gradient fill
+      const areaD = `${pathD} L ${points[points.length - 1].x} ${h - padBottom} L ${points[0].x} ${h - padBottom} Z`;
+
+      // Draw Grid Horizontal Line Lines
+      let gridLines = '';
+      for (let g = 0; g <= 2; g++) {
+        const gy = padTop + (plotH / 2) * g;
+        gridLines += `<line x1="${padLeft}" y1="${gy}" x2="${w - padRight}" y2="${gy}" stroke="#EAF2F1" stroke-width="1.5" />`;
+      }
+
+      // Generate Node Circles
+      let nodes = '';
+      points.forEach((p, idx) => {
+        const isSelected = idx === state.selectedChartIndex;
+        
+        if (isSelected) {
+          nodes += `
+            <!-- Selection Glow Outer -->
+            <circle cx="${p.x}" cy="${p.y}" r="11" fill="#FF788F" opacity="0.25" class="transition-all duration-300" />
+            <!-- Solid Core -->
+            <circle cx="${p.x}" cy="${p.y}" r="5.5" fill="#FF788F" stroke="#ffffff" stroke-width="2" class="cursor-pointer transition-all duration-300" onclick="selectChartNode(${idx})" />
+          `;
+        } else {
+          nodes += `
+            <circle cx="${p.x}" cy="${p.y}" r="10" fill="transparent" class="cursor-pointer" onclick="selectChartNode(${idx})" />
+            <circle cx="${p.x}" cy="${p.y}" r="4" fill="#42B5A7" class="cursor-pointer hover:scale-125 transition-all duration-200" onclick="selectChartNode(${idx})" />
+          `;
+        }
+
+        // X-Axis Text labels below grid
+        nodes += `<text x="${p.x}" y="${h - 4}" fill="#809490" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" font-size="9" text-anchor="middle">${p.label}</text>`;
+      });
+
+      // Tooltip positioning overlay
+      let tooltipSVG = '';
+      if (state.selectedChartIndex !== null && state.selectedChartIndex < points.length) {
+        const targetP = points[state.selectedChartIndex];
+        const ttW = 85;
+        const ttH = 26;
+        const ttX = Math.min(Math.max(targetP.x - ttW / 2, 4), w - ttW - 4);
+        const ttY = targetP.y - ttH - 8;
+
+        tooltipSVG = `
+          <g class="transition-all duration-300">
+            <!-- Tooltip Container Box -->
+            <rect x="${ttX}" y="${ttY}" width="${ttW}" height="${ttH}" rx="6" fill="#1A2E35" shadow="0 4px 6px rgba(0,0,0,0.15)" />
+            <!-- Label value text -->
+            <text x="${ttX + ttW / 2}" y="${ttY + 16}" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="9" text-anchor="middle">
+              ${targetP.label}: ${targetP.val} Pemesanan
+            </text>
+          </g>
+        `;
+      }
+
+      // Render inner graphic markup directly inside SVG viewport
+      chartBox.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Soft Gradient color definition -->
+            <linearGradient id="chartFillGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#42B5A7" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="#42B5A7" stop-opacity="0.0" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Horizontal reference lines -->
+          ${gridLines}
+
+          <!-- Underline shaded gradient zone -->
+          <path d="${areaD}" fill="url(#chartFillGrad)" />
+
+          <!-- Curve Bezier Stroke line -->
+          <path d="${pathD}" fill="none" stroke="#42B5A7" stroke-width="3.5" stroke-linecap="round" />
+
+          <!-- Overlay Nodes -->
+          ${nodes}
+
+          <!-- Selected Tooltip Card -->
+          ${tooltipSVG}
+        </svg>
+      `;
+    }
+
+    function renderDashboard() {
+      // Bookings counts
+      const totalBookings = state.bookings.length;
+      const totalPending = state.bookings.filter(b => b.status === 'Menunggu').length;
+      const totalSuccess = state.bookings.filter(b => b.status === 'Selesai').length;
+
+      document.getElementById('stat-total-pemesanan').innerText = totalBookings;
+      document.getElementById('stat-menunggu').innerText = totalPending;
+      document.getElementById('stat-selesai').innerText = totalSuccess;
+
+      // Render performance SVG trends graph
+      renderPerformanceChart();
+
+      // Render HORIZONTAL SCROLLING ACTIVE ADS (Referencing image_2646fc.png idea with Plus Jakarta Sans styling)
+      const runningAdsSlider = document.getElementById('running-ads-slider');
+      runningAdsSlider.innerHTML = '';
+
+      // Filter ads which have 'Lunas' as status (representing active running ads)
+      const activeAds = state.advertisements.filter(ad => ad.status === 'Lunas');
+      
+      if (activeAds.length === 0) {
+        runningAdsSlider.innerHTML = `
+          <div class="w-full flex-shrink-0 bg-white p-6 rounded-3xl border border-gray-100 text-center py-8">
+            <p class="text-xs text-gray-400 font-semibold">Tidak ada iklan berjalan saat ini.</p>
+            <button onclick="switchScreen('iklan_mitra')" class="text-[10px] mt-2 text-diagnosTeal font-bold hover:underline">Aktifkan Iklan Baru</button>
+          </div>
+        `;
+      } else {
+        activeAds.forEach(ad => {
+          const vectorPreview = imagePresets[ad.imagePreset || 'cholesterol'];
+          
+          runningAdsSlider.innerHTML += `
+            <div class="flex-shrink-0 w-64 bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm flex flex-col snap-start transition-all hover:shadow-md">
+              <div class="h-28 w-full relative bg-gray-50 border-b border-gray-100 overflow-hidden">
+                ${vectorPreview}
+                <!-- Premium Overlay Active Badge styled like image_2646fc.png -->
+                <div class="absolute top-2 left-2">
+                  <span class="text-[8px] tracking-wider font-extrabold px-2.5 py-0.5 bg-emerald-500 text-white rounded-full shadow-sm">
+                    AKTIF
+                  </span>
+                </div>
+              </div>
+              <div class="p-3.5 space-y-1">
+                <h4 class="font-extrabold text-xs text-gray-800 tracking-tight leading-tight line-clamp-1">${ad.title}</h4>
+                <div class="flex items-center gap-1.5 text-gray-400 text-[10px] font-semibold">
+                  <svg class="w-3.5 h-3.5 text-diagnosTeal/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <span class="truncate text-diagnosTeal">${state.partnerName}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      // Render 3 Latest Bookings on the Dashboard (matches image_2724d7.png list style)
+      const latestList = document.getElementById('latest-bookings-list');
+      latestList.innerHTML = '';
+      
+      // Take up to 3 most recent bookings
+      const recent = state.bookings.slice(0, 3);
+      recent.forEach(b => {
+        let statusBadgeClass = '';
+        if (b.status === 'Menunggu') statusBadgeClass = 'bg-yellow-50 text-yellow-600 border border-yellow-200/50';
+        else if (b.status === 'Dikonfirmasi') statusBadgeClass = 'bg-teal-50 text-diagnosTeal border border-diagnosTeal/20';
+        else if (b.status === 'Selesai') statusBadgeClass = 'bg-emerald-50 text-emerald-600 border border-emerald-200/50';
+        else if (b.status === 'Dibatalkan') statusBadgeClass = 'bg-rose-50 text-rose-500 border border-rose-200/50';
+
+        latestList.innerHTML += `
+          <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100/40 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-teal-50 text-diagnosTeal flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              </div>
+              <div>
+                <h4 class="font-extrabold text-xs text-gray-800 leading-tight">${b.patientName}</h4>
+                <p class="text-[10px] text-gray-400 mt-0.5">${b.testName}</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${statusBadgeClass}">
+              ${b.status}
+            </span>
+          </div>
+        `;
+      });
+    }
+
+    function filterBookings(filterName) {
+      state.activeBookingFilter = filterName;
+      
+      const tabs = ['Semua', 'Menunggu', 'Dikonfirmasi', 'Selesai', 'Dibatalkan'];
+      tabs.forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}`);
+        if (tab === filterName) {
+          btn.className = "shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-diagnosTeal text-white shadow shadow-teal-500/15";
+        } else {
+          btn.className = "shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white text-gray-500 hover:bg-gray-50";
+        }
+      });
+
+      renderBookingsList();
+    }
+
+    function renderBookingsList() {
+      const container = document.getElementById('bookings-list-container');
+      container.innerHTML = '';
+
+      const filtered = state.bookings.filter(b => {
+        if (state.activeBookingFilter === 'Semua') return true;
+        return b.status === state.activeBookingFilter;
+      });
+
+      document.getElementById('bookingCountText').innerHTML = `Pemesanan <span class="text-xs font-normal text-gray-400 block mt-1">${filtered.length} total dari filter (${state.activeBookingFilter})</span>`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-white rounded-3xl border border-dashed border-gray-200 p-6">
+            <span class="text-3xl block mb-2">📭</span>
+            <p class="text-xs text-gray-400">Belum ada pesanan dalam kategori ${state.activeBookingFilter}.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(b => {
+        let statusBadgeClass = '';
+        if (b.status === 'Menunggu') statusBadgeClass = 'bg-yellow-100 text-yellow-700';
+        else if (b.status === 'Dikonfirmasi') statusBadgeClass = 'bg-teal-50 text-diagnosTeal';
+        else if (b.status === 'Selesai') statusBadgeClass = 'bg-emerald-100 text-emerald-700';
+        else if (b.status === 'Dibatalkan') statusBadgeClass = 'bg-rose-100 text-rose-700';
+
+        const resultBadgeClass = b.status === 'Selesai' || b.resultStatus === 'Hasil Siap' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-400';
+
+        container.innerHTML += `
+          <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-teal-50 text-diagnosTeal flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                </div>
+                <div>
+                  <h4 class="font-bold text-xs text-gray-800 leading-tight">${b.patientName}</h4>
+                  <p class="text-[10px] text-gray-400 mt-0.5">${b.testName}</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg ${statusBadgeClass}">
+                ${b.status}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-gray-500 pt-2 border-t border-gray-50">
+              <span class="flex items-center gap-1">${b.date} · ${b.time}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${resultBadgeClass}">
+                ${b.resultStatus}
+              </span>
+            </div>
+
+            <!-- "Lihat Detail" Action Button triggering image_26c013.png styled modal -->
+            <button onclick="openBookingModal('${b.id}')" class="w-full mt-1.5 py-3.5 bg-diagnosTealLight hover:bg-diagnosTeal/10 text-diagnosTeal font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              Lihat Detail
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function openBookingModal(bookingId) {
+      state.selectedBookingIdForDetail = bookingId;
+      const b = state.bookings.find(item => item.id === bookingId);
+      if (!b) return;
+
+      // Populate basic metadata fields
+      document.getElementById('detail-patient-name').innerText = b.patientName;
+      document.getElementById('detail-patient-email').innerText = b.email || 'pasien@diagnos.id';
+      document.getElementById('detail-patient-phone').innerText = b.phone || '0812-0000-0000';
+      document.getElementById('detail-test-name').innerText = b.testName;
+      document.getElementById('detail-schedule').innerText = `${b.date} · ${b.time}`;
+
+      // Initialize selected status value
+      state.selectedStatusValue = b.status;
+      
+      // Initialize results available toggle switch
+      state.isResultAvailable = b.status === 'Selesai' || b.resultStatus === 'Hasil Siap';
+      updateToggleSwitchUI();
+
+      // Render the current active selected state button grid (Perbarui Status)
+      updateStatusSelectionUI();
+
+      // Hide warning box on initial load
+      document.getElementById('safeguard-warning-box').classList.add('hidden');
+
+      // Animate Modal Up
+      const modal = document.getElementById('bookingDetailModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.children[0].classList.remove('translate-y-full');
+    }
+
+    function closeBookingModal() {
+      const modal = document.getElementById('bookingDetailModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.children[0].classList.add('translate-y-full');
+    }
+
+    // Interactive button selection handler inside modal (image_26c013.png) with greyed out disable layouts
+    function setSelectedStatus(newStatus) {
+      const b = state.bookings.find(item => item.id === state.selectedBookingIdForDetail);
+      if (!b) return;
+
+      const originalStatus = b.status;
+
+      // Policy Safeguard validation rule:
+      // "status dibatalkan hanya bisa terjadi ketika status masih menunggu. Jika sudah masuk ke status dikonfirmasi, maka pesanan sudah tidak dapat dibatalkan"
+      if ((originalStatus === 'Dikonfirmasi' || originalStatus === 'Selesai') && newStatus === 'Dibatalkan') {
+        document.getElementById('safeguard-warning-box').innerText = '⛔ Kebijakan Diagnos: Pesanan yang telah dikonfirmasi atau diselesaikan tidak dapat dibatalkan lagi.';
+        document.getElementById('safeguard-warning-box').classList.remove('hidden');
+        showToast('Pembatalan diblokir oleh sistem!', 'error');
+        return;
+      }
+
+      // Prohibit going backwards from Confirmed/Selesai/Dibatalkan to Menunggu
+      if ((originalStatus === 'Dikonfirmasi' || originalStatus === 'Selesai' || originalStatus === 'Dibatalkan') && newStatus === 'Menunggu') {
+        document.getElementById('safeguard-warning-box').innerText = '⛔ Kebijakan Diagnos: Tidak dapat memindahkan pesanan kembali ke status Menunggu.';
+        document.getElementById('safeguard-warning-box').classList.remove('hidden');
+        showToast('Tindakan tidak valid!', 'error');
+        return;
+      }
+
+      // If successfully passed checks, update selected status value in state & hide warnings
+      state.selectedStatusValue = newStatus;
+      document.getElementById('safeguard-warning-box').classList.add('hidden');
+
+      // Auto-toggle Results Ready if "Selesai" is selected
+      if (newStatus === 'Selesai') {
+        state.isResultAvailable = true;
+      } else {
+        state.isResultAvailable = false;
+      }
+
+      updateToggleSwitchUI();
+      updateStatusSelectionUI();
+    }
+
+    // Toggle logic for "Hasil Tersedia" switch from image_26c013.png
+    function toggleResultAvailable() {
+      const b = state.bookings.find(item => item.id === state.selectedBookingIdForDetail);
+      if (!b) return;
+
+      // Prevent changing results if canceled
+      if (state.selectedStatusValue === 'Dibatalkan') {
+        showToast('Pesanan dibatalkan tidak memiliki hasil!', 'error');
+        return;
+      }
+
+      state.isResultAvailable = !state.isResultAvailable;
+      updateToggleSwitchUI();
+
+      // If toggled manually to active, set status choice to Selesai
+      if (state.isResultAvailable && state.selectedStatusValue !== 'Selesai') {
+        state.selectedStatusValue = 'Selesai';
+        updateStatusSelectionUI();
+      }
+    }
+
+    function updateToggleSwitchUI() {
+      const container = document.getElementById('result-toggle-container');
+      const knob = document.getElementById('result-toggle-knob');
+      
+      if (state.isResultAvailable) {
+        container.className = "w-12 h-6 rounded-full bg-diagnosTeal relative p-1 transition-all duration-300";
+        knob.className = "w-4 h-4 rounded-full bg-white transition-all duration-300 transform translate-x-6";
+      } else {
+        container.className = "w-12 h-6 rounded-full bg-gray-200 relative p-1 transition-all duration-300";
+        knob.className = "w-4 h-4 rounded-full bg-white transition-all duration-300 transform translate-x-0";
+      }
+    }
+
+    // Set interactive visual borders matching image_265a04.png, image_265a40.png, image_265a5b.png, image_265a7f.png style
+    function updateStatusSelectionUI() {
+      const b = state.bookings.find(item => item.id === state.selectedBookingIdForDetail);
+      if (!b) return;
+
+      const originalStatus = b.status;
+      const isPastPending = (originalStatus === 'Dikonfirmasi' || originalStatus === 'Selesai' || originalStatus === 'Dibatalkan');
+
+      const statuses = ['Menunggu', 'Dikonfirmasi', 'Selesai', 'Dibatalkan'];
+      statuses.forEach(status => {
+        const btn = document.getElementById(`btn-status-${status}`);
+        
+        // 1. First, check if this button represents a disabled action according to the business policy safeguard rules.
+        // Rule: If already progressed past Menunggu, you can't go back to 'Menunggu' or select 'Dibatalkan'.
+        const isButtonDisabled = (isPastPending && status === 'Menunggu') || 
+                                 ((originalStatus === 'Dikonfirmasi' || originalStatus === 'Selesai') && status === 'Dibatalkan');
+
+        if (isButtonDisabled) {
+          // Greyed out appearance for disabled buttons
+          btn.className = "py-3 px-4 rounded-xl text-xs font-semibold border border-gray-100 bg-gray-100 text-gray-300 cursor-not-allowed text-center transition-all opacity-60";
+          btn.disabled = true;
+          return;
+        } else {
+          btn.disabled = false;
+        }
+
+        // 2. Styled state for active selections with distinct color matches
+        if (state.selectedStatusValue === status) {
+          if (status === 'Menunggu') {
+            // Golden yellow highlight style matching image_265a04.png
+            btn.className = "py-3 px-4 rounded-xl text-xs font-bold border-2 border-amber-400 bg-amber-50 text-amber-600 text-center transition-all scale-102";
+          } else if (status === 'Dikonfirmasi') {
+            // Teal highlight style matching image_265a40.png
+            btn.className = "py-3 px-4 rounded-xl text-xs font-bold border-2 border-diagnosTeal bg-diagnosTealLight text-diagnosTeal text-center transition-all scale-102";
+          } else if (status === 'Selesai') {
+            // Green highlight style matching image_265a5b.png
+            btn.className = "py-3 px-4 rounded-xl text-xs font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-600 text-center transition-all scale-102";
+          } else if (status === 'Dibatalkan') {
+            // Coral pink highlight style matching image_265a7f.png
+            btn.className = "py-3 px-4 rounded-xl text-xs font-bold border-2 border-diagnosPink bg-diagnosPinkLight text-diagnosPink text-center transition-all scale-102";
+          }
+        } else {
+          // Standard inactive styling
+          btn.className = "py-3 px-4 rounded-xl text-xs font-semibold border border-gray-100 bg-gray-50 text-gray-500 hover:bg-gray-100 text-center transition-all";
+        }
+      });
+    }
+
+    // Action execution for Booking Detail save
+    function saveSelectedStatusChange() {
+      const index = state.bookings.findIndex(b => b.id === state.selectedBookingIdForDetail);
+      if (index === -1) return;
+
+      const booking = state.bookings[index];
+      const previousStatus = booking.status;
+      const newStatus = state.selectedStatusValue;
+
+      // Update values
+      booking.status = newStatus;
+      booking.resultStatus = state.isResultAvailable ? 'Hasil Siap' : 'Menunggu Hasil';
+
+      showToast(`Status pesanan ${booking.patientName} disimpan menjadi ${newStatus}.`);
+      closeBookingModal();
+      renderBookingsList();
+      renderDashboard();
+    }
+
+    function updateLiveAdPreview() {
+      const themeSelector = document.getElementById('ad-theme');
+      const liveBox = document.getElementById('ad-live-preview-box');
+      
+      if (themeSelector && liveBox) {
+        const theme = themeSelector.value;
+        
+        // Smart Automate preset mapping based on tag themes selected to keep layout beautiful
+        let presetKey = 'cholesterol';
+        if (theme === 'Teal') presetKey = 'diabetes';
+        if (theme === 'Blue') presetKey = 'mcu';
+        
+        liveBox.innerHTML = imagePresets[presetKey];
+      }
+    }
+
+    function renderAdsList() {
+      const container = document.getElementById('ads-list-container');
+      container.innerHTML = '';
+
+      // Update Single Partner Name in text
+      document.getElementById('main-partner-name').innerText = state.partnerName;
+
+      if (state.advertisements.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-white rounded-3xl border border-dashed border-gray-200 p-6">
+            <span class="text-3xl block mb-2">📢</span>
+            <p class="text-xs text-gray-400">Belum ada promosi iklan terdaftar.</p>
+          </div>
+        `;
+        return;
+      }
+
+      state.advertisements.forEach(ad => {
+        let badgeColor = 'bg-teal-50 text-diagnosTeal';
+        
+        if (ad.theme === 'Pink') {
+          badgeColor = 'bg-diagnosPinkLight text-diagnosPink';
+        } else if (ad.theme === 'Blue') {
+          badgeColor = 'bg-blue-50 text-blue-500';
+        }
+
+        const isLunas = ad.status === 'Lunas';
+        const vectorPreview = imagePresets[ad.imagePreset || 'cholesterol'];
+
+        // Card design matches image_264702.jpg structure adapted with premium Plus Jakarta Sans formatting
+        container.innerHTML += `
+          <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden space-y-0 transition-all hover:shadow-md">
+            
+            <!-- Visual Card Header/Image Preview -->
+            <div class="w-full h-36 overflow-hidden border-b border-gray-100 relative bg-gray-50">
+              ${vectorPreview}
+              <div class="absolute top-3 left-3 flex gap-1.5 items-center">
+                <span class="text-[8px] font-bold tracking-wider px-2.5 py-1 rounded-full ${isLunas ? 'bg-emerald-500 text-white shadow-sm' : 'bg-amber-500 text-white'} uppercase">
+                  ${isLunas ? 'AKTIF' : ad.status}
+                </span>
+                <span class="text-[9px] font-bold px-2 py-1 rounded-full ${badgeColor} shadow-md backdrop-blur-md">
+                  ${ad.theme} Tag
+                </span>
+              </div>
+            </div>
+
+            <!-- Promotion specifications -->
+            <div class="p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] font-black uppercase text-gray-400">Jenis Iklan</span>
+                <span class="text-[10px] font-semibold text-diagnosTeal">
+                  ${state.partnerName}
+                </span>
+              </div>
+
+              <div class="space-y-1">
+                <h4 class="font-extrabold text-sm text-gray-800 leading-tight">${ad.title}</h4>
+                <p class="text-[10px] text-gray-400">Durasi penayangan: <strong class="text-gray-500">${ad.duration}</strong></p>
+              </div>
+
+              <!-- Budget monetization tracking info -->
+              <div class="flex items-center justify-between pt-3 border-t border-gray-50">
+                <div class="text-[11px]">
+                  <span class="text-gray-400 block text-[9px] uppercase font-bold">Biaya Iklan</span>
+                  <strong class="text-gray-700 font-extrabold">IDR ${ad.payment.toLocaleString('id-ID')}</strong>
+                </div>
+
+                <!-- Admin management actions (Edit / Delete) formatted cleanly like image_264702.jpg -->
+                <div class="flex gap-1.5">
+                  <button onclick="openAdModal('${ad.id}')" class="p-2 bg-gray-50 hover:bg-diagnosPinkLight text-gray-400 hover:text-diagnosPink rounded-lg transition-all" title="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  </button>
+                  <button onclick="deleteAd('${ad.id}')" class="p-2 bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-diagnosPink rounded-lg transition-all" title="Hapus">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function openAdModal(adId = '') {
+      const modal = document.getElementById('adModal');
+      const modalTitle = document.getElementById('adModalTitle');
+      const form = document.getElementById('adForm');
+      
+      form.reset();
+      document.getElementById('edit-ad-id').value = '';
+
+      if (adId) {
+        modalTitle.innerText = 'Ubah Detail Iklan';
+        const ad = state.advertisements.find(item => item.id === adId);
+        if (ad) {
+          document.getElementById('edit-ad-id').value = ad.id;
+          document.getElementById('ad-title').value = ad.title;
+          document.getElementById('ad-payment').value = ad.payment;
+          document.getElementById('ad-duration').value = ad.duration;
+          document.getElementById('ad-theme').value = ad.theme;
+          document.getElementById('ad-pay-status').value = ad.status;
+        }
+      } else {
+        modalTitle.innerText = 'Tambah Promosi Baru';
+      }
+
+      // Initialize Live Visual Image Preview inside the Modal
+      updateLiveAdPreview();
+
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.children[0].classList.remove('translate-y-full');
+    }
+
+    function closeAdModal() {
+      const modal = document.getElementById('adModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.children[0].classList.add('translate-y-full');
+    }
+
+    function saveAd(event) {
+      event.preventDefault();
+      const id = document.getElementById('edit-ad-id').value;
+      const title = document.getElementById('ad-title').value;
+      const payment = parseInt(document.getElementById('ad-payment').value);
+      const duration = document.getElementById('ad-duration').value;
+      const theme = document.getElementById('ad-theme').value;
+      const status = document.getElementById('ad-pay-status').value;
+
+      // Smart Automate preset mapping based on tag themes selected to keep layout beautiful
+      let imagePreset = 'cholesterol';
+      if (theme === 'Teal') imagePreset = 'diabetes';
+      if (theme === 'Blue') imagePreset = 'mcu';
+
+      if (id) {
+        // Edit existing ad campaign
+        const index = state.advertisements.findIndex(ad => ad.id === id);
+        if (index !== -1) {
+          state.advertisements[index] = { id, title, payment, duration, status, theme, imagePreset };
+          showToast('Jenis iklan promosi berhasil diperbarui.');
+        }
+      } else {
+        // Create new ad campaign
+        const newId = 'ad' + (state.advertisements.length + 1);
+        state.advertisements.push({ id: newId, title, payment, duration, status, theme, imagePreset });
+        showToast('Iklan promosi baru sukses dipasang.');
+      }
+
+      closeAdModal();
+      renderAdsList();
+      renderDashboard(); // Immediately refresh dashboard horizontal slider
+    }
+
+    function deleteAd(id) {
+      const ad = state.advertisements.find(item => item.id === id);
+      if (confirm(`Apakah Anda yakin ingin menghapus iklan "${ad.title}"?`)) {
+        state.advertisements = state.advertisements.filter(item => item.id !== id);
+        showToast('Iklan promosi berhasil diturunkan.', 'success');
+        renderAdsList();
+        renderDashboard(); // Immediately refresh dashboard horizontal slider
+      }
+    }
+  </script>
+</body>
+</html>

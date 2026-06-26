@@ -1,3 +1,4 @@
+// Interface Retrofit yang mendefinisikan seluruh endpoint API (GET, POST, dll)
 package org.ukrida.diagnos.data.api
 
 import org.ukrida.diagnos.data.model.User

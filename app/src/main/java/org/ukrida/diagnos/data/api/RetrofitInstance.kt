@@ -1,3 +1,4 @@
+// Singleton untuk konfigurasi Retrofit, menentukan Base URL dan Converter
 package org.ukrida.diagnos.data.api
 
 import retrofit2.Retrofit

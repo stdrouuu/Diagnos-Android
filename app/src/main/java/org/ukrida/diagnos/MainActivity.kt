@@ -1,6 +1,3 @@
-//usn = brandon, password = 123456
-//usn = lebron, password = 123456
-
 package org.ukrida.diagnos
 
 import android.os.Bundle
@@ -19,8 +16,13 @@ import org.ukrida.diagnos.di.Injection
 import org.ukrida.diagnos.ui.screen.LoginScreen
 import org.ukrida.diagnos.ui.screen.MainScreen
 import org.ukrida.diagnos.ui.screen.RegisterScreen
+import org.ukrida.diagnos.ui.screen.WelcomeScreen
 import org.ukrida.diagnos.ui.theme.DiagnosTheme
 import org.ukrida.diagnos.viewmodel.UserViewModel
+import org.ukrida.diagnos.viewmodel.AdminViewModel
+import org.ukrida.diagnos.ui.screen.AdminHomeScreen
+import org.ukrida.diagnos.ui.screen.AdminOrderScreen
+import org.ukrida.diagnos.ui.screen.AdminInputScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,15 +32,30 @@ class MainActivity : ComponentActivity() {
             DiagnosTheme {
                 val navController = rememberNavController()
                 val userViewModel = remember { UserViewModel(Injection.userRepo) }
+                val adminViewModel = remember { AdminViewModel() }
 
                 // State login
                 var isLoggedIn by remember { mutableStateOf(false) }
                 var role by remember { mutableStateOf("") }
 
+                val startDest = if (isLoggedIn) {
+                    if (role == "admin") "admin-home" else "main"
+                } else {
+                    "welcome"
+                }
+
                 NavHost(
                     navController = navController,
-                    startDestination = if (isLoggedIn) "main" else "login"
+                    startDestination = startDest
                 ) {
+                    // ================= WELCOME =================
+                    composable("welcome") {
+                        WelcomeScreen(
+                            onNavigateLogin = {
+                                navController.navigate("login")
+                            }
+                        )
+                    }
                     // ================= LOGIN =================
                     composable("login") {
                         LoginScreen(
@@ -46,8 +63,9 @@ class MainActivity : ComponentActivity() {
                             onLoginSuccess = { userRole ->
                                 role = userRole
                                 isLoggedIn = true
-                                navController.navigate("main") {
-                                    popUpTo("login") { inclusive = true }
+                                val dest = if (userRole == "admin") "admin-home" else "main"
+                                navController.navigate(dest) {
+                                    popUpTo("welcome") { inclusive = true }
                                 }
                             },
                             onNavigateRegister = {
@@ -69,7 +87,60 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             role = role,
                             navController = navController,
-                            userViewModel = userViewModel
+                            userViewModel = userViewModel,
+                            onLogout = {
+                                isLoggedIn = false
+                                role = ""
+                                userViewModel.currentUser.value = null
+                                navController.navigate("welcome") {
+                                    popUpTo("main") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    // ================= ADMIN HOME =================
+                    composable("admin-home") {
+                        AdminHomeScreen(
+                            viewModel = adminViewModel,
+                            navController = navController,
+                            onLogout = {
+                                isLoggedIn = false
+                                role = ""
+                                userViewModel.currentUser.value = null
+                                navController.navigate("welcome") {
+                                    popUpTo("admin-home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    // ================= ADMIN ORDER =================
+                    composable("admin-order") {
+                        AdminOrderScreen(
+                            viewModel = adminViewModel,
+                            navController = navController,
+                            onLogout = {
+                                isLoggedIn = false
+                                role = ""
+                                userViewModel.currentUser.value = null
+                                navController.navigate("welcome") {
+                                    popUpTo("admin-order") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    // ================= ADMIN INPUT =================
+                    composable("admin-input") {
+                        AdminInputScreen(
+                            viewModel = adminViewModel,
+                            navController = navController,
+                            onLogout = {
+                                isLoggedIn = false
+                                role = ""
+                                userViewModel.currentUser.value = null
+                                navController.navigate("welcome") {
+                                    popUpTo("admin-input") { inclusive = true }
+                                }
+                            }
                         )
                     }
                 }
