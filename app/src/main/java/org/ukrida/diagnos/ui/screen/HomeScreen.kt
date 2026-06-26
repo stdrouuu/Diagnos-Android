@@ -19,6 +19,9 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -51,16 +54,22 @@ import androidx.compose.ui.unit.sp
 import org.ukrida.diagnos.R
 import org.ukrida.diagnos.viewmodel.UserViewModel
 import org.ukrida.diagnos.viewmodel.BookingViewModel
+import org.ukrida.diagnos.viewmodel.HistoryViewModel
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 @Composable
 fun HomeScreen(
     userViewModel: UserViewModel,
     bookingViewModel: BookingViewModel,
+    historyViewModel: HistoryViewModel,
     onNavigateToListTest: () -> Unit,
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToHistory: () -> Unit,
-    onNavigateToResult: (Int) -> Unit
+    onNavigateToResult: (Int) -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
+    val context = LocalContext.current
     val currentUser = userViewModel.currentUser.value
     val userName = currentUser?.name ?: "Guest"
 
@@ -124,47 +133,146 @@ fun HomeScreen(
             )
         }
 
-        // Search Bar Section
-        Row(
+        // Search Bar Section with Auto-suggestions
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            TextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                placeholder = { Text("Cari tes lab...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = Color(0xFF9CA3AF),
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(16.dp))
-            )
-            Button(
-                onClick = { /* Action search if needed */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.height(52.dp),
-                contentPadding = PaddingValues(horizontal = 20.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Cari", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("Cari tes lab...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Color(0xFF9CA3AF),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Hapus",
+                                    tint = Color(0xFF9CA3AF),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(16.dp))
+                )
+                Button(
+                    onClick = { /* Action search if needed */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.height(52.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp)
+                ) {
+                    Text("Cari", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                }
+            }
+
+            // Recommendations Dropdown List
+            if (searchQuery.trim().isNotEmpty()) {
+                val filteredTests = bookingViewModel.allTests.filter {
+                    it.title.lowercase().contains(searchQuery.lowercase().trim())
+                }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(4.dp, RoundedCornerShape(16.dp)),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        if (filteredTests.isNotEmpty()) {
+                            filteredTests.forEachIndexed { index, test ->
+                                if (index > 0) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(1.dp)
+                                            .background(Color(0xFFF3F4F6))
+                                            .padding(horizontal = 16.dp)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            searchQuery = ""
+                                            onNavigateToDetail(test.id)
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = test.title,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF1F2937)
+                                        )
+                                        Text(
+                                            text = test.category,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF3CB7A6),
+                                            modifier = Modifier.padding(top = 2.dp)
+                                        )
+                                    }
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                        contentDescription = "Pilih",
+                                        tint = Color(0xFF9CA3AF),
+                                        modifier = Modifier.size(10.dp)
+                                    )
+                                }
+                            }
+                        } else {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Mohon Maaf, Tes Belum Tersedia",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF9CA3AF)
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -180,9 +288,7 @@ fun HomeScreen(
                 icon = Icons.Default.Inventory,
                 label = "Lihat\nStatus Pesanan",
                 modifier = Modifier.weight(1f),
-                onClick = {
-                    onNavigateToHistory()
-                }
+                onClick = onNavigateToProfile
             )
             // Action 2
             QuickActionButton(
@@ -190,12 +296,17 @@ fun HomeScreen(
                 label = "Pemeriksaan \nTerakhir",
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    val lastTestId = if (bookingViewModel.isOrderCompleted && bookingViewModel.selectedTest != null) {
-                        bookingViewModel.selectedTest!!.id
+                    val lastHistoryItem = historyViewModel.historyList.value.firstOrNull()
+                    if (lastHistoryItem != null) {
+                        if (lastHistoryItem.status == "Selesai") {
+                            onNavigateToResult(lastHistoryItem.testId)
+                        } else {
+                            Toast.makeText(context, "Hasil pemeriksaan terakhir belum selesai atau sedang diuji", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        1
+                        // Fallback/No history yet
+                        onNavigateToResult(1)
                     }
-                    onNavigateToResult(lastTestId)
                 }
             )
             // Action 3

@@ -22,7 +22,7 @@ class BookingViewModel : ViewModel() {
             priceVal = 1950000,
             category = "Hematologi",
             duration = "45 Menit",
-            biomarkerCount = 12,
+            biomarkerCount = 15,
             resultDuration = "24 Jam",
             benefits = "Tes hematologi lengkap bermanfaat untuk mendeteksi anemia, mengidentifikasi infeksi, menilai kemampuan pembekuan darah, serta menyaring risiko penyakit serius seperti kanker darah secara dini.",
             fullDescription = """

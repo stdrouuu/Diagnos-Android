@@ -12,7 +12,7 @@ class HistoryViewModel : ViewModel() {
                 id = 1,
                 testId = 1,
                 title = "Hematologi (Lengkap)",
-                date = "15 Okt 2025",
+                date = "15 Mei 2026",
                 clinicName = "Klinik Cinta Kasih PIK",
                 status = "Selesai"
             ),
@@ -20,7 +20,15 @@ class HistoryViewModel : ViewModel() {
                 id = 2,
                 testId = 2,
                 title = "Hitung Jenis Leukosit",
-                date = "02 Sep 2025",
+                date = "02 Apr 2026",
+                clinicName = "Klinik Cinta Kasih PIK",
+                status = "Selesai"
+            ),
+            TestHistoryItem(
+                id = 3,
+                testId = 3,
+                title = "Cek Darah Rutin & Nilai-Nilai MC",
+                date = "18 Feb 2026",
                 clinicName = "Klinik Cinta Kasih PIK",
                 status = "Selesai"
             )

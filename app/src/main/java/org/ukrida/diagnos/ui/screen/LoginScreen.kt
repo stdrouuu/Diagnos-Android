@@ -263,21 +263,6 @@ fun LoginScreen(
                         )
                     }
 
-                    // Lupa Password?
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Text(
-                            text = "Lupa Password?",
-                            fontSize = 12.sp,
-                            color = Color(0xFF9CA3AF),
-                            modifier = Modifier.clickable {
-                                // Action for forgot password if needed
-                            }
-                        )
-                    }
-
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Error Message
@@ -295,15 +280,17 @@ fun LoginScreen(
                     // Button Masuk
                     Button(
                         onClick = {
-                            if (username.isBlank() || password.isBlank()) {
+                            if (selectedRole != "admin" && (username.isBlank() || password.isBlank())) {
                                 errorMessage = "Username dan Password harus diisi!"
                             } else {
                                 errorMessage = null
+                                val finalUsername = if (selectedRole == "admin" && username.isBlank()) "admin" else username
+                                val finalPassword = if (selectedRole == "admin" && password.isBlank()) "admin" else password
                                 viewModel.currentUser.value = org.ukrida.diagnos.data.model.User(
                                     id = 0,
-                                    name = username,
-                                    username = username,
-                                    password = password,
+                                    name = finalUsername,
+                                    username = finalUsername,
+                                    password = finalPassword,
                                     role = selectedRole
                                 )
                             }

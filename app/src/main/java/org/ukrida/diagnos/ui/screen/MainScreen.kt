@@ -91,7 +91,9 @@ fun MainScreen(
 
         // ================= BOTTOM NAV =================
         bottomBar = {
-            BottomNav(innerNavController, role)
+            if (currentRoute != "history" && !currentRoute.startsWith("result")) {
+                BottomNav(innerNavController, role)
+            }
         }
 
     ) { padding ->
@@ -109,6 +111,7 @@ fun MainScreen(
                 HomeScreen(
                     userViewModel = userViewModel,
                     bookingViewModel = bookingViewModel,
+                    historyViewModel = historyViewModel,
                     onNavigateToListTest = {
                         innerNavController.navigate("listtest")
                     },
@@ -120,6 +123,9 @@ fun MainScreen(
                     },
                     onNavigateToResult = { testId ->
                         innerNavController.navigate("result/$testId")
+                    },
+                    onNavigateToProfile = {
+                        innerNavController.navigate("user")
                     }
                 )
             }

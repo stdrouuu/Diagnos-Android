@@ -69,7 +69,7 @@ fun WelcomeScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Button Masuk
+                // Button Mulai Sekarang
                 Button(
                     onClick = onNavigateLogin,
                     colors = ButtonDefaults.buttonColors(
@@ -83,7 +83,7 @@ fun WelcomeScreen(
                         .shadow(0.2.dp, shape = RoundedCornerShape(16.dp))
                 ) {
                     Text(
-                        text = "Masuk",
+                        text = "Mulai Sekarang",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
                     )

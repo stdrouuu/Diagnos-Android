@@ -175,9 +175,12 @@ fun ResultScreen(
                                     resultViewModel.getHitungJenisLeukositList().forEach { TableRow(it) }
                                 }
                                 3 -> {
-                                    // result3: Darah Rutin only
+                                    // result3: Darah Rutin & Nilai-Nilai MC
                                     TableSectionHeader("DARAH RUTIN")
                                     resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+
+                                    TableSectionHeader("NILAI-NILAI MC")
+                                    resultViewModel.getNilaiMcList().forEach { TableRow(it) }
                                 }
                                 else -> {
                                     // Fallback: Darah Rutin
