@@ -37,6 +37,9 @@ fun AdminInputScreen(
     navController: NavController,
     onLogout: () -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getBookings()
+    }
     val needInput = viewModel.bookings.value.filter { it.status == "Dikonfirmasi" && it.resultStatus == "Menunggu Hasil" }
 
     Scaffold(
@@ -155,7 +158,7 @@ fun AdminInputScreen(
             booking = booking,
             groups = groups,
             onDismiss = { viewModel.selectedBookingForInput.value = null },
-            onSave = { viewModel.saveInputResults(booking.id) }
+            onSave = { resultsMap -> viewModel.saveInputResults(booking.id, resultsMap) }
         )
     }
 }
@@ -234,7 +237,7 @@ fun InputResultModal(
     booking: AdminBooking,
     groups: List<Pair<String, List<String>>>,
     onDismiss: () -> Unit,
-    onSave: () -> Unit
+    onSave: (Map<String, String>) -> Unit
 ) {
     val keys = remember(groups) { groups.flatMap { it.second } }
     // Stores inputs & validation error messages
@@ -421,7 +424,7 @@ fun InputResultModal(
                         if (!isValid) allValid = false
                     }
                     if (allValid) {
-                        onSave()
+                        onSave(inputs)
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF42B5A7)),

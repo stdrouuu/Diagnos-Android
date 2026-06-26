@@ -126,16 +126,33 @@ class BookingViewModel : ViewModel() {
         selectedTest = allTests.find { it.id == id }
     }
 
-    fun confirmOrder(onComplete: () -> Unit = {}) {
+    fun confirmOrder(userId: Int, onComplete: () -> Unit = {}) {
         if (isConfirmingOrder) return
         viewModelScope.launch {
             isConfirmingOrder = true
-            delay(1500) // Mock api response delay
-            isConfirmingOrder = false
-            isOrderCompleted = true
-            showToastMessage = true
-            showSuccessModal = true
-            onComplete()
+            try {
+                val response = org.ukrida.diagnos.data.api.RetrofitInstance.api.createBooking(
+                    mapOf(
+                        "user_id" to userId,
+                        "test_id" to (selectedTest?.id ?: 1),
+                        "booking_date" to selectedDate,
+                        "booking_time" to selectedTimeSlot,
+                        "clinic_name" to selectedClinic,
+                        "status" to "Menunggu",
+                        "result_status" to "Menunggu Hasil"
+                    )
+                )
+                if (response.isSuccessful) {
+                    isOrderCompleted = true
+                    showToastMessage = true
+                    showSuccessModal = true
+                    onComplete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isConfirmingOrder = false
+            }
         }
     }
 

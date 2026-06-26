@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -45,6 +46,9 @@ fun AdminOrderScreen(
     navController: NavController,
     onLogout: () -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getBookings()
+    }
     val context = LocalContext.current
     val filteredBookings = viewModel.filterBookings()
 

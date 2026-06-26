@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import org.ukrida.diagnos.viewmodel.HistoryViewModel
 import org.ukrida.diagnos.data.model.TestHistoryItem
 import androidx.compose.foundation.Canvas
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -35,10 +36,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
+    userId: Int,
     viewModel: HistoryViewModel,
     onBack: () -> Unit,
-    onNavigateToResult: (Int) -> Unit
+    onNavigateToResult: (Int, Int) -> Unit
 ) {
+    LaunchedEffect(userId) {
+        if (userId > 0) {
+            viewModel.getHistoryList(userId)
+        }
+    }
     val historyList = viewModel.historyList.value
     val searchQuery = viewModel.searchQuery.value
 
@@ -200,7 +207,7 @@ fun HistoryScreen(
                     items(filteredList) { item ->
                         HistoryCard(
                             item = item,
-                            onClick = { onNavigateToResult(item.testId) }
+                            onClick = { onNavigateToResult(item.id, item.testId) }
                         )
                     }
                 }

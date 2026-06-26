@@ -66,7 +66,7 @@ fun HomeScreen(
     onNavigateToListTest: () -> Unit,
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToHistory: () -> Unit,
-    onNavigateToResult: (Int) -> Unit,
+    onNavigateToResult: (Int, Int) -> Unit,
     onNavigateToProfile: () -> Unit
 ) {
     val context = LocalContext.current
@@ -299,13 +299,13 @@ fun HomeScreen(
                     val lastHistoryItem = historyViewModel.historyList.value.firstOrNull()
                     if (lastHistoryItem != null) {
                         if (lastHistoryItem.status == "Selesai") {
-                            onNavigateToResult(lastHistoryItem.testId)
+                            onNavigateToResult(lastHistoryItem.id, lastHistoryItem.testId)
                         } else {
                             Toast.makeText(context, "Hasil pemeriksaan terakhir belum selesai atau sedang diuji", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // Fallback/No history yet
-                        onNavigateToResult(1)
+                        // Fallback/No history yet (bookingId = 0, testId = 1)
+                        onNavigateToResult(0, 1)
                     }
                 }
             )

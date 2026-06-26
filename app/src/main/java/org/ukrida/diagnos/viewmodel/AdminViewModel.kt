@@ -3,6 +3,8 @@ package org.ukrida.diagnos.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import org.ukrida.diagnos.data.model.AdminBooking
 import java.util.Calendar
 import java.util.Date
@@ -10,85 +12,21 @@ import java.util.Date
 class AdminViewModel : ViewModel() {
 
     // Mock initial data
-    private val _bookings = mutableStateOf(
-        listOf(
-            AdminBooking(
-                id = "DG-9912",
-                patientName = "Rina Kusuma",
-                email = "rina.k@gmail.com",
-                phone = "0812-3456-7890",
-                testName = "Hematologi Lengkap",
-                date = "20 Jul 2026",
-                time = "08:00",
-                status = "Dikonfirmasi",
-                resultStatus = "Menunggu Hasil",
-                gender = "Perempuan",
-                dob = "14 Maret 1993",
-                address = "Jl. Melati No. 12, Jakarta Selatan",
-                clinicName = "Klinik Citra Kasih Jakarta Selatan"
-            ),
-            AdminBooking(
-                id = "DG-9913",
-                patientName = "Budi Santoso",
-                email = "budi.s@outlook.com",
-                phone = "0821-9876-5432",
-                testName = "Cek Darah Rutin & Nilai-Nilai MC",
-                date = "20 Jul 2026",
-                time = "09:30",
-                status = "Selesai",
-                resultStatus = "Hasil Siap",
-                gender = "Laki-laki",
-                dob = "22 Agustus 1985",
-                address = "Jl. Sudirman Kav. 21, Jakarta Pusat",
-                clinicName = "Klinik Citra Kasih PIK"
-            ),
-            AdminBooking(
-                id = "DG-9914",
-                patientName = "Siti Rahayu",
-                email = "siti.rahayu@yahoo.com",
-                phone = "0813-1111-2222",
-                testName = "Cek Darah Rutin & Nilai-Nilai MC",
-                date = "21 Jul 2026",
-                time = "10:00",
-                status = "Dikonfirmasi",
-                resultStatus = "Menunggu Hasil",
-                gender = "Perempuan",
-                dob = "05 Desember 1990",
-                address = "Gg. Kelinci No. 8, Bandung",
-                clinicName = "Klinik Citra Kasih Jakarta Utara"
-            ),
-            AdminBooking(
-                id = "DG-9915",
-                patientName = "Agus Wijaya",
-                email = "agus@email.com",
-                phone = "0815-4567-8901",
-                testName = "Hitung Jenis Leukosit",
-                date = "22 Jul 2026",
-                time = "08:30",
-                status = "Dikonfirmasi",
-                resultStatus = "Menunggu Hasil",
-                gender = "Laki-laki",
-                dob = "17 Juli 1978",
-                address = "Jl. Merdeka No. 102, Surabaya",
-                clinicName = "Klinik Citra Kasih PIK"
-            ),
-            AdminBooking(
-                id = "DG-9916",
-                patientName = "Dewi Lestari",
-                email = "dewi.les@gmail.com",
-                phone = "0857-3333-4444",
-                testName = "Hematologi Lengkap",
-                date = "22 Jul 2026",
-                time = "11:00",
-                status = "Menunggu",
-                resultStatus = "Menunggu Hasil",
-                gender = "Perempuan",
-                dob = "29 Oktober 1997",
-                address = "Perum Gading Indah Blok C/4, Jakarta Utara",
-                clinicName = "Klinik Citra Kasih Jakarta Utara"
-            )
-        )
-    )
+    private val _bookings = mutableStateOf<List<AdminBooking>>(emptyList())
+
+    init {
+        getBookings()
+    }
+
+    fun getBookings() {
+        viewModelScope.launch {
+            try {
+                _bookings.value = org.ukrida.diagnos.data.api.RetrofitInstance.api.getBookings()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     val bookings: State<List<AdminBooking>> = _bookings
 
     // Filters and search states
@@ -201,29 +139,53 @@ class AdminViewModel : ViewModel() {
         val booking = selectedBookingForDetail.value ?: return
         val newStatus = selectedStatusValue.value
 
-        _bookings.value = _bookings.value.map { item ->
-            if (item.id == booking.id) {
-                val updatedResultStatus = if (newStatus == "Selesai") "Hasil Siap" else item.resultStatus
-                item.copy(status = newStatus, resultStatus = updatedResultStatus)
-            } else {
-                item
+        viewModelScope.launch {
+            try {
+                val response = org.ukrida.diagnos.data.api.RetrofitInstance.api.updateBookingStatus(
+                    mapOf(
+                        "id" to booking.id.toInt(),
+                        "status" to newStatus
+                    )
+                )
+                if (response.isSuccessful) {
+                    getBookings()
+                    showToast("Status pesanan ${booking.patientName} disimpan menjadi $newStatus.")
+                } else {
+                    showToast("Gagal merubah status: ${response.message()}", isError = true)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                showToast("Terjadi kesalahan koneksi.", isError = true)
+            } finally {
+                selectBookingForDetail(null)
             }
         }
-
-        showToast("Status pesanan ${booking.patientName} disimpan menjadi $newStatus.")
-        selectBookingForDetail(null)
     }
 
-    fun saveInputResults(bookingId: String) {
-        _bookings.value = _bookings.value.map { item ->
-            if (item.id == bookingId) {
-                item.copy(status = "Selesai", resultStatus = "Hasil Siap")
-            } else {
-                item
+    fun saveInputResults(bookingId: String, resultsMap: Map<String, String>) {
+        viewModelScope.launch {
+            try {
+                val payload = mutableMapOf<String, Any?>()
+                payload["booking_id"] = bookingId.toInt()
+                resultsMap.forEach { (key, value) ->
+                    val dbKey = key.lowercase().replace("-", "_")
+                    payload[dbKey] = value
+                }
+
+                val response = org.ukrida.diagnos.data.api.RetrofitInstance.api.saveLabResults(payload)
+                if (response.isSuccessful) {
+                    getBookings()
+                    showToast("Data lab berhasil disimpan dan dirilis ke akun Pasien.")
+                } else {
+                    showToast("Gagal menyimpan hasil lab: ${response.message()}", isError = true)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                showToast("Terjadi kesalahan koneksi.", isError = true)
+            } finally {
+                selectedBookingForInput.value = null
             }
         }
-        showToast("Data lab berhasil disimpan dan dirilis ke akun Pasien.")
-        selectedBookingForInput.value = null
     }
 
     fun getUpcomingBooking(): AdminBooking? {

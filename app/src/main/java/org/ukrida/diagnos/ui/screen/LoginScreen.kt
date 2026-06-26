@@ -266,7 +266,9 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Error Message
-                    errorMessage?.let {
+                    val apiError = viewModel.loginError.value
+                    val displayError = errorMessage ?: apiError
+                    displayError?.let {
                         Text(
                             text = it,
                             color = Color(0xFFF86066),
@@ -280,19 +282,11 @@ fun LoginScreen(
                     // Button Masuk
                     Button(
                         onClick = {
-                            if (selectedRole != "admin" && (username.isBlank() || password.isBlank())) {
+                            if (username.isBlank() || password.isBlank()) {
                                 errorMessage = "Username dan Password harus diisi!"
                             } else {
                                 errorMessage = null
-                                val finalUsername = if (selectedRole == "admin" && username.isBlank()) "admin" else username
-                                val finalPassword = if (selectedRole == "admin" && password.isBlank()) "admin" else password
-                                viewModel.currentUser.value = org.ukrida.diagnos.data.model.User(
-                                    id = 0,
-                                    name = finalUsername,
-                                    username = finalUsername,
-                                    password = finalPassword,
-                                    role = selectedRole
-                                )
+                                viewModel.login(username, password)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(

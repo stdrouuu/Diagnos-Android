@@ -42,6 +42,7 @@ import org.ukrida.diagnos.viewmodel.BookingViewModel
 @Composable
 fun OrderReviewScreen(
     bookingViewModel: BookingViewModel,
+    userViewModel: org.ukrida.diagnos.viewmodel.UserViewModel,
     onBack: () -> Unit,
     onNavigateToProfile: () -> Unit
 ) {
@@ -512,7 +513,8 @@ fun OrderReviewScreen(
                     Button(
                         onClick = {
                             if (!isConfirming && !isCompleted) {
-                                bookingViewModel.confirmOrder()
+                                val userId = userViewModel.currentUser.value?.id ?: 0
+                                bookingViewModel.confirmOrder(userId)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(

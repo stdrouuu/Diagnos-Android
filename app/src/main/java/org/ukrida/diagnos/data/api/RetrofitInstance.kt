@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
     // private const val BASE_URL = "http://192.168.2"
-    private const val BASE_URL = "http://10.0.2.2/store_api/routes/"
+    private const val BASE_URL = "http://192.168.1.7/Diagnos-API/routes/"
 
     val api: ApiService by lazy {
         Retrofit.Builder()

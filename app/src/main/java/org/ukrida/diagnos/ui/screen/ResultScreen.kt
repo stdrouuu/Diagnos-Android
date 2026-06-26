@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +30,16 @@ import org.ukrida.diagnos.data.model.TestParameterResult
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
+    bookingId: Int,
     testId: Int,
     resultViewModel: ResultViewModel,
     bookingViewModel: BookingViewModel,
     onBack: () -> Unit
 ) {
+    LaunchedEffect(bookingId) {
+        resultViewModel.loadResults(bookingId)
+    }
+
     val test = bookingViewModel.allTests.find { it.id == testId } ?: bookingViewModel.allTests[0]
 
     Scaffold(
