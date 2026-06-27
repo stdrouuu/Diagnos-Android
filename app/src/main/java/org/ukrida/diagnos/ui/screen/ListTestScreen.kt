@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.outlined.SentimentDissatisfied
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -55,6 +57,7 @@ data class LabTest(
 @Composable
 fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
     var searchQuery by remember { mutableStateOf("") }
+    var showHelpDialog by remember { mutableStateOf(false) }
 
     val allTests = remember {
         listOf(
@@ -141,15 +144,6 @@ fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
                     .weight(1f)
                     .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(16.dp))
             )
-            Button(
-                onClick = { /* Action search */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.height(52.dp),
-                contentPadding = PaddingValues(horizontal = 20.dp)
-            ) {
-                Text("Cari", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            }
         }
 
         // Section Title
@@ -219,8 +213,36 @@ fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
             PromoSpecialBanner()
 
             // Need help card (static)
-            NeedHelpCard()
+            NeedHelpCard(onContactClick = { showHelpDialog = true })
         }
+    }
+
+    if (showHelpDialog) {
+        AlertDialog(
+            onDismissRequest = { showHelpDialog = false },
+            title = {
+                Text(
+                    text = "Pusat Bantuan",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color(0xFF1F2937)
+                )
+            },
+            text = {
+                Text(
+                    text = "Layanan Pusat Bantuan sedang dalam pemeliharaan. Silakan hubungi kami kembali nanti.",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showHelpDialog = false }) {
+                    Text(text = "Oke", color = Color(0xFF3CB7A6), fontWeight = FontWeight.Bold)
+                }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color.White
+        )
     }
 }
 
@@ -362,7 +384,7 @@ fun PromoSpecialBanner() {
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "PROMO SPESIAL",
+                    text = "KATA BIJAK HARI INI",
                     color = Color.White,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -373,7 +395,7 @@ fun PromoSpecialBanner() {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "SKRINING Kesehatan\nPencegahan",
+                text = "Kesehatan Adalah Harta",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.White,
@@ -383,33 +405,18 @@ fun PromoSpecialBanner() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Deteksi dini adalah kunci. Pesan pemeriksaan seluruh tubuh hari ini dan hemat 20%.",
+                text = "\"Kesehatan yang baik bukanlah sesuatu yang dapat kita beli. Namun, sesuatu yang dapat menjadi tabungan yang sangat berharga.\"\n\n~ Anne Wilson Schaef",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White.copy(alpha = 0.9f),
                 lineHeight = 16.sp
             )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(
-                onClick = { /* Learn more */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF3CB7A6)),
-                shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
-            ) {
-                Text(
-                    text = "Pelajari Lebih Lanjut",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
         }
     }
 }
 
 @Composable
-fun NeedHelpCard() {
+fun NeedHelpCard(onContactClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -454,7 +461,7 @@ fun NeedHelpCard() {
             )
 
             OutlinedButton(
-                onClick = { /* Help action */ },
+                onClick = onContactClick,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3CB7A6)),
                 border = BorderStroke(1.5.dp, Color(0xFF3CB7A6)),
                 shape = RoundedCornerShape(12.dp),

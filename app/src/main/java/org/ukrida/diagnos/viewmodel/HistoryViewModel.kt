@@ -15,6 +15,9 @@ class HistoryViewModel : ViewModel() {
     private val _pendingOrder = mutableStateOf<TestHistoryItem?>(null)
     val pendingOrder: State<TestHistoryItem?> = _pendingOrder
 
+    private val _pendingOrders = mutableStateOf<List<TestHistoryItem>>(emptyList())
+    val pendingOrders: State<List<TestHistoryItem>> = _pendingOrders
+
     private val _searchQuery = mutableStateOf("")
     val searchQuery: State<String> = _searchQuery
 
@@ -30,6 +33,8 @@ class HistoryViewModel : ViewModel() {
                 _historyList.value = list.filter { it.status == "Selesai" }
                 // Set pendingOrder to the first active/non-completed booking
                 _pendingOrder.value = list.firstOrNull { it.status != "Selesai" && it.status != "Dibatalkan" }
+                // Set pendingOrders to all active/non-completed/non-cancelled bookings
+                _pendingOrders.value = list.filter { it.status != "Selesai" && it.status != "Dibatalkan" }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

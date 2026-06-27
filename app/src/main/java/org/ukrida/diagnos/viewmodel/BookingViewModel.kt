@@ -139,7 +139,8 @@ class BookingViewModel : ViewModel() {
                         "booking_time" to selectedTimeSlot,
                         "clinic_name" to selectedClinic,
                         "status" to "Menunggu",
-                        "result_status" to "Menunggu Hasil"
+                        "result_status" to "Menunggu Hasil",
+                        "referral_photo" to if (hasDoctorReferral) "present" else null
                     )
                 )
                 if (response.isSuccessful) {

@@ -6,5 +6,6 @@ data class TestHistoryItem(
     val title: String,
     val date: String,
     val clinicName: String,
-    val status: String // e.g. "Selesai" or "Diproses"
+    val status: String, // e.g. "Selesai" or "Diproses"
+    val referralPhoto: String? = null
 )

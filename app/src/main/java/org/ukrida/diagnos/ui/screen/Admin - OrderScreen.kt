@@ -477,7 +477,9 @@ fun AdminOrderScreen(
                 val selectedStatus = viewModel.selectedStatusValue.value
                 val isPastPending = (originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai" || originalStatus == "Dibatalkan")
 
-                if (isPastPending && selectedStatus == "Menunggu") {
+                if (originalStatus == "Menunggu" && (selectedStatus == "Sedang diuji" || selectedStatus == "Selesai")) {
+                    WarningBox(message = "⚠️ Dari status Menunggu, Anda hanya bisa mengubah ke Dikonfirmasi atau Dibatalkan.")
+                } else if (isPastPending && selectedStatus == "Menunggu") {
                     WarningBox(message = "⚠️ Status Terkonfirmasi tidak diperbolehkan kembali ke antrean Menunggu.")
                 } else if ((originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai") && selectedStatus == "Dibatalkan") {
                     WarningBox(message = "⚠️ Status yang telah dikonfirmasi atau diuji tidak dapat dibatalkan.")

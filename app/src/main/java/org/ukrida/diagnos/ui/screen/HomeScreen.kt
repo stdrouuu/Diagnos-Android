@@ -75,6 +75,9 @@ fun HomeScreen(
 
     var searchQuery by remember { mutableStateOf("") }
 
+    val lastHistoryItem = historyViewModel.historyList.value.firstOrNull()
+    val lastTestDate = lastHistoryItem?.date ?: "-"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +92,7 @@ fun HomeScreen(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Text(
-                text = "SELAMAT PAGI,",
+                text = "HALO,",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF9CA3AF),
@@ -124,7 +127,7 @@ fun HomeScreen(
                 text = buildAnnotatedString {
                     append("Terakhir Test Lab: ")
                     withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold, color = Color(0xFF374151))) {
-                        append("12/11/26")
+                        append(lastTestDate)
                     }
                 },
                 fontSize = 10.sp,
@@ -182,15 +185,6 @@ fun HomeScreen(
                         .weight(1f)
                         .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(16.dp))
                 )
-                Button(
-                    onClick = { /* Action search if needed */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.height(52.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
-                ) {
-                    Text("Cari", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                }
             }
 
             // Recommendations Dropdown List

@@ -3,6 +3,8 @@ package org.ukrida.diagnos.ui.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -52,6 +54,14 @@ fun ProfileScreen(
     var showImagePreview by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
     var showHelpDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(currentUser) {
+        currentUser?.id?.let { userId ->
+            if (userId > 0) {
+                historyViewModel.getHistoryList(userId)
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -190,15 +200,15 @@ fun ProfileScreen(
                 ) {
                     Column {
                         // Status Pesanan
-                        // Status Pesanan — driven by pendingOrder (not historyList)
-                        val pendingOrder = historyViewModel.pendingOrder.value
+                        // Status Pesanan — driven by pendingOrders (not historyList)
+                        val pendingOrders = historyViewModel.pendingOrders.value
                         ProfileMenuItem(
                             icon = Icons.Default.Inventory,
                             title = "Status Pesanan",
-                            badgeText = if (pendingOrder != null) "Menunggu" else "Tidak Ada",
-                            badgeColor = if (pendingOrder != null) Color(0xFFFEF3C7) else Color(0xFFF3F4F6),
-                            badgeTextColor = if (pendingOrder != null) Color(0xFFD97706) else Color(0xFF6B7280),
-                            onClick = { if (pendingOrder != null) showHistoryDialog = true }
+                            badgeText = if (pendingOrders.isNotEmpty()) "Menunggu" else "Tidak Ada",
+                            badgeColor = if (pendingOrders.isNotEmpty()) Color(0xFFFEF3C7) else Color(0xFFF3F4F6),
+                            badgeTextColor = if (pendingOrders.isNotEmpty()) Color(0xFFD97706) else Color(0xFF6B7280),
+                            onClick = { if (pendingOrders.isNotEmpty()) showHistoryDialog = true }
                         )
                         HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
                         // Riwayat Pesanan — only shows completed orders via history page
@@ -326,11 +336,10 @@ fun ProfileScreen(
             }
         }
     }
-
     // ================= status pesanan dialog (Menunggu) =================
     if (showHistoryDialog) {
-        val order = historyViewModel.pendingOrder.value
-        if (order != null) {
+        val pendingOrders = historyViewModel.pendingOrders.value
+        if (pendingOrders.isNotEmpty()) {
             AlertDialog(
                 onDismissRequest = { showHistoryDialog = false },
                 title = {
@@ -342,44 +351,159 @@ fun ProfileScreen(
                     )
                 },
                 text = {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 350.dp)
                     ) {
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                            Text("Tes Lab:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(order.title, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(start = 8.dp))
-                        }
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                            Text("Klinik:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(order.clinicName, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(start = 8.dp))
-                        }
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                            Text("Jadwal:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Text(order.date, color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(start = 8.dp))
-                        }
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                            Text("Status:", fontWeight = FontWeight.Bold, color = Color.Gray, fontSize = 13.sp)
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFFFEF3C7), RoundedCornerShape(6.dp))
-                                    .padding(horizontal = 10.dp, vertical = 3.dp)
-                            ) {
-                                Text(
-                                    text = "Menunggu",
-                                    color = Color(0xFFD97706),
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.ExtraBold
-                                )
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(pendingOrders) { order ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB)),
+                                    border = BorderStroke(0.5.dp, Color(0xFFE5E7EB)),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                "Tes Lab:",
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Gray,
+                                                fontSize = 12.sp
+                                            )
+                                            Text(
+                                                order.title,
+                                                color = Color.Black,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                textAlign = TextAlign.End,
+                                                modifier = Modifier.weight(1f).padding(start = 8.dp)
+                                            )
+                                        }
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                "Klinik:",
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Gray,
+                                                fontSize = 12.sp
+                                            )
+                                            Text(
+                                                order.clinicName,
+                                                color = Color.Black,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                textAlign = TextAlign.End,
+                                                modifier = Modifier.weight(1f).padding(start = 8.dp)
+                                            )
+                                        }
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                "Jadwal:",
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Gray,
+                                                fontSize = 12.sp
+                                            )
+                                            Text(
+                                                order.date,
+                                                color = Color.Black,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                textAlign = TextAlign.End,
+                                                modifier = Modifier.weight(1f).padding(start = 8.dp)
+                                            )
+                                        }
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                "Status:",
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Gray,
+                                                fontSize = 12.sp
+                                            )
+                                            val badgeColor = when (order.status) {
+                                                "Menunggu" -> Color(0xFFFEF3C7)
+                                                "Dikonfirmasi" -> Color(0xFFE0F2FE)
+                                                "Sedang diuji" -> Color(0xFFF3E8FF)
+                                                else -> Color(0xFFF3F4F6)
+                                            }
+                                            val badgeTextColor = when (order.status) {
+                                                "Menunggu" -> Color(0xFFD97706)
+                                                "Dikonfirmasi" -> Color(0xFF0369A1)
+                                                "Sedang diuji" -> Color(0xFF6B21A8)
+                                                else -> Color(0xFF374151)
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .background(badgeColor, RoundedCornerShape(6.dp))
+                                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                            ) {
+                                                Text(
+                                                    text = order.status,
+                                                    color = badgeTextColor,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.ExtraBold
+                                                )
+                                            }
+                                        }
+                                        
+                                        val statusDesc = when (order.status) {
+                                            "Menunggu" -> "Pesanan Anda sedang menunggu konfirmasi dari klinik."
+                                            "Dikonfirmasi" -> "Pesanan telah dikonfirmasi. Silakan datang ke klinik sesuai jadwal."
+                                            "Sedang diuji" -> "Pemeriksaan sedang berlangsung di laboratorium."
+                                            else -> "Pemeriksaan selesai. Hasil dapat diakses di Riwayat."
+                                        }
+                                        
+                                        Spacer(modifier = Modifier.height(1.dp))
+                                        Text(
+                                            text = statusDesc,
+                                            fontSize = 11.sp,
+                                            color = Color(0xFF9CA3AF),
+                                            lineHeight = 15.sp
+                                        )
+                                        
+                                        val hasReferral = !order.referralPhoto.isNullOrEmpty() && order.referralPhoto != "null"
+                                        if (hasReferral) {
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(Color(0xFFFFEAEA), RoundedCornerShape(8.dp))
+                                                    .padding(8.dp)
+                                            ) {
+                                                Text(
+                                                    text = "Pengingat: Silakan bawa surat rujukan dokter fisik Anda saat mengunjungi klinik.",
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFFFA6A71),
+                                                    lineHeight = 14.sp
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Pesanan Anda sedang menunggu konfirmasi dari klinik. Hasil akan tersedia setelah pemeriksaan selesai.",
-                            fontSize = 11.sp,
-                            color = Color(0xFF9CA3AF),
-                            lineHeight = 16.sp
-                        )
                     }
                 },
                 confirmButton = {
@@ -392,8 +516,6 @@ fun ProfileScreen(
             )
         }
     }
-
-
     // ================= help dialog =================
     if (showHelpDialog) {
         AlertDialog(

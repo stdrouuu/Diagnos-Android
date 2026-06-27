@@ -57,7 +57,7 @@ class AdminViewModel : ViewModel() {
     // Derived Statistics
     val totalBookings: Int get() = _bookings.value.size
     val totalPending: Int get() = _bookings.value.count { it.status == "Menunggu" }
-    val totalResultQueue: Int get() = _bookings.value.count { it.status == "Dikonfirmasi" && it.resultStatus == "Menunggu Hasil" }
+    val totalResultQueue: Int get() = _bookings.value.count { it.status == "Sedang diuji" && it.resultStatus == "Menunggu Hasil" }
     val totalTesting: Int get() = _bookings.value.count { it.status == "Sedang diuji" }
     val totalSuccess: Int get() = _bookings.value.count { it.status == "Selesai" }
 
@@ -117,6 +117,11 @@ class AdminViewModel : ViewModel() {
         val originalStatus = selectedBookingForDetail.value?.status ?: return
 
         // Safeguard policies
+        if (originalStatus == "Menunggu" && (status == "Sedang diuji" || status == "Selesai")) {
+            showToast("Tindakan tidak valid! Dari status Menunggu, Anda hanya bisa mengubah ke Dikonfirmasi atau Dibatalkan.", true)
+            return
+        }
+
         if ((originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai") && status == "Dibatalkan") {
             showToast("Pembatalan diblokir oleh sistem! Pesanan terkonfirmasi tidak dapat dibatalkan.", true)
             return

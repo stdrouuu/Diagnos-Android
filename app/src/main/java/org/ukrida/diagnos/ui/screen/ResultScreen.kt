@@ -23,6 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
+import org.ukrida.diagnos.data.api.RetrofitInstance
 import org.ukrida.diagnos.viewmodel.ResultViewModel
 import org.ukrida.diagnos.viewmodel.BookingViewModel
 import org.ukrida.diagnos.data.model.TestParameterResult
@@ -36,6 +40,7 @@ fun ResultScreen(
     bookingViewModel: BookingViewModel,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(bookingId) {
         resultViewModel.loadResults(bookingId)
     }
@@ -208,7 +213,15 @@ fun ResultScreen(
                     .padding(horizontal = 20.dp)
             ) {
                 Button(
-                    onClick = { /* Action Unduh PDF */ },
+                    onClick = {
+                        val pdfUrl = "${RetrofitInstance.BASE_URL}results_pdf.php?booking_id=$bookingId"
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier

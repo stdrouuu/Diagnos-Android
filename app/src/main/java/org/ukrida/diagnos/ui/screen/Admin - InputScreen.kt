@@ -40,7 +40,7 @@ fun AdminInputScreen(
     LaunchedEffect(Unit) {
         viewModel.getBookings()
     }
-    val needInput = viewModel.bookings.value.filter { it.status == "Dikonfirmasi" && it.resultStatus == "Menunggu Hasil" }
+    val needInput = viewModel.bookings.value.filter { it.status == "Sedang diuji" && it.resultStatus == "Menunggu Hasil" }
 
     Scaffold(
         topBar = {
@@ -177,7 +177,6 @@ fun InputQueueCard(booking: AdminBooking, onInputClick: () -> Unit) {
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -199,20 +198,6 @@ fun InputQueueCard(booking: AdminBooking, onInputClick: () -> Unit) {
                         text = "${booking.id} · Jadwal: ${booking.date}",
                         fontSize = 10.sp,
                         color = Color.Gray
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFF1F5F9)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        tint = Color.Gray
                     )
                 }
             }
