@@ -32,9 +32,9 @@ class HistoryViewModel : ViewModel() {
                 // Filter only completed bookings for history list
                 _historyList.value = list.filter { it.status == "Selesai" }
                 // Set pendingOrder to the first active/non-completed booking
-                _pendingOrder.value = list.firstOrNull { it.status != "Selesai" && it.status != "Dibatalkan" }
-                // Set pendingOrders to all active/non-completed/non-cancelled bookings
-                _pendingOrders.value = list.filter { it.status != "Selesai" && it.status != "Dibatalkan" }
+                _pendingOrder.value = list.firstOrNull { it.status != "Selesai" }
+                // Set pendingOrders to all active/non-completed bookings
+                _pendingOrders.value = list.filter { it.status != "Selesai" }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

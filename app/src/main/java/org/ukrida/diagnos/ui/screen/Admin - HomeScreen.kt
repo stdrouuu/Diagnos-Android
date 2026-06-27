@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.ukrida.diagnos.data.model.AdminBooking
 import org.ukrida.diagnos.viewmodel.AdminViewModel
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,6 +91,20 @@ fun AdminHomeScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val currentDate = remember {
+                val calendar = Calendar.getInstance()
+                val dayNamesIndo = listOf("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu")
+                val monthsIndo = listOf(
+                    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                )
+                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+                val month = calendar.get(Calendar.MONTH)
+                val year = calendar.get(Calendar.YEAR)
+                "${dayNamesIndo[dayOfWeek - 1]}, $day ${monthsIndo[month]} $year"
+            }
+
             // Welcome Card
             Box(
                 modifier = Modifier
@@ -117,7 +132,7 @@ fun AdminHomeScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Senin, 20 Juli 2026",
+                        text = currentDate,
                         fontSize = 12.sp,
                         color = Color(0xFFB2DFDB),
                         fontWeight = FontWeight.Medium
@@ -271,83 +286,6 @@ fun AdminHomeScreen(
                 }
             }
 
-            // Upcoming Patients (Pasien Mendatang)
-            val upcomingBooking = viewModel.getUpcomingBooking()
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "Pasien Mendatang",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A2E35),
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-
-                if (upcomingBooking != null) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = CardDefaults.outlinedCardBorder().copy(
-                            brush = Brush.linearGradient(listOf(Color(0xFFE2E8F0), Color(0xFFE2E8F0))),
-                            width = 0.5.dp
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = upcomingBooking.patientName,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1A2E35)
-                                )
-                                Text(
-                                    text = upcomingBooking.testName,
-                                    fontSize = 10.sp,
-                                    color = Color.Gray,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Text(
-                                text = upcomingBooking.date,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF42B5A7)
-                            )
-                        }
-                    }
-                } else {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = CardDefaults.outlinedCardBorder().copy(
-                            brush = Brush.linearGradient(listOf(Color(0xFFE2E8F0), Color(0xFFE2E8F0))),
-                            width = 0.5.dp
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Tidak ada pasien mendatang",
-                                fontSize = 12.sp,
-                                color = Color.Gray,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-            }
 
             // Recent Bookings (Pemesanan Terbaru)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -214,7 +214,7 @@ fun ProfileScreen(
                         // Riwayat Pesanan — only shows completed orders via history page
                         ProfileMenuItem(
                             icon = Icons.Default.ReceiptLong,
-                            title = "Riwayat Pesanan",
+                            title = "Riwayat Pemeriksaan",
                             onClick = { onNavigateToHistory() }
                         )
                     }
@@ -445,12 +445,14 @@ fun ProfileScreen(
                                                 "Menunggu" -> Color(0xFFFEF3C7)
                                                 "Dikonfirmasi" -> Color(0xFFE0F2FE)
                                                 "Sedang diuji" -> Color(0xFFF3E8FF)
+                                                "Dibatalkan" -> Color(0xFFFEE2E2)
                                                 else -> Color(0xFFF3F4F6)
                                             }
                                             val badgeTextColor = when (order.status) {
                                                 "Menunggu" -> Color(0xFFD97706)
                                                 "Dikonfirmasi" -> Color(0xFF0369A1)
                                                 "Sedang diuji" -> Color(0xFF6B21A8)
+                                                "Dibatalkan" -> Color(0xFFEF4444)
                                                 else -> Color(0xFF374151)
                                             }
                                             Box(
@@ -471,6 +473,7 @@ fun ProfileScreen(
                                             "Menunggu" -> "Pesanan Anda sedang menunggu konfirmasi dari klinik."
                                             "Dikonfirmasi" -> "Pesanan telah dikonfirmasi. Silakan datang ke klinik sesuai jadwal."
                                             "Sedang diuji" -> "Pemeriksaan sedang berlangsung di laboratorium."
+                                            "Dibatalkan" -> "Pemeriksaan ini dibatalkan oleh klinik."
                                             else -> "Pemeriksaan selesai. Hasil dapat diakses di Riwayat."
                                         }
                                         
@@ -481,6 +484,32 @@ fun ProfileScreen(
                                             color = Color(0xFF9CA3AF),
                                             lineHeight = 15.sp
                                         )
+
+                                        if (order.status == "Dibatalkan" && !order.cancelReason.isNullOrEmpty()) {
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(Color(0xFFFEE2E2), RoundedCornerShape(8.dp))
+                                                    .border(BorderStroke(0.5.dp, Color(0xFFFCA5A5)), RoundedCornerShape(8.dp))
+                                                    .padding(8.dp)
+                                            ) {
+                                                Column {
+                                                    Text(
+                                                        text = "Alasan Pembatalan:",
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = Color(0xFFB91C1C)
+                                                    )
+                                                    Text(
+                                                        text = order.cancelReason,
+                                                        fontSize = 11.sp,
+                                                        color = Color(0xFF991B1B),
+                                                        lineHeight = 14.sp
+                                                    )
+                                                }
+                                            }
+                                        }
                                         
                                         val hasReferral = !order.referralPhoto.isNullOrEmpty() && order.referralPhoto != "null"
                                         if (hasReferral) {

@@ -121,15 +121,6 @@ fun HistoryScreen(
                         .weight(1f)
                         .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(12.dp))
                 )
-                Button(
-                    onClick = { /* Search is already real-time, click triggers no action */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.height(52.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
-                ) {
-                    Text("Cari", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
-                }
             }
 
             // Title list header

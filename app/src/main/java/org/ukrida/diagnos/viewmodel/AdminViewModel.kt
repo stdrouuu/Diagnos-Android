@@ -46,6 +46,7 @@ class AdminViewModel : ViewModel() {
     // Detail Bottom Sheet States
     val selectedBookingForDetail = mutableStateOf<AdminBooking?>(null)
     val selectedStatusValue = mutableStateOf("Menunggu")
+    val cancelReasonInput = mutableStateOf("")
 
     // Input Results States
     val selectedBookingForInput = mutableStateOf<AdminBooking?>(null)
@@ -110,6 +111,9 @@ class AdminViewModel : ViewModel() {
         selectedBookingForDetail.value = booking
         if (booking != null) {
             selectedStatusValue.value = booking.status
+            cancelReasonInput.value = booking.cancelReason ?: ""
+        } else {
+            cancelReasonInput.value = ""
         }
     }
 
@@ -143,15 +147,18 @@ class AdminViewModel : ViewModel() {
     fun saveStatusChange() {
         val booking = selectedBookingForDetail.value ?: return
         val newStatus = selectedStatusValue.value
+        val cancelReason = if (newStatus == "Dibatalkan") cancelReasonInput.value else null
 
         viewModelScope.launch {
             try {
-                val response = org.ukrida.diagnos.data.api.RetrofitInstance.api.updateBookingStatus(
-                    mapOf(
-                        "id" to booking.id.toInt(),
-                        "status" to newStatus
-                    )
+                val payload = mutableMapOf<String, Any>(
+                    "id" to booking.id.toInt(),
+                    "status" to newStatus
                 )
+                if (cancelReason != null) {
+                    payload["cancel_reason"] = cancelReason
+                }
+                val response = org.ukrida.diagnos.data.api.RetrofitInstance.api.updateBookingStatus(payload)
                 if (response.isSuccessful) {
                     getBookings()
                     showToast("Status pesanan ${booking.patientName} disimpan menjadi $newStatus.")
@@ -193,48 +200,7 @@ class AdminViewModel : ViewModel() {
         }
     }
 
-    fun getUpcomingBooking(): AdminBooking? {
-        val todayMs = System.currentTimeMillis()
-        return _bookings.value
-            .filter { it.status == "Dikonfirmasi" || it.status == "Menunggu" }
-            .mapNotNull { booking ->
-                val date = parseBookingDate(booking.date) ?: return@mapNotNull null
-                booking to date
-            }
-            .sortedWith(compareBy<Pair<AdminBooking, Date>> { (_, date) ->
-                if (date.time >= todayMs) 0 else 1
-            }.thenBy { (_, date) ->
-                Math.abs(date.time - todayMs)
-            })
-            .firstOrNull()?.first
-    }
-
-    private fun parseBookingDate(dateStr: String): Date? {
-        val parts = dateStr.split(" ")
-        if (parts.size == 3) {
-            try {
-                val day = parts[0].toInt()
-                val monthStr = parts[1]
-                val year = parts[2].toInt()
-
-                val months = mapOf(
-                    "Jan" to Calendar.JANUARY, "Feb" to Calendar.FEBRUARY, "Mar" to Calendar.MARCH,
-                    "Apr" to Calendar.APRIL, "Mei" to Calendar.MAY, "Jun" to Calendar.JUNE,
-                    "Jul" to Calendar.JULY, "Agu" to Calendar.AUGUST, "Sep" to Calendar.SEPTEMBER,
-                    "Okt" to Calendar.OCTOBER, "Nov" to Calendar.NOVEMBER, "Des" to Calendar.DECEMBER
-                )
-                val month = months[monthStr] ?: Calendar.JANUARY
-
-                val cal = Calendar.getInstance()
-                cal.set(year, month, day, 0, 0, 0)
-                cal.set(Calendar.MILLISECOND, 0)
-                return cal.time
-            } catch (e: Exception) {
-                return null
-            }
-        }
-        return null
-    }
+    // Upcoming patient feature removed as requested
 
     fun showToast(message: String, isError: Boolean = false) {
         toastMessage.value = message
