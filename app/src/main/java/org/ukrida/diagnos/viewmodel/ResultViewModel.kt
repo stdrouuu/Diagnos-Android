@@ -63,15 +63,23 @@ class ResultViewModel : ViewModel() {
         return TestParameterResult(name, displayVal, refRange, unit, keterangan, isOut = isOut, isBullet = isBullet)
     }
 
-    fun getDarahRutinList(): List<TestParameterResult> {
+    fun getDarahRutinList(gender: String?): List<TestParameterResult> {
+        val isMale = gender == "L" || gender?.lowercase()?.contains("laki") == true
+        val hbRange = if (isMale) "13.5 - 17.5" else "11.7 - 15.5"
+        val htRange = if (isMale) "40 - 52" else "35 - 47"
+        val erRange = if (isMale) "4.4 - 5.9" else "3.8 - 5.2"
+        val ledRange = if (isMale) "0 - 20" else "0 - 30"
+        val genderLabel = if (isMale) "Laki-laki, Dewasa" else "Perempuan, Dewasa"
+        val ledLabel = if (isMale) "Laki-laki, > 50\ntahun" else "Perempuan, > 50\ntahun"
+
         return listOf(
-            buildParameter("Hemoglobin", "hemoglobin", "11.7 - 15.5", "g/dL", "Perempuan, Dewasa"),
-            buildParameter("Hematokrit", "hematokrit", "35 - 47", "%", "Perempuan, Dewasa"),
-            buildParameter("Eritrosit", "eritrosit", "3.8 - 5.2", "10^6/uL", "Perempuan, Dewasa"),
+            buildParameter("Hemoglobin", "hemoglobin", hbRange, "g/dL", genderLabel),
+            buildParameter("Hematokrit", "hematokrit", htRange, "%", genderLabel),
+            buildParameter("Eritrosit", "eritrosit", erRange, "10^6/uL", genderLabel),
             buildParameter("Trombosit", "trombosit", "150 - 440", "10^3/uL", "Dewasa"),
             buildParameter("RDW-CV", "rdw_cv", "11.5 - 14.5", "%", "Dewasa"),
-            buildParameter("Leukosit", "leukosit", "3.6 - 11", "10^3/uL", "Perempuan, Dewasa"),
-            buildParameter("LED", "led", "0 - 30", "mm/jam", "Perempuan, > 50\ntahun")
+            buildParameter("Leukosit", "leukosit", "3.6 - 11", "10^3/uL", genderLabel),
+            buildParameter("LED", "led", ledRange, "mm/jam", ledLabel)
         )
     }
 

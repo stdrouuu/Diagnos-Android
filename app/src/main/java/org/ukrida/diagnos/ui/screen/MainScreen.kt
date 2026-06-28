@@ -160,6 +160,7 @@ fun MainScreen(
                     testId = testId,
                     resultViewModel = resultViewModel,
                     bookingViewModel = bookingViewModel,
+                    gender = userViewModel.currentUser.value?.gender,
                     onBack = {
                         innerNavController.popBackStack()
                     }

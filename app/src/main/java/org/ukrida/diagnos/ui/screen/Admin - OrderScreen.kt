@@ -728,20 +728,14 @@ fun StatusOptionButton(
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDisabled = when (originalStatus) {
-        "Menunggu" -> {
-            statusName != "Dikonfirmasi" && statusName != "Dibatalkan"
-        }
-        "Dikonfirmasi" -> {
-            statusName != "Sedang diuji"
-        }
-        else -> {
-            // "Sedang diuji", "Selesai", "Dibatalkan"
-            true
-        }
+    val isClickable = when (originalStatus) {
+        "Menunggu" -> statusName == "Dikonfirmasi" || statusName == "Dibatalkan"
+        "Dikonfirmasi" -> statusName == "Sedang diuji"
+        else -> false
     }
 
-    val selected = activeStatus == statusName
+    val isGreyedOut = !isClickable && statusName != originalStatus
+    val selected = (activeStatus == statusName) || (originalStatus == statusName)
 
     val activeColor = when (statusName) {
         "Menunggu" -> Color(0xFFF59E0B)
@@ -760,19 +754,19 @@ fun StatusOptionButton(
     }
 
     val bg = when {
-        isDisabled -> Color(0xFFF1F5F9)
+        isGreyedOut -> Color(0xFFF1F5F9)
         selected -> activeBg
         else -> Color(0xFFF8FAFC)
     }
 
     val border = when {
-        isDisabled -> Color(0xFFE2E8F0)
+        isGreyedOut -> Color(0xFFE2E8F0)
         selected -> activeColor
         else -> Color(0xFFE2E8F0)
     }
 
     val fg = when {
-        isDisabled -> Color(0xFFCBD5E1)
+        isGreyedOut -> Color(0xFFCBD5E1)
         selected -> activeColor
         else -> Color(0xFF94A3B8)
     }
@@ -782,7 +776,7 @@ fun StatusOptionButton(
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
             .border(1.dp, border, RoundedCornerShape(12.dp))
-            .clickable(enabled = !isDisabled) { onSelect() }
+            .clickable(enabled = isClickable) { onSelect() }
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {

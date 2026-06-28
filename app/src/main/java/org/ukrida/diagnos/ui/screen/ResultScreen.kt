@@ -38,6 +38,7 @@ fun ResultScreen(
     testId: Int,
     resultViewModel: ResultViewModel,
     bookingViewModel: BookingViewModel,
+    gender: String? = "Perempuan",
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -172,7 +173,7 @@ fun ResultScreen(
                                 1 -> {
                                     // result1: Darah Rutin, Nilai-Nilai MC, Hitung Jenis Leukosit
                                     TableSectionHeader("DARAH RUTIN")
-                                    resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+                                    resultViewModel.getDarahRutinList(gender).forEach { TableRow(it) }
 
                                     TableSectionHeader("NILAI-NILAI MC")
                                     resultViewModel.getNilaiMcList().forEach { TableRow(it) }
@@ -188,7 +189,7 @@ fun ResultScreen(
                                 3 -> {
                                     // result3: Darah Rutin & Nilai-Nilai MC
                                     TableSectionHeader("DARAH RUTIN")
-                                    resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+                                    resultViewModel.getDarahRutinList(gender).forEach { TableRow(it) }
 
                                     TableSectionHeader("NILAI-NILAI MC")
                                     resultViewModel.getNilaiMcList().forEach { TableRow(it) }
@@ -196,7 +197,7 @@ fun ResultScreen(
                                 else -> {
                                     // Fallback: Darah Rutin
                                     TableSectionHeader("DARAH RUTIN")
-                                    resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+                                    resultViewModel.getDarahRutinList(gender).forEach { TableRow(it) }
                                 }
                             }
                         }
