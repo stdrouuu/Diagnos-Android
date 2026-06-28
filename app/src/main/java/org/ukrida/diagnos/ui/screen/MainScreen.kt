@@ -124,8 +124,9 @@ fun MainScreen(
                     onNavigateToHistory = {
                         innerNavController.navigate("history")
                     },
-                    onNavigateToResult = { bookingId, testId ->
-                        innerNavController.navigate("result/$bookingId/$testId")
+                    onNavigateToResult = { bookingId, testId, date ->
+                        val dateArg = if (date != null) "?date=${android.net.Uri.encode(date)}" else ""
+                        innerNavController.navigate("result/$bookingId/$testId$dateArg")
                     },
                     onNavigateToProfile = {
                         innerNavController.navigate("user")
@@ -140,27 +141,35 @@ fun MainScreen(
                     onBack = {
                         innerNavController.popBackStack()
                     },
-                    onNavigateToResult = { bookingId, testId ->
-                        innerNavController.navigate("result/$bookingId/$testId")
+                    onNavigateToResult = { bookingId, testId, date ->
+                        val dateArg = if (date != null) "?date=${android.net.Uri.encode(date)}" else ""
+                        innerNavController.navigate("result/$bookingId/$testId$dateArg")
                     }
                 )
             }
 
             composable(
-                route = "result/{bookingId}/{testId}",
+                route = "result/{bookingId}/{testId}?date={date}",
                 arguments = listOf(
                     navArgument("bookingId") { type = NavType.IntType },
-                    navArgument("testId") { type = NavType.IntType }
+                    navArgument("testId") { type = NavType.IntType },
+                    navArgument("date") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
                 )
             ) { backStackEntry ->
                 val bookingId = backStackEntry.arguments?.getInt("bookingId") ?: 0
                 val testId = backStackEntry.arguments?.getInt("testId") ?: 1
+                val date = backStackEntry.arguments?.getString("date")
                 ResultScreen(
                     bookingId = bookingId,
                     testId = testId,
                     resultViewModel = resultViewModel,
                     bookingViewModel = bookingViewModel,
                     gender = userViewModel.currentUser.value?.gender,
+                    date = date,
                     onBack = {
                         innerNavController.popBackStack()
                     }

@@ -729,13 +729,13 @@ fun StatusOptionButton(
     modifier: Modifier = Modifier
 ) {
     val isClickable = when (originalStatus) {
-        "Menunggu" -> statusName == "Dikonfirmasi" || statusName == "Dibatalkan"
-        "Dikonfirmasi" -> statusName == "Sedang diuji"
+        "Menunggu" -> statusName == "Dikonfirmasi" || statusName == "Dibatalkan" || statusName == "Menunggu"
+        "Dikonfirmasi" -> statusName == "Sedang diuji" || statusName == "Dikonfirmasi"
         else -> false
     }
 
     val isGreyedOut = !isClickable && statusName != originalStatus
-    val selected = (activeStatus == statusName) || (originalStatus == statusName)
+    val selected = activeStatus == statusName
 
     val activeColor = when (statusName) {
         "Menunggu" -> Color(0xFFF59E0B)
