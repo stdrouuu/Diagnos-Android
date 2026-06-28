@@ -23,13 +23,23 @@ class UserViewModel(private val repo: UserRepository) : ViewModel() {
         }
     }
 
+    var loginError = mutableStateOf<String?>(null)
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
+            loginError.value = null
             try {
                 currentUser.value = repo.login(username, password)
-            } catch (e: Exception) {
+            } catch (e: retrofit2.HttpException) {
                 e.printStackTrace()
-                // Offline fallback: Search local users list
+                if (e.code() == 401) {
+                    loginError.value = "Username atau password salah!"
+                } else {
+                    loginError.value = "Gagal login: server error (${e.code()})"
+                }
+            } catch (e: java.io.IOException) {
+                e.printStackTrace()
+                // Offline fallback ONLY on connection errors
                 val matched = users.value.find { it.username == username && it.password == password }
                 if (matched != null) {
                     currentUser.value = matched
@@ -44,6 +54,9 @@ class UserViewModel(private val repo: UserRepository) : ViewModel() {
                         role = userRole
                     )
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                loginError.value = "Terjadi kesalahan tidak dikenal."
             }
         }
     }

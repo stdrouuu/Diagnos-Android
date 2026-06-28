@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,9 @@ fun AdminOrderScreen(
     navController: NavController,
     onLogout: () -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getBookings()
+    }
     val context = LocalContext.current
     val filteredBookings = viewModel.filterBookings()
 
@@ -468,17 +473,43 @@ fun AdminOrderScreen(
                     }
                 }
 
-                // Safeguard Policy Warning
                 val originalStatus = booking.status
                 val selectedStatus = viewModel.selectedStatusValue.value
-                val isPastPending = (originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai" || originalStatus == "Dibatalkan")
 
-                if (isPastPending && selectedStatus == "Menunggu") {
-                    WarningBox(message = "⚠️ Status Terkonfirmasi tidak diperbolehkan kembali ke antrean Menunggu.")
-                } else if ((originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai") && selectedStatus == "Dibatalkan") {
-                    WarningBox(message = "⚠️ Status yang telah dikonfirmasi atau diuji tidak dapat dibatalkan.")
-                } else if ((originalStatus == "Sedang diuji" || originalStatus == "Selesai") && selectedStatus == "Dikonfirmasi") {
-                    WarningBox(message = "⚠️ Status sedang diuji atau selesai tidak dapat kembali ke Dikonfirmasi.")
+                if (selectedStatus == "Dibatalkan") {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "ALASAN PEMBATALAN",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray,
+                        letterSpacing = 0.5.sp
+                    )
+                    OutlinedTextField(
+                        value = viewModel.cancelReasonInput.value,
+                        onValueChange = { viewModel.cancelReasonInput.value = it },
+                        placeholder = { Text("Tuliskan alasan pembatalan...", fontSize = 12.sp, color = Color.Gray) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp),
+                        textStyle = TextStyle(fontSize = 12.sp, color = Color(0xFF1E293B)),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFFEF4444),
+                            unfocusedBorderColor = Color(0xFFE2E8F0),
+                            focusedContainerColor = Color(0xFFFEE2E2).copy(alpha = 0.2f),
+                            unfocusedContainerColor = Color(0xFFFEE2E2).copy(alpha = 0.2f)
+                        ),
+                        maxLines = 2
+                    )
+                }
+
+                if (originalStatus == "Sedang diuji") {
+                    WarningBox(message = "Untuk merilis hasil pemeriksaan ini, silakan input hasil lab melalui menu Input Hasil Lab.")
+                } else if (originalStatus == "Selesai") {
+                    WarningBox(message = "Pemeriksaan lab ini telah selesai dirilis.")
+                } else if (originalStatus == "Dibatalkan") {
+                    WarningBox(message = "Pemeriksaan lab ini telah dibatalkan.")
                 }
 
                 // Actions Button
@@ -488,13 +519,27 @@ fun AdminOrderScreen(
                 ) {
                     Button(
                         onClick = { viewModel.saveStatusChange() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF42B5A7)),
+                        enabled = (originalStatus == "Menunggu" || originalStatus == "Dikonfirmasi") && 
+                                  (selectedStatus != originalStatus) && 
+                                  (selectedStatus != "Dibatalkan" || viewModel.cancelReasonInput.value.trim().isNotEmpty()),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF42B5A7),
+                            disabledContainerColor = Color(0xFFCBD5E1)
+                        ),
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                        Text("Simpan Perubahan", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(
+                            text = "Simpan Perubahan",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if ((originalStatus == "Menunggu" || originalStatus == "Dikonfirmasi") && 
+                                       (selectedStatus != originalStatus) && 
+                                       (selectedStatus != "Dibatalkan" || viewModel.cancelReasonInput.value.trim().isNotEmpty())) 
+                                           Color.White else Color(0xFF94A3B8)
+                        )
                     }
 
                     OutlinedButton(
@@ -683,12 +728,14 @@ fun StatusOptionButton(
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isPastPending = (originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai" || originalStatus == "Dibatalkan")
-    val isDisabled = (isPastPending && statusName == "Menunggu") ||
-            ((originalStatus == "Dikonfirmasi" || originalStatus == "Sedang diuji" || originalStatus == "Selesai") && statusName == "Dibatalkan") ||
-            ((originalStatus == "Sedang diuji" || originalStatus == "Selesai") && statusName == "Dikonfirmasi")
+    val isClickable = when (originalStatus) {
+        "Menunggu" -> statusName == "Dikonfirmasi" || statusName == "Dibatalkan"
+        "Dikonfirmasi" -> statusName == "Sedang diuji"
+        else -> false
+    }
 
-    val selected = activeStatus == statusName
+    val isGreyedOut = !isClickable && statusName != originalStatus
+    val selected = (activeStatus == statusName) || (originalStatus == statusName)
 
     val activeColor = when (statusName) {
         "Menunggu" -> Color(0xFFF59E0B)
@@ -707,19 +754,19 @@ fun StatusOptionButton(
     }
 
     val bg = when {
-        isDisabled -> Color(0xFFF1F5F9)
+        isGreyedOut -> Color(0xFFF1F5F9)
         selected -> activeBg
         else -> Color(0xFFF8FAFC)
     }
 
     val border = when {
-        isDisabled -> Color(0xFFE2E8F0)
+        isGreyedOut -> Color(0xFFE2E8F0)
         selected -> activeColor
         else -> Color(0xFFE2E8F0)
     }
 
     val fg = when {
-        isDisabled -> Color(0xFFCBD5E1)
+        isGreyedOut -> Color(0xFFCBD5E1)
         selected -> activeColor
         else -> Color(0xFF94A3B8)
     }
@@ -729,7 +776,7 @@ fun StatusOptionButton(
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
             .border(1.dp, border, RoundedCornerShape(12.dp))
-            .clickable(enabled = !isDisabled) { onSelect() }
+            .clickable(enabled = isClickable) { onSelect() }
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import org.ukrida.diagnos.viewmodel.HistoryViewModel
 import org.ukrida.diagnos.data.model.TestHistoryItem
 import androidx.compose.foundation.Canvas
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -35,10 +36,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
+    userId: Int,
     viewModel: HistoryViewModel,
     onBack: () -> Unit,
-    onNavigateToResult: (Int) -> Unit
+    onNavigateToResult: (Int, Int) -> Unit
 ) {
+    LaunchedEffect(userId) {
+        if (userId > 0) {
+            viewModel.getHistoryList(userId)
+        }
+    }
     val historyList = viewModel.historyList.value
     val searchQuery = viewModel.searchQuery.value
 
@@ -114,15 +121,6 @@ fun HistoryScreen(
                         .weight(1f)
                         .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(12.dp))
                 )
-                Button(
-                    onClick = { /* Search is already real-time, click triggers no action */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.height(52.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
-                ) {
-                    Text("Cari", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
-                }
             }
 
             // Title list header
@@ -200,7 +198,7 @@ fun HistoryScreen(
                     items(filteredList) { item ->
                         HistoryCard(
                             item = item,
-                            onClick = { onNavigateToResult(item.testId) }
+                            onClick = { onNavigateToResult(item.id, item.testId) }
                         )
                     }
                 }

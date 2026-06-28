@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.ukrida.diagnos.data.model.AdminBooking
 import org.ukrida.diagnos.viewmodel.AdminViewModel
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +41,9 @@ fun AdminHomeScreen(
     navController: NavController,
     onLogout: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getBookings()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -86,6 +91,20 @@ fun AdminHomeScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val currentDate = remember {
+                val calendar = Calendar.getInstance()
+                val dayNamesIndo = listOf("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu")
+                val monthsIndo = listOf(
+                    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                )
+                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+                val month = calendar.get(Calendar.MONTH)
+                val year = calendar.get(Calendar.YEAR)
+                "${dayNamesIndo[dayOfWeek - 1]}, $day ${monthsIndo[month]} $year"
+            }
+
             // Welcome Card
             Box(
                 modifier = Modifier
@@ -113,7 +132,7 @@ fun AdminHomeScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Senin, 20 Juli 2026",
+                        text = currentDate,
                         fontSize = 12.sp,
                         color = Color(0xFFB2DFDB),
                         fontWeight = FontWeight.Medium
@@ -127,7 +146,16 @@ fun AdminHomeScreen(
             ) {
                 // Total Booking Card (Full Width)
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.activeStatusFilter.value = "Semua"
+                            navController.navigate("admin-order") {
+                                popUpTo("admin-home") { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -191,7 +219,15 @@ fun AdminHomeScreen(
                         tint = Color(0xFFF59E0B),
                         backgroundColor = Color(0xFFFEF3C7),
                         icon = Icons.Default.HourglassEmpty,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.activeStatusFilter.value = "Menunggu"
+                            navController.navigate("admin-order") {
+                                popUpTo("admin-home") { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
 
                     // Antrean Hasil
@@ -201,7 +237,15 @@ fun AdminHomeScreen(
                         tint = Color(0xFF3B82F6),
                         backgroundColor = Color(0xFFEFF6FF),
                         icon = Icons.AutoMirrored.Filled.Assignment,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.activeStatusFilter.value = "Sedang diuji"
+                            navController.navigate("admin-order") {
+                                popUpTo("admin-home") { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
 
                     // Sedang Diuji
@@ -211,7 +255,15 @@ fun AdminHomeScreen(
                         tint = Color(0xFF8B5CF6),
                         backgroundColor = Color(0xFFF5F3FF),
                         icon = Icons.Default.Science,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.activeStatusFilter.value = "Sedang diuji"
+                            navController.navigate("admin-order") {
+                                popUpTo("admin-home") { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
 
                     // Selesai
@@ -221,88 +273,19 @@ fun AdminHomeScreen(
                         tint = Color(0xFF10B981),
                         backgroundColor = Color(0xFFD1FAE5),
                         icon = Icons.Default.CheckCircle,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.activeStatusFilter.value = "Selesai"
+                            navController.navigate("admin-order") {
+                                popUpTo("admin-home") { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }
 
-            // Upcoming Patients (Pasien Mendatang)
-            val upcomingBooking = viewModel.getUpcomingBooking()
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "Pasien Mendatang",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A2E35),
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-
-                if (upcomingBooking != null) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = CardDefaults.outlinedCardBorder().copy(
-                            brush = Brush.linearGradient(listOf(Color(0xFFE2E8F0), Color(0xFFE2E8F0))),
-                            width = 0.5.dp
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = upcomingBooking.patientName,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1A2E35)
-                                )
-                                Text(
-                                    text = upcomingBooking.testName,
-                                    fontSize = 10.sp,
-                                    color = Color.Gray,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Text(
-                                text = upcomingBooking.date,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF42B5A7)
-                            )
-                        }
-                    }
-                } else {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = CardDefaults.outlinedCardBorder().copy(
-                            brush = Brush.linearGradient(listOf(Color(0xFFE2E8F0), Color(0xFFE2E8F0))),
-                            width = 0.5.dp
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Tidak ada pasien mendatang",
-                                fontSize = 12.sp,
-                                color = Color.Gray,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-            }
 
             // Recent Bookings (Pemesanan Terbaru)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -324,7 +307,13 @@ fun AdminHomeScreen(
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF42B5A7),
                         modifier = Modifier
-                            .clickable { navController.navigate("admin-order") }
+                            .clickable {
+                                navController.navigate("admin-order") {
+                                    popUpTo("admin-home") { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
                             .padding(horizontal = 4.dp)
                     )
                 }
@@ -346,10 +335,11 @@ fun StatGridItem(
     tint: Color,
     backgroundColor: Color,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Card(
-        modifier = modifier,
+        modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)

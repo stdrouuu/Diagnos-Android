@@ -46,8 +46,11 @@ fun MainScreen(
     val resultViewModel = remember { ResultViewModel() }
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
 
-    LaunchedEffect(bookingViewModel.isOrderCompleted) {
-        historyViewModel.syncWithBooking(bookingViewModel)
+    val userId = userViewModel.currentUser.value?.id ?: 0
+    LaunchedEffect(userId, bookingViewModel.isOrderCompleted) {
+        if (userId > 0) {
+            historyViewModel.getHistoryList(userId)
+        }
     }
     val currentRoute = navBackStackEntry?.destination?.route ?: "home"
     val showTopBar = currentRoute == "home" || currentRoute == "listtest"
@@ -121,8 +124,8 @@ fun MainScreen(
                     onNavigateToHistory = {
                         innerNavController.navigate("history")
                     },
-                    onNavigateToResult = { testId ->
-                        innerNavController.navigate("result/$testId")
+                    onNavigateToResult = { bookingId, testId ->
+                        innerNavController.navigate("result/$bookingId/$testId")
                     },
                     onNavigateToProfile = {
                         innerNavController.navigate("user")
@@ -132,25 +135,32 @@ fun MainScreen(
 
             composable("history") {
                 HistoryScreen(
+                    userId = userId,
                     viewModel = historyViewModel,
                     onBack = {
                         innerNavController.popBackStack()
                     },
-                    onNavigateToResult = { testId ->
-                        innerNavController.navigate("result/$testId")
+                    onNavigateToResult = { bookingId, testId ->
+                        innerNavController.navigate("result/$bookingId/$testId")
                     }
                 )
             }
 
             composable(
-                route = "result/{testId}",
-                arguments = listOf(navArgument("testId") { type = NavType.IntType })
+                route = "result/{bookingId}/{testId}",
+                arguments = listOf(
+                    navArgument("bookingId") { type = NavType.IntType },
+                    navArgument("testId") { type = NavType.IntType }
+                )
             ) { backStackEntry ->
+                val bookingId = backStackEntry.arguments?.getInt("bookingId") ?: 0
                 val testId = backStackEntry.arguments?.getInt("testId") ?: 1
                 ResultScreen(
+                    bookingId = bookingId,
                     testId = testId,
                     resultViewModel = resultViewModel,
                     bookingViewModel = bookingViewModel,
+                    gender = userViewModel.currentUser.value?.gender,
                     onBack = {
                         innerNavController.popBackStack()
                     }
@@ -217,6 +227,7 @@ fun MainScreen(
             composable("orderreview") {
                 OrderReviewScreen(
                     bookingViewModel = bookingViewModel,
+                    userViewModel = userViewModel,
                     onBack = {
                         innerNavController.popBackStack()
                     },

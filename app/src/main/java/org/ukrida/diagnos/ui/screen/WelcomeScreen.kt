@@ -51,11 +51,11 @@ fun WelcomeScreen(
                     contentDescription = "Diagnos Logo",
                     modifier = Modifier
                         .fillMaxWidth(0.55f)
-                        .height(240.dp),
+                        .height(200.dp),
                     contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 // Subtitle
                 Text(

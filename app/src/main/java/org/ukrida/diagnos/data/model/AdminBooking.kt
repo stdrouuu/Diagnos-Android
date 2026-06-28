@@ -13,6 +13,7 @@ data class AdminBooking(
     val gender: String,
     val dob: String,
     val address: String,
-    val clinicName: String
+    val clinicName: String,
+    val cancelReason: String? = null
 )
 

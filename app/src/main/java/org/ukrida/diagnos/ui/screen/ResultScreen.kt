@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
+import org.ukrida.diagnos.data.api.RetrofitInstance
 import org.ukrida.diagnos.viewmodel.ResultViewModel
 import org.ukrida.diagnos.viewmodel.BookingViewModel
 import org.ukrida.diagnos.data.model.TestParameterResult
@@ -29,11 +34,18 @@ import org.ukrida.diagnos.data.model.TestParameterResult
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
+    bookingId: Int,
     testId: Int,
     resultViewModel: ResultViewModel,
     bookingViewModel: BookingViewModel,
+    gender: String? = "Perempuan",
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(bookingId) {
+        resultViewModel.loadResults(bookingId)
+    }
+
     val test = bookingViewModel.allTests.find { it.id == testId } ?: bookingViewModel.allTests[0]
 
     Scaffold(
@@ -161,7 +173,7 @@ fun ResultScreen(
                                 1 -> {
                                     // result1: Darah Rutin, Nilai-Nilai MC, Hitung Jenis Leukosit
                                     TableSectionHeader("DARAH RUTIN")
-                                    resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+                                    resultViewModel.getDarahRutinList(gender).forEach { TableRow(it) }
 
                                     TableSectionHeader("NILAI-NILAI MC")
                                     resultViewModel.getNilaiMcList().forEach { TableRow(it) }
@@ -177,7 +189,7 @@ fun ResultScreen(
                                 3 -> {
                                     // result3: Darah Rutin & Nilai-Nilai MC
                                     TableSectionHeader("DARAH RUTIN")
-                                    resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+                                    resultViewModel.getDarahRutinList(gender).forEach { TableRow(it) }
 
                                     TableSectionHeader("NILAI-NILAI MC")
                                     resultViewModel.getNilaiMcList().forEach { TableRow(it) }
@@ -185,7 +197,7 @@ fun ResultScreen(
                                 else -> {
                                     // Fallback: Darah Rutin
                                     TableSectionHeader("DARAH RUTIN")
-                                    resultViewModel.getDarahRutinList().forEach { TableRow(it) }
+                                    resultViewModel.getDarahRutinList(gender).forEach { TableRow(it) }
                                 }
                             }
                         }
@@ -202,7 +214,15 @@ fun ResultScreen(
                     .padding(horizontal = 20.dp)
             ) {
                 Button(
-                    onClick = { /* Action Unduh PDF */ },
+                    onClick = {
+                        val pdfUrl = "${RetrofitInstance.BASE_URL}results_pdf.php?booking_id=$bookingId"
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier

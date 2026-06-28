@@ -248,7 +248,7 @@ fun EditUserDialog(
 ) {
     var name by remember { mutableStateOf(user.name) }
     var username by remember { mutableStateOf(user.username) }
-    var password by remember { mutableStateOf(user.password) }
+    var password by remember { mutableStateOf(user.password ?: "") }
     var role by remember { mutableStateOf(user.role) }
 
     AlertDialog(
