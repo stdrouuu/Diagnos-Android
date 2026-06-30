@@ -55,7 +55,7 @@ fun ProfileScreen(
     var showHistoryDialog by remember { mutableStateOf(false) }
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(currentUser) {
+    LaunchedEffect(Unit) {
         currentUser?.id?.let { userId ->
             if (userId > 0) {
                 historyViewModel.getHistoryList(userId)
