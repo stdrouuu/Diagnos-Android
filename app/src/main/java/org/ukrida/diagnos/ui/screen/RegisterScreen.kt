@@ -710,6 +710,8 @@ fun RegisterScreen(
                 onClick = {
                     if (name.isBlank() || username.isBlank() || password.isBlank() || email.isBlank() || phone.isBlank() || dob.isBlank() || address.isBlank()) {
                         errorMessage = "Semua field input harus diisi!"
+                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        errorMessage = "Format alamat email tidak valid!"
                     } else if (!isTermsChecked) {
                         errorMessage = "Anda harus menyetujui Syarat & Ketentuan!"
                     } else {

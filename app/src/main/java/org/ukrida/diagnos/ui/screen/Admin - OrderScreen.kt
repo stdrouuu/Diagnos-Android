@@ -507,7 +507,7 @@ fun AdminOrderScreen(
                 if (originalStatus == "Sedang diuji") {
                     WarningBox(message = "Untuk merilis hasil pemeriksaan ini, silakan input hasil lab melalui menu Input Hasil Lab.")
                 } else if (originalStatus == "Selesai") {
-                    WarningBox(message = "Pemeriksaan lab ini telah selesai dirilis.")
+                    WarningBox(message = "Pemeriksaan lab ini telah selesai dirilis.", isSuccess = true)
                 } else if (originalStatus == "Dibatalkan") {
                     WarningBox(message = "Pemeriksaan lab ini telah dibatalkan.")
                 }
@@ -790,20 +790,24 @@ fun StatusOptionButton(
 }
 
 @Composable
-fun WarningBox(message: String) {
+fun WarningBox(message: String, isSuccess: Boolean = false) {
+    val bgColor = if (isSuccess) Color(0xFFECFDF5) else Color(0xFFFEF2F2)
+    val borderColor = if (isSuccess) Color(0xFFA7F3D0) else Color(0xFFFCA5A5)
+    val textColor = if (isSuccess) Color(0xFF059669) else Color(0xFFDC2626)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFFEF2F2))
-            .border(0.5.dp, Color(0xFFFCA5A5), RoundedCornerShape(12.dp))
+            .background(bgColor)
+            .border(0.5.dp, borderColor, RoundedCornerShape(12.dp))
             .padding(10.dp)
     ) {
         Text(
             text = message,
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFDC2626)
+            color = textColor
         )
     }
 }

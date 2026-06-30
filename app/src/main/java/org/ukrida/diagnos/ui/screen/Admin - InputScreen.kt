@@ -29,6 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.ukrida.diagnos.data.model.AdminBooking
 import org.ukrida.diagnos.viewmodel.AdminViewModel
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -160,6 +165,86 @@ fun AdminInputScreen(
             onDismiss = { viewModel.selectedBookingForInput.value = null },
             onSave = { resultsMap -> viewModel.saveInputResults(booking.id, resultsMap) }
         )
+    }
+ 
+    // Success Modal Popup Dialog
+    if (viewModel.showInputSuccessModal.value) {
+        Dialog(
+            onDismissRequest = {
+                viewModel.showInputSuccessModal.value = false
+                viewModel.selectedBookingForInput.value = null
+            },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(30.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(Color(0xFFE6F7F5), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Check",
+                            tint = Color(0xFF3CB7A6),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+ 
+                    Spacer(modifier = Modifier.height(16.dp))
+ 
+                    Text(
+                        text = "Hasil Lab Dirilis!",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF1F2937)
+                    )
+ 
+                    Spacer(modifier = Modifier.height(8.dp))
+ 
+                    Text(
+                        text = "Hasil pemeriksaan laboratorium telah berhasil disimpan dan dirilis ke akun pasien.",
+                        fontSize = 12.sp,
+                        color = Color(0xFF6B7280),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 18.sp
+                    )
+ 
+                    Spacer(modifier = Modifier.height(24.dp))
+ 
+                    Button(
+                        onClick = {
+                            viewModel.showInputSuccessModal.value = false
+                            viewModel.selectedBookingForInput.value = null
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
+                    ) {
+                        Text(
+                            text = "Tutup",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
