@@ -44,7 +44,6 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
     onNavigateRegister: () -> Unit
 ) {
-    var selectedRole by remember { mutableStateOf("user") } // "user" or "admin"
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -139,52 +138,6 @@ fun LoginScreen(
                         .padding(horizontal = 24.dp, vertical = 32.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    // Role Selector (User vs Admin)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFFF4F4F5), RoundedCornerShape(12.dp))
-                            .padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(38.dp)
-                                .background(
-                                    if (selectedRole == "user") Color.White else Color.Transparent,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .clickable { selectedRole = "user" },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "User",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (selectedRole == "user") Color(0xFF3CAEA3) else Color(0xFF71717A)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(38.dp)
-                                .background(
-                                    if (selectedRole == "admin") Color.White else Color.Transparent,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .clickable { selectedRole = "admin" },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Admin",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (selectedRole == "admin") Color(0xFF3CAEA3) else Color(0xFF71717A)
-                            )
-                        }
-                    }
-
                     // USERNAME
                     Column {
                         Text(

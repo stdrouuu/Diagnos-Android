@@ -202,12 +202,28 @@ fun ProfileScreen(
                         // Status Pesanan
                         // Status Pesanan — driven by pendingOrders (not historyList)
                         val pendingOrders = historyViewModel.pendingOrders.value
+                        val firstPendingStatus = pendingOrders.firstOrNull()?.status ?: "Tidak Ada"
+                        val badgeColor = when (firstPendingStatus) {
+                            "Menunggu" -> Color(0xFFFEF3C7)
+                            "Dikonfirmasi" -> Color(0xFFE0F2FE)
+                            "Sedang diuji" -> Color(0xFFF3E8FF)
+                            "Dibatalkan" -> Color(0xFFFEE2E2)
+                            else -> Color(0xFFF3F4F6)
+                        }
+                        val badgeTextColor = when (firstPendingStatus) {
+                            "Menunggu" -> Color(0xFFD97706)
+                            "Dikonfirmasi" -> Color(0xFF0369A1)
+                            "Sedang diuji" -> Color(0xFF6B21A8)
+                            "Dibatalkan" -> Color(0xFFEF4444)
+                            else -> Color(0xFF6B7280)
+                        }
+
                         ProfileMenuItem(
                             icon = Icons.Default.Inventory,
                             title = "Status Pesanan",
-                            badgeText = if (pendingOrders.isNotEmpty()) "Menunggu" else "Tidak Ada",
-                            badgeColor = if (pendingOrders.isNotEmpty()) Color(0xFFFEF3C7) else Color(0xFFF3F4F6),
-                            badgeTextColor = if (pendingOrders.isNotEmpty()) Color(0xFFD97706) else Color(0xFF6B7280),
+                            badgeText = firstPendingStatus,
+                            badgeColor = badgeColor,
+                            badgeTextColor = badgeTextColor,
                             onClick = { if (pendingOrders.isNotEmpty()) showHistoryDialog = true }
                         )
                         HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
