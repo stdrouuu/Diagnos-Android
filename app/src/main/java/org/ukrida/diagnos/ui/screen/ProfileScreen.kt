@@ -202,26 +202,37 @@ fun ProfileScreen(
                         // Status Pesanan
                         // Status Pesanan — driven by pendingOrders (not historyList)
                         val pendingOrders = historyViewModel.pendingOrders.value
-                        val firstPendingStatus = pendingOrders.firstOrNull()?.status ?: "Tidak Ada"
-                        val badgeColor = when (firstPendingStatus) {
-                            "Menunggu" -> Color(0xFFFEF3C7)
-                            "Dikonfirmasi" -> Color(0xFFE0F2FE)
-                            "Sedang diuji" -> Color(0xFFF3E8FF)
-                            "Dibatalkan" -> Color(0xFFFEE2E2)
-                            else -> Color(0xFFF3F4F6)
-                        }
-                        val badgeTextColor = when (firstPendingStatus) {
-                            "Menunggu" -> Color(0xFFD97706)
-                            "Dikonfirmasi" -> Color(0xFF0369A1)
-                            "Sedang diuji" -> Color(0xFF6B21A8)
-                            "Dibatalkan" -> Color(0xFFEF4444)
-                            else -> Color(0xFF6B7280)
+                        val (badgeText, badgeColor, badgeTextColor) = when {
+                            pendingOrders.isEmpty() -> {
+                                Triple("Tidak Ada", Color(0xFFF3F4F6), Color(0xFF6B7280))
+                            }
+                            pendingOrders.size > 1 -> {
+                                Triple("Lihat Semua", Color(0xFFE6F7F5), Color(0xFF3CAEA3))
+                            }
+                            else -> {
+                                val status = pendingOrders.first().status
+                                val bg = when (status) {
+                                    "Menunggu" -> Color(0xFFFEF3C7)
+                                    "Dikonfirmasi" -> Color(0xFFE0F2FE)
+                                    "Sedang diuji" -> Color(0xFFF3E8FF)
+                                    "Dibatalkan" -> Color(0xFFFEE2E2)
+                                    else -> Color(0xFFF3F4F6)
+                                }
+                                val fg = when (status) {
+                                    "Menunggu" -> Color(0xFFD97706)
+                                    "Dikonfirmasi" -> Color(0xFF0369A1)
+                                    "Sedang diuji" -> Color(0xFF6B21A8)
+                                    "Dibatalkan" -> Color(0xFFEF4444)
+                                    else -> Color(0xFF6B7280)
+                                }
+                                Triple(status, bg, fg)
+                            }
                         }
 
                         ProfileMenuItem(
                             icon = Icons.Default.Inventory,
                             title = "Status Pesanan",
-                            badgeText = firstPendingStatus,
+                            badgeText = badgeText,
                             badgeColor = badgeColor,
                             badgeTextColor = badgeTextColor,
                             onClick = { if (pendingOrders.isNotEmpty()) showHistoryDialog = true }
