@@ -4,33 +4,31 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.NavType
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.ukrida.diagnos.R
 import org.ukrida.diagnos.ui.navigation.BottomNav
-import org.ukrida.diagnos.viewmodel.UserViewModel
 import org.ukrida.diagnos.viewmodel.BookingViewModel
-import org.ukrida.diagnos.ui.screen.HistoryScreen
-import org.ukrida.diagnos.ui.screen.ResultScreen
+import org.ukrida.diagnos.viewmodel.CartViewModel
 import org.ukrida.diagnos.viewmodel.HistoryViewModel
 import org.ukrida.diagnos.viewmodel.ResultViewModel
+import org.ukrida.diagnos.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +42,7 @@ fun MainScreen(
     val bookingViewModel = remember { BookingViewModel() }
     val historyViewModel = remember { HistoryViewModel() }
     val resultViewModel = remember { ResultViewModel() }
+    val cartViewModel = remember { CartViewModel() }
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
 
     val userId = userViewModel.currentUser.value?.id ?: 0
@@ -87,6 +86,35 @@ fun MainScreen(
                         modifier = Modifier.height(28.dp),
                         contentScale = ContentScale.Fit
                     )
+                }
+
+                // Right: Cart Icon with Item Badge Counter
+                IconButton(
+                    onClick = { innerNavController.navigate("cart") },
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    BadgedBox(
+                        badge = {
+                            if (cartViewModel.cartItemCount > 0) {
+                                Badge(
+                                    containerColor = Color(0xFFE11D48),
+                                    contentColor = Color.White
+                                ) {
+                                    Text(
+                                        text = cartViewModel.cartItemCount.toString(),
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.ShoppingCart,
+                            contentDescription = "Keranjang Saya",
+                            tint = Color(0xFF1F2937)
+                        )
+                    }
                 }
                 }
             }
@@ -215,11 +243,30 @@ fun MainScreen(
             composable("bookschedule") {
                 BookScheduleScreen(
                     bookingViewModel = bookingViewModel,
+                    cartViewModel = cartViewModel,
                     onBack = {
                         innerNavController.popBackStack()
                     },
                     onNavigateToReview = {
                         innerNavController.navigate("orderreview")
+                    },
+                    onNavigateToCart = {
+                        innerNavController.navigate("cart")
+                    }
+                )
+            }
+
+            composable("cart") {
+                CartScreen(
+                    cartViewModel = cartViewModel,
+                    userViewModel = userViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToProfile = {
+                        innerNavController.navigate("user") {
+                            popUpTo("home") { inclusive = false }
+                        }
                     }
                 )
             }
