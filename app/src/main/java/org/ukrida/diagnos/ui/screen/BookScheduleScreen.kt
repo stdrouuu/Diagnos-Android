@@ -1,5 +1,6 @@
 package org.ukrida.diagnos.ui.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,12 +28,16 @@ import androidx.compose.ui.unit.sp
 import org.ukrida.diagnos.viewmodel.BookingViewModel
 import java.util.Calendar
 
+import org.ukrida.diagnos.viewmodel.CartViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScheduleScreen(
     bookingViewModel: BookingViewModel,
+    cartViewModel: CartViewModel = remember { CartViewModel() },
     onBack: () -> Unit,
-    onNavigateToReview: () -> Unit
+    onNavigateToReview: () -> Unit,
+    onNavigateToCart: () -> Unit = {}
 ) {
     val today = remember { Calendar.getInstance() }
     val todayYear = today.get(Calendar.YEAR)
@@ -413,22 +418,55 @@ fun BookScheduleScreen(
                 }
             }
 
-            // Confirm Button
-            Button(
-                onClick = onNavigateToReview,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
-                shape = RoundedCornerShape(16.dp),
+            // Action Buttons: Tambah ke Keranjang & Konfirmasi Lokasi/Jadwal
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .height(54.dp)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Text(
-                    text = "Konfirmasi Lokasi & Jadwal",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
-                )
+                OutlinedButton(
+                    onClick = {
+                        bookingViewModel.selectedTest?.let { test ->
+                            cartViewModel.addToCart(
+                                test = test,
+                                clinicName = bookingViewModel.selectedClinic,
+                                bookingDate = bookingViewModel.selectedDate,
+                                bookingTime = bookingViewModel.selectedTimeSlot,
+                                hasDoctorReferral = bookingViewModel.hasDoctorReferral
+                            )
+                            onNavigateToCart()
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.5.dp, Color(0xFF3CB7A6)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "+ Tambah ke Keranjang Saya",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF3CB7A6)
+                    )
+                }
+
+                Button(
+                    onClick = onNavigateToReview,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Konfirmasi Lokasi & Jadwal",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
