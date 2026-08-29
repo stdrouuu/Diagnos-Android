@@ -50,6 +50,7 @@ class AdminViewModel : ViewModel() {
 
     // Input Results States
     val selectedBookingForInput = mutableStateOf<AdminBooking?>(null)
+    val showInputSuccessModal = mutableStateOf(false)
 
     // Feedback States
     val toastMessage = mutableStateOf<String?>(null)
@@ -187,15 +188,13 @@ class AdminViewModel : ViewModel() {
                 val response = org.ukrida.diagnos.data.api.RetrofitInstance.api.saveLabResults(payload)
                 if (response.isSuccessful) {
                     getBookings()
-                    showToast("Data lab berhasil disimpan dan dirilis ke akun Pasien.")
+                    showInputSuccessModal.value = true
                 } else {
                     showToast("Gagal menyimpan hasil lab: ${response.message()}", isError = true)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 showToast("Terjadi kesalahan koneksi.", isError = true)
-            } finally {
-                selectedBookingForInput.value = null
             }
         }
     }

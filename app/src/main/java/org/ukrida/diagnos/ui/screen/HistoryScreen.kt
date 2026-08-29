@@ -39,7 +39,7 @@ fun HistoryScreen(
     userId: Int,
     viewModel: HistoryViewModel,
     onBack: () -> Unit,
-    onNavigateToResult: (Int, Int) -> Unit
+    onNavigateToResult: (Int, Int, String?) -> Unit
 ) {
     LaunchedEffect(userId) {
         if (userId > 0) {
@@ -198,7 +198,7 @@ fun HistoryScreen(
                     items(filteredList) { item ->
                         HistoryCard(
                             item = item,
-                            onClick = { onNavigateToResult(item.id, item.testId) }
+                            onClick = { onNavigateToResult(item.id, item.testId, item.date) }
                         )
                     }
                 }

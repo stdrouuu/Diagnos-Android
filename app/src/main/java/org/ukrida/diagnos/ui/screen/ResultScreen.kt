@@ -39,6 +39,7 @@ fun ResultScreen(
     resultViewModel: ResultViewModel,
     bookingViewModel: BookingViewModel,
     gender: String? = "Perempuan",
+    date: String? = null,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -107,12 +108,23 @@ fun ResultScreen(
                             .fillMaxWidth()
                             .padding(20.dp)
                     ) {
-                        Text(
-                            text = test.title,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF3CB7A6)
-                        )
+                        Column {
+                            Text(
+                                text = test.title,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF3CB7A6)
+                            )
+                            if (!date.isNullOrEmpty()) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = date,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF6B7280),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
                     }
 
                     // Table with Horizontal Scroll

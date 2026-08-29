@@ -44,7 +44,6 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
     onNavigateRegister: () -> Unit
 ) {
-    var selectedRole by remember { mutableStateOf("user") } // "user" or "admin"
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -139,8 +138,6 @@ fun LoginScreen(
                         .padding(horizontal = 24.dp, vertical = 32.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-
-
                     // USERNAME
                     Column {
                         Text(
