@@ -207,7 +207,9 @@ fun OrderReviewScreen(
                                 imageVector = Icons.Default.LocationOn,
                                 contentDescription = null,
                                 tint = Color(0xFF374151),
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .offset(y = 1.dp)
                             )
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
@@ -239,7 +241,9 @@ fun OrderReviewScreen(
                                 imageVector = Icons.Default.Schedule,
                                 contentDescription = null,
                                 tint = Color(0xFF374151),
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .offset(y = 1.dp)
                             )
                             Column {
                                 Text(
@@ -299,14 +303,17 @@ fun OrderReviewScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.Top,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Description,
                                 contentDescription = null,
                                 tint = Color(0xFF4B5563),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .offset(y = 1.dp)
                             )
                             Column {
                                 Text(
