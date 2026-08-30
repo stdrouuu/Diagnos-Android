@@ -67,7 +67,8 @@ fun HomeScreen(
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToResult: (Int, Int, String?) -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToOrderStatus: () -> Unit = onNavigateToProfile
 ) {
     val context = LocalContext.current
     val currentUser = userViewModel.currentUser.value
@@ -270,11 +271,11 @@ fun HomeScreen(
             }
         }
 
-        // Quick Actions Grid
+        // Quick Actions Section
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 24.dp),
+                .padding(20.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Action 1
@@ -282,7 +283,7 @@ fun HomeScreen(
                 icon = Icons.Default.Inventory,
                 label = "Lihat\nStatus Pesanan",
                 modifier = Modifier.weight(1f),
-                onClick = onNavigateToProfile
+                onClick = onNavigateToOrderStatus
             )
             // Action 2
             QuickActionButton(
@@ -298,8 +299,7 @@ fun HomeScreen(
                             Toast.makeText(context, "Hasil pemeriksaan terakhir belum selesai atau sedang diuji", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // Fallback/No history yet (bookingId = 0, testId = 1)
-                        onNavigateToResult(0, 1, null)
+                        Toast.makeText(context, "Anda belum memiliki data hasil pemeriksaan laboratorium.", Toast.LENGTH_SHORT).show()
                     }
                 }
             )

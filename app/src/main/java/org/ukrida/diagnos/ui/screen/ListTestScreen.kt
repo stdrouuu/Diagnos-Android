@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.ukrida.diagnos.viewmodel.BookingViewModel
 
 data class LabTest(
     val id: Int,
@@ -55,7 +55,10 @@ data class LabTest(
 )
 
 @Composable
-fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
+fun ListTestScreen(
+    onNavigateToDetail: (testId: Int) -> Unit = {},
+    bookingViewModel: BookingViewModel
+) {
     var searchQuery by remember { mutableStateOf("") }
     var showHelpDialog by remember { mutableStateOf(false) }
 

@@ -50,7 +50,9 @@ fun CartScreen(
     cartViewModel: CartViewModel,
     userViewModel: UserViewModel,
     onBack: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToListTest: () -> Unit = {},
+    onNavigateToOrderStatus: () -> Unit = onNavigateToProfile
 ) {
     val context = LocalContext.current
     val cartItems = cartViewModel.cartItems.value
@@ -224,7 +226,7 @@ fun CartScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
-                        onClick = onBack,
+                        onClick = onNavigateToListTest,
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.height(48.dp)
@@ -310,7 +312,7 @@ fun CartScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Seluruh tes lab yang dicentang telah berhasil dipesan. Anda dapat memantau status pemeriksaan di halaman profil.",
+                        text = "Seluruh tes lab yang dicentang telah berhasil dipesan. Anda dapat memantau status pemeriksaan di halaman status pesanan.",
                         fontSize = 12.sp,
                         color = Color(0xFF6B7280),
                         textAlign = TextAlign.Center,
@@ -322,7 +324,7 @@ fun CartScreen(
                     Button(
                         onClick = {
                             cartViewModel.resetSuccessModal()
-                            onNavigateToProfile()
+                            onNavigateToOrderStatus()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                         shape = RoundedCornerShape(14.dp),
@@ -331,7 +333,7 @@ fun CartScreen(
                             .height(46.dp)
                     ) {
                         Text(
-                            text = "Lihat Status di Profil",
+                            text = "Lihat Status Pesanan",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White

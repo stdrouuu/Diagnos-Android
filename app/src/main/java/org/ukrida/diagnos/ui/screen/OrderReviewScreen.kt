@@ -44,7 +44,8 @@ fun OrderReviewScreen(
     bookingViewModel: BookingViewModel,
     userViewModel: org.ukrida.diagnos.viewmodel.UserViewModel,
     onBack: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToOrderStatus: () -> Unit = onNavigateToProfile
 ) {
     val test = bookingViewModel.selectedTest
 
@@ -652,7 +653,7 @@ fun OrderReviewScreen(
                         Button(
                             onClick = {
                                 bookingViewModel.resetOrderState()
-                                onNavigateToProfile()
+                                onNavigateToOrderStatus()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                             shape = RoundedCornerShape(12.dp),
@@ -661,7 +662,7 @@ fun OrderReviewScreen(
                                 .height(44.dp)
                         ) {
                             Text(
-                                text = "Lihat Status di Profil",
+                                text = "Lihat Status Pesanan",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White

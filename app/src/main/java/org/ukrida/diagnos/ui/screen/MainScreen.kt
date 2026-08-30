@@ -122,7 +122,7 @@ fun MainScreen(
 
         // ================= BOTTOM NAV =================
         bottomBar = {
-            if (currentRoute != "history" && !currentRoute.startsWith("result")) {
+            if (currentRoute != "history" && !currentRoute.startsWith("result") && currentRoute != "cart" && currentRoute != "orderstatus") {
                 BottomNav(innerNavController, role)
             }
         }
@@ -158,6 +158,9 @@ fun MainScreen(
                     },
                     onNavigateToProfile = {
                         innerNavController.navigate("user")
+                    },
+                    onNavigateToOrderStatus = {
+                        innerNavController.navigate("orderstatus")
                     }
                 )
             }
@@ -206,6 +209,7 @@ fun MainScreen(
 
             composable("listtest") {
                 ListTestScreen(
+                    bookingViewModel = bookingViewModel,
                     onNavigateToDetail = { testId ->
                         innerNavController.navigate("detailtest/$testId")
                     }
@@ -220,6 +224,9 @@ fun MainScreen(
                     historyViewModel = historyViewModel,
                     onNavigateToHistory = {
                         innerNavController.navigate("history")
+                    },
+                    onNavigateToOrderStatus = {
+                        innerNavController.navigate("orderstatus")
                     },
                     onLogout = onLogout
                 )
@@ -260,7 +267,12 @@ fun MainScreen(
                         innerNavController.navigate("orderreview")
                     },
                     onNavigateToCart = {
-                        innerNavController.navigate("cart")
+                        innerNavController.navigate("cart") {
+                            val popped = innerNavController.popBackStack("listtest", false)
+                            if (!popped) {
+                                innerNavController.popBackStack("home", false)
+                            }
+                        }
                     }
                 )
             }
@@ -270,12 +282,24 @@ fun MainScreen(
                     cartViewModel = cartViewModel,
                     userViewModel = userViewModel,
                     onBack = {
-                        innerNavController.popBackStack()
+                        val popped = innerNavController.popBackStack("listtest", false)
+                        if (!popped) {
+                            val poppedHome = innerNavController.popBackStack("home", false)
+                            if (!poppedHome) {
+                                innerNavController.popBackStack()
+                            }
+                        }
                     },
                     onNavigateToProfile = {
                         innerNavController.navigate("user") {
                             popUpTo("home") { inclusive = false }
                         }
+                    },
+                    onNavigateToListTest = {
+                        innerNavController.navigate("listtest")
+                    },
+                    onNavigateToOrderStatus = {
+                        innerNavController.navigate("orderstatus")
                     }
                 )
             }
@@ -291,6 +315,22 @@ fun MainScreen(
                         innerNavController.navigate("user") {
                             popUpTo("home") { inclusive = false }
                         }
+                    },
+                    onNavigateToOrderStatus = {
+                        innerNavController.navigate("orderstatus")
+                    }
+                )
+            }
+
+            composable("orderstatus") {
+                OrderStatusScreen(
+                    userViewModel = userViewModel,
+                    historyViewModel = historyViewModel,
+                    onBack = {
+                        innerNavController.popBackStack()
+                    },
+                    onNavigateToListTest = {
+                        innerNavController.navigate("listtest")
                     }
                 )
             }

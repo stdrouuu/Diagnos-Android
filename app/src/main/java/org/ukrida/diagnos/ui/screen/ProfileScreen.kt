@@ -45,6 +45,7 @@ fun ProfileScreen(
     bookingViewModel: BookingViewModel = remember { BookingViewModel() },
     historyViewModel: HistoryViewModel = remember { HistoryViewModel() },
     onNavigateToHistory: () -> Unit = {},
+    onNavigateToOrderStatus: () -> Unit = {},
     onLogout: () -> Unit
 ) {
     val currentUser = viewModel.currentUser.value
@@ -235,7 +236,7 @@ fun ProfileScreen(
                             badgeText = badgeText,
                             badgeColor = badgeColor,
                             badgeTextColor = badgeTextColor,
-                            onClick = { if (pendingOrders.isNotEmpty()) showHistoryDialog = true }
+                            onClick = { onNavigateToOrderStatus() }
                         )
                         HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
                         // Riwayat Pesanan — only shows completed orders via history page
