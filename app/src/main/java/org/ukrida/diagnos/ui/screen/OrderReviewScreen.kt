@@ -224,56 +224,6 @@ fun OrderReviewScreen(
                                     lineHeight = 15.sp,
                                     modifier = Modifier.padding(top = 2.dp)
                                 )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // Dynamic Premium Map Mockup
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(96.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0xFFE5E7EB))
-                                        .border(0.5.dp, Color(0xFFD1D5DB), RoundedCornerShape(12.dp))
-                                ) {
-                                    // Custom map visual representation in canvas drawing
-                                    Canvas(modifier = Modifier.fillMaxSize()) {
-                                        // Draw stylized roads
-                                        val roadColor = Color.White
-                                        drawLine(
-                                            color = roadColor,
-                                            start = Offset(0f, size.height * 0.4f),
-                                            end = Offset(size.width, size.height * 0.5f),
-                                            strokeWidth = 16f
-                                        )
-                                        drawLine(
-                                            color = roadColor,
-                                            start = Offset(size.width * 0.3f, 0f),
-                                            end = Offset(size.width * 0.3f, size.height),
-                                            strokeWidth = 16f
-                                        )
-                                        drawLine(
-                                            color = roadColor,
-                                            start = Offset(size.width * 0.7f, 0f),
-                                            end = Offset(size.width * 0.7f, size.height),
-                                            strokeWidth = 16f
-                                        )
-                                    }
-
-                                    // Clinic pin locator in center
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.LocationOn,
-                                            contentDescription = "Clinic Pin",
-                                            tint = Color(0xFF3CB7A6),
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                }
                             }
                         }
 
