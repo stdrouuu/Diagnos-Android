@@ -13,6 +13,9 @@ class UserViewModel(private val repo: UserRepository) : ViewModel() {
     var users = mutableStateOf<List<User>>(emptyList())
     var currentUser = mutableStateOf<User?>(null)
 
+    // State untuk notifikasi toast berhasil registrasi
+    var showRegisterSuccessToast = mutableStateOf(false)
+
     // State untuk proses hapus akun: null = idle, true = loading, false = selesai
     var isDeletingAccount = mutableStateOf(false)
     var deleteAccountError = mutableStateOf<String?>(null)
