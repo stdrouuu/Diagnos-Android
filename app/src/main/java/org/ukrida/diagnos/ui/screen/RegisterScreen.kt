@@ -656,10 +656,11 @@ fun RegisterScreen(
 
                         // Terms and Conditions checkbox
                         Row(
-                            verticalAlignment = Alignment.Top,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp)
+                                .clickable { isTermsChecked = !isTermsChecked }
+                                .padding(vertical = 4.dp)
                         ) {
                             Checkbox(
                                 checked = isTermsChecked,
@@ -667,8 +668,7 @@ fun RegisterScreen(
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = Color(0xFF3CAEA3),
                                     uncheckedColor = Color(0xFF9CA3AF)
-                                ),
-                                modifier = Modifier.offset(y = (-8).dp)
+                                )
                             )
                             Text(
                                 text = buildAnnotatedString {
@@ -680,8 +680,7 @@ fun RegisterScreen(
                                 },
                                 fontSize = 12.sp,
                                 color = Color(0xFF6B7280),
-                                lineHeight = 16.sp,
-                                modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
+                                lineHeight = 16.sp
                             )
                         }
                     }
@@ -725,6 +724,7 @@ fun RegisterScreen(
                             dob = dob,
                             address = address
                         )
+                        viewModel.showRegisterSuccessToast.value = true
                         viewModel.insert(user)
                         onRegisterSuccess() // Redirect back to login page
                     }

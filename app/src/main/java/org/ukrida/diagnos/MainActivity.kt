@@ -78,7 +78,12 @@ class MainActivity : ComponentActivity() {
                         RegisterScreen(
                             viewModel = userViewModel,
                             onRegisterSuccess = {
-                                navController.popBackStack()
+                                val popped = navController.popBackStack("login", false)
+                                if (!popped) {
+                                    navController.navigate("login") {
+                                        popUpTo("welcome") { inclusive = false }
+                                    }
+                                }
                             }
                         )
                     }
