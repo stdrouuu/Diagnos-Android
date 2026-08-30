@@ -3,6 +3,7 @@ package org.ukrida.diagnos.ui.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -215,8 +216,8 @@ fun ListTestScreen(
             // Promo banner card (static)
             PromoSpecialBanner()
 
-            // Need help card (static)
-            NeedHelpCard(onContactClick = { showHelpDialog = true })
+            // Need help card (static - Disembunyikan sementara)
+            // NeedHelpCard(onContactClick = { showHelpDialog = true })
         }
     }
 
@@ -253,7 +254,8 @@ fun ListTestScreen(
 fun LabTestCardItem(test: LabTest, onPesanClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onPesanClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(32.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)

@@ -674,10 +674,6 @@ fun RegisterScreen(
                                 text = buildAnnotatedString {
                                     append("Saya menyetujui ")
                                     withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
-                                        append("Syarat & Ketentuan")
-                                    }
-                                    append(" serta ")
-                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
                                         append("Kebijakan Privasi")
                                     }
                                     append(" Diagnōs.")
@@ -713,7 +709,7 @@ fun RegisterScreen(
                     } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                         errorMessage = "Format alamat email tidak valid!"
                     } else if (!isTermsChecked) {
-                        errorMessage = "Anda harus menyetujui Syarat & Ketentuan!"
+                        errorMessage = "Anda harus menyetujui Kebijakan Privasi!"
                     } else {
                         errorMessage = null
                         val user = User(

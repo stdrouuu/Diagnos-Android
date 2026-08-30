@@ -575,7 +575,8 @@ fun PopularTestCard(
     Card(
         modifier = Modifier
             .width(175.dp)
-            .height(192.dp),
+            .height(192.dp)
+            .clickable { onPesanClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
