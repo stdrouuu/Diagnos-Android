@@ -50,7 +50,7 @@ fun ProfileScreen(
     onDeleteAccount: () -> Unit = {}
 ) {
     val currentUser = viewModel.currentUser.value
-    val userName = currentUser?.name ?: "Estero"
+    val userName = currentUser?.name ?: ""
     val userPhoto: Any = currentUser?.photo ?: R.drawable.images
 
     var showImagePreview by remember { mutableStateOf(false) }
@@ -204,7 +204,7 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, Color(0xFFF3F4F6))
                 ) {
-                    Column {
+                    Column(modifier = Modifier.clip(RoundedCornerShape(20.dp))) {
                         // Status Pesanan
                         // Status Pesanan — driven by pendingOrders (not historyList)
                         val pendingOrders = historyViewModel.pendingOrders.value
@@ -265,18 +265,21 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, Color(0xFFF3F4F6))
                 ) {
-                    ProfileMenuItem(
-                        icon = Icons.Default.Person,
-                        title = "Edit Profil",
-                        onClick = {
-                            navController.navigate("profileedit")
-                        }
-                    )
+                    Box(modifier = Modifier.clip(RoundedCornerShape(20.dp))) {
+                        ProfileMenuItem(
+                            icon = Icons.Default.Person,
+                            title = "Edit Profil",
+                            onClick = {
+                                navController.navigate("profileedit")
+                            }
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(28.dp))
+                // Spacer(modifier = Modifier.height(28.dp))
 
-                // Bantuan Section
+                // Bantuan Section (Disembunyikan sementara)
+                /*
                 SectionTitle(text = "Bantuan")
                 Card(
                     modifier = Modifier
@@ -294,6 +297,7 @@ fun ProfileScreen(
                         }
                     )
                 }
+                */
 
                 Spacer(modifier = Modifier.height(32.dp))
 
