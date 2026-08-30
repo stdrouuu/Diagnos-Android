@@ -64,7 +64,8 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 @Composable
 fun RegisterScreen(
     viewModel: UserViewModel,
-    onRegisterSuccess: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    onNavigatePrivacyPolicy: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -659,7 +660,6 @@ fun RegisterScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { isTermsChecked = !isTermsChecked }
                                 .padding(vertical = 4.dp)
                         ) {
                             Checkbox(
@@ -670,18 +670,29 @@ fun RegisterScreen(
                                     uncheckedColor = Color(0xFF9CA3AF)
                                 )
                             )
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("Saya menyetujui ")
-                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
-                                        append("Kebijakan Privasi")
-                                    }
-                                    append(" Diagnōs.")
-                                },
-                                fontSize = 12.sp,
-                                color = Color(0xFF6B7280),
-                                lineHeight = 16.sp
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Saya menyetujui ",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF6B7280),
+                                    modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
+                                )
+                                Text(
+                                    text = "Kebijakan Privasi",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF3CAEA3),
+                                    modifier = Modifier.clickable { onNavigatePrivacyPolicy() }
+                                )
+                                Text(
+                                    text = " Diagnōs.",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF6B7280),
+                                    modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
+                                )
+                            }
                         }
                     }
                 }

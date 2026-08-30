@@ -265,12 +265,20 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, Color(0xFFF3F4F6))
                 ) {
-                    Box(modifier = Modifier.clip(RoundedCornerShape(20.dp))) {
+                    Column(modifier = Modifier.clip(RoundedCornerShape(20.dp))) {
                         ProfileMenuItem(
                             icon = Icons.Default.Person,
                             title = "Edit Profil",
                             onClick = {
                                 navController.navigate("profileedit")
+                            }
+                        )
+                        HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
+                        ProfileMenuItem(
+                            icon = Icons.Default.Security,
+                            title = "Kebijakan Privasi",
+                            onClick = {
+                                navController.navigate("privacypolicy")
                             }
                         )
                     }

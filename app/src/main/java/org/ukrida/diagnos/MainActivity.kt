@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import org.ukrida.diagnos.di.Injection
 import org.ukrida.diagnos.ui.screen.LoginScreen
 import org.ukrida.diagnos.ui.screen.MainScreen
+import org.ukrida.diagnos.ui.screen.PrivacyPolicyScreen
 import org.ukrida.diagnos.ui.screen.RegisterScreen
 import org.ukrida.diagnos.ui.screen.WelcomeScreen
 import org.ukrida.diagnos.ui.theme.DiagnosTheme
@@ -84,6 +85,17 @@ class MainActivity : ComponentActivity() {
                                         popUpTo("welcome") { inclusive = false }
                                     }
                                 }
+                            },
+                            onNavigatePrivacyPolicy = {
+                                navController.navigate("privacypolicy")
+                            }
+                        )
+                    }
+                    // ================= PRIVACY POLICY =================
+                    composable("privacypolicy") {
+                        PrivacyPolicyScreen(
+                            onBack = {
+                                navController.popBackStack()
                             }
                         )
                     }

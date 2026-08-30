@@ -123,7 +123,7 @@ fun MainScreen(
 
         // ================= BOTTOM NAV =================
         bottomBar = {
-            if (currentRoute != "history" && !currentRoute.startsWith("result") && currentRoute != "cart" && currentRoute != "orderstatus") {
+            if (currentRoute != "history" && !currentRoute.startsWith("result") && currentRoute != "cart" && currentRoute != "orderstatus" && currentRoute != "privacypolicy") {
                 BottomNav(innerNavController, role)
             }
         }
@@ -238,6 +238,14 @@ fun MainScreen(
                 ProfileEditScreen(
                     viewModel = userViewModel,
                     navController = innerNavController
+                )
+            }
+
+            composable("privacypolicy") {
+                PrivacyPolicyScreen(
+                    onBack = {
+                        innerNavController.popBackStack()
+                    }
                 )
             }
 
