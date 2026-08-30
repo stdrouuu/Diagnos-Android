@@ -36,7 +36,8 @@ fun MainScreen(
     role: String,
     navController: NavHostController,
     userViewModel: UserViewModel,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onDeleteAccount: () -> Unit = onLogout
 ) {
     val innerNavController = rememberNavController()
     val bookingViewModel = remember { BookingViewModel() }
@@ -228,7 +229,8 @@ fun MainScreen(
                     onNavigateToOrderStatus = {
                         innerNavController.navigate("orderstatus")
                     },
-                    onLogout = onLogout
+                    onLogout = onLogout,
+                    onDeleteAccount = onDeleteAccount
                 )
             }
 

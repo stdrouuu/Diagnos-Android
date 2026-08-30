@@ -13,6 +13,33 @@ class UserViewModel(private val repo: UserRepository) : ViewModel() {
     var users = mutableStateOf<List<User>>(emptyList())
     var currentUser = mutableStateOf<User?>(null)
 
+    // State untuk proses hapus akun: null = idle, true = loading, false = selesai
+    var isDeletingAccount = mutableStateOf(false)
+    var deleteAccountError = mutableStateOf<String?>(null)
+
+    fun deleteAccount(onSuccess: () -> Unit, onError: (String) -> Unit = {}) {
+        val userId = currentUser.value?.id ?: return
+        viewModelScope.launch {
+            isDeletingAccount.value = true
+            deleteAccountError.value = null
+            try {
+                repo.delete(userId)
+                // Hapus dari daftar lokal
+                users.value = users.value.filter { it.id != userId }
+                // Bersihkan sesi pengguna
+                currentUser.value = null
+                isDeletingAccount.value = false
+                onSuccess()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                isDeletingAccount.value = false
+                val errMsg = "Gagal menghapus akun. Periksa koneksi internet Anda."
+                deleteAccountError.value = errMsg
+                onError(errMsg)
+            }
+        }
+    }
+
     fun getUsers() {
         viewModelScope.launch {
             try {

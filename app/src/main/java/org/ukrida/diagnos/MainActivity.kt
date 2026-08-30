@@ -95,6 +95,13 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("welcome") {
                                     popUpTo("main") { inclusive = true }
                                 }
+                            },
+                            onDeleteAccount = {
+                                isLoggedIn = false
+                                role = ""
+                                navController.navigate("welcome") {
+                                    popUpTo("main") { inclusive = true }
+                                }
                             }
                         )
                     }
