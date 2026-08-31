@@ -11,12 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -144,7 +138,6 @@ fun PrivacyPolicyScreen(
 
                 // Section 1: Pendahuluan
                 PrivacyPolicySection(
-                    icon = Icons.Default.VerifiedUser,
                     title = "1. Pendahuluan",
                     content = "Selamat datang di aplikasi Diagnōs. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi pengguna saat mendaftar, menggunakan layanan pemesanan tes laboratorium, serta mengunggah surat rujukan medis."
                 )
@@ -153,7 +146,6 @@ fun PrivacyPolicyScreen(
 
                 // Section 2: Data yang Diumpulkan
                 PrivacyPolicySection(
-                    icon = Icons.Default.Person,
                     title = "2. Informasi yang Kami Kumpulkan",
                     content = "Saat Anda membuat akun dan menggunakan aplikasi Diagnōs, kami mengumpulkan beberapa data pribadi yang Anda berikan secara sadar, antara lain:",
                     bulletPoints = listOf(
@@ -169,7 +161,6 @@ fun PrivacyPolicyScreen(
 
                 // Section 3: Tujuan Penggunaan Data
                 PrivacyPolicySection(
-                    icon = Icons.Default.CheckCircle,
                     title = "3. Tujuan Penggunaan Informasi",
                     content = "Data pribadi yang kami kumpulkan digunakan secara khusus untuk keperluan operasional dan pelayanan kesehatan Anda:",
                     bulletPoints = listOf(
@@ -184,7 +175,6 @@ fun PrivacyPolicyScreen(
 
                 // Section 4: Keamanan & Penyimpanan
                 PrivacyPolicySection(
-                    icon = Icons.Default.Lock,
                     title = "4. Penyimpanan & Keamanan Data",
                     content = "Kami menerapkan standar enkripsi dan sistem keamanan basis data untuk melindungi informasi pribadi Anda dari akses tidak sah, kebocoran, atau pengubahan. Seluruh rekam medis dan data diri disimpan dalam server aman yang mematuhi regulasi privasi data kesehatan."
                 )
@@ -193,7 +183,6 @@ fun PrivacyPolicyScreen(
 
                 // Section 5: Pembagian Pihak Ketiga
                 PrivacyPolicySection(
-                    icon = Icons.Default.Security,
                     title = "5. Pembagian Data ke Pihak Ketiga",
                     content = "Diagnōs TIDAK AKAN PERNAH menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga untuk kepentingan komersial atau iklan. Data Anda hanya dibagikan secara terbatas kepada klinik mitra resmi tempat Anda mendaftar pemeriksaan laboratorium."
                 )
@@ -202,7 +191,6 @@ fun PrivacyPolicyScreen(
 
                 // Section 6: Hak Pengguna & Hapus Akun
                 PrivacyPolicySection(
-                    icon = Icons.Default.Shield,
                     title = "6. Hak Pengguna & Penghapusan Akun",
                     content = "Sebagai pemilik data pribadi, Anda memiliki hak penuh untuk mengendalikan data Anda:",
                     bulletPoints = listOf(
@@ -266,7 +254,6 @@ fun PrivacyPolicyScreen(
 
 @Composable
 fun PrivacyPolicySection(
-    icon: ImageVector,
     title: String,
     content: String,
     bulletPoints: List<String> = emptyList()
@@ -282,32 +269,12 @@ fun PrivacyPolicySection(
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(Color(0xFFE6F7F5), RoundedCornerShape(10.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = Color(0xFF3CAEA3),
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-
-                Text(
-                    text = title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1F2937),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            Text(
+                text = title,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1F2937)
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
