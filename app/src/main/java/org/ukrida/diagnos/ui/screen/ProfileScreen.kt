@@ -275,7 +275,7 @@ fun ProfileScreen(
                         )
                         HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
                         ProfileMenuItem(
-                            icon = Icons.Default.Security,
+                            icon = Icons.Default.VerifiedUser,
                             title = "Kebijakan Privasi",
                             onClick = {
                                 navController.navigate("privacypolicy")
