@@ -53,12 +53,12 @@ fun ProfileEditScreen(
     val coroutineScope = rememberCoroutineScope()
     val currentUser = viewModel.currentUser.value
 
-    var name by remember { mutableStateOf(currentUser?.name ?: "Estero") }
-    var email by remember { mutableStateOf(currentUser?.email ?: "estero@diagnos.co.id") }
-    var phone by remember { mutableStateOf(currentUser?.phone ?: "81234567890") }
-    var gender by remember { mutableStateOf(if (currentUser?.gender == "P") "Perempuan" else "Laki-laki") }
-    var dob by remember { mutableStateOf(currentUser?.dob ?: "1995-08-15") }
-    var address by remember { mutableStateOf(currentUser?.address ?: "The Gallery Blok 8, No. EG, Jl. Pantai Indah Utara, Jakarta Utara") }
+    var name by remember { mutableStateOf(currentUser?.name ?: "") }
+    var email by remember { mutableStateOf(currentUser?.email ?: "") }
+    var phone by remember { mutableStateOf(currentUser?.phone ?: "") }
+    var gender by remember { mutableStateOf(if (currentUser?.gender == "P") "Perempuan" else if (currentUser?.gender == "L") "Laki-laki" else "Laki-laki") }
+    var dob by remember { mutableStateOf(currentUser?.dob ?: "") }
+    var address by remember { mutableStateOf(currentUser?.address ?: "") }
     
     // Profile photo image Uri state
     var imageUri by remember {

@@ -3,6 +3,7 @@ package org.ukrida.diagnos.ui.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -33,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.ukrida.diagnos.viewmodel.BookingViewModel
 
 data class LabTest(
     val id: Int,
@@ -55,7 +56,10 @@ data class LabTest(
 )
 
 @Composable
-fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
+fun ListTestScreen(
+    onNavigateToDetail: (testId: Int) -> Unit = {},
+    bookingViewModel: BookingViewModel
+) {
     var searchQuery by remember { mutableStateOf("") }
     var showHelpDialog by remember { mutableStateOf(false) }
 
@@ -212,8 +216,8 @@ fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
             // Promo banner card (static)
             PromoSpecialBanner()
 
-            // Need help card (static)
-            NeedHelpCard(onContactClick = { showHelpDialog = true })
+            // Need help card (static - Disembunyikan sementara)
+            // NeedHelpCard(onContactClick = { showHelpDialog = true })
         }
     }
 
@@ -250,7 +254,8 @@ fun ListTestScreen(onNavigateToDetail: (testId: Int) -> Unit = {}) {
 fun LabTestCardItem(test: LabTest, onPesanClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onPesanClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(32.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)

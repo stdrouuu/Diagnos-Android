@@ -64,7 +64,8 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 @Composable
 fun RegisterScreen(
     viewModel: UserViewModel,
-    onRegisterSuccess: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    onNavigatePrivacyPolicy: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -656,10 +657,10 @@ fun RegisterScreen(
 
                         // Terms and Conditions checkbox
                         Row(
-                            verticalAlignment = Alignment.Top,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp)
+                                .padding(vertical = 4.dp)
                         ) {
                             Checkbox(
                                 checked = isTermsChecked,
@@ -667,26 +668,31 @@ fun RegisterScreen(
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = Color(0xFF3CAEA3),
                                     uncheckedColor = Color(0xFF9CA3AF)
-                                ),
-                                modifier = Modifier.offset(y = (-8).dp)
+                                )
                             )
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("Saya menyetujui ")
-                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
-                                        append("Syarat & Ketentuan")
-                                    }
-                                    append(" serta ")
-                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
-                                        append("Kebijakan Privasi")
-                                    }
-                                    append(" Diagnōs.")
-                                },
-                                fontSize = 12.sp,
-                                color = Color(0xFF6B7280),
-                                lineHeight = 16.sp,
-                                modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Saya menyetujui ",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF6B7280),
+                                    modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
+                                )
+                                Text(
+                                    text = "Kebijakan Privasi",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF3CAEA3),
+                                    modifier = Modifier.clickable { onNavigatePrivacyPolicy() }
+                                )
+                                Text(
+                                    text = " Diagnōs.",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF6B7280),
+                                    modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
+                                )
+                            }
                         }
                     }
                 }
@@ -713,7 +719,7 @@ fun RegisterScreen(
                     } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                         errorMessage = "Format alamat email tidak valid!"
                     } else if (!isTermsChecked) {
-                        errorMessage = "Anda harus menyetujui Syarat & Ketentuan!"
+                        errorMessage = "Anda harus menyetujui Kebijakan Privasi!"
                     } else {
                         errorMessage = null
                         val user = User(
@@ -729,6 +735,7 @@ fun RegisterScreen(
                             dob = dob,
                             address = address
                         )
+                        viewModel.showRegisterSuccessToast.value = true
                         viewModel.insert(user)
                         onRegisterSuccess() // Redirect back to login page
                     }

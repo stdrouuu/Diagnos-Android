@@ -45,15 +45,21 @@ fun ProfileScreen(
     bookingViewModel: BookingViewModel = remember { BookingViewModel() },
     historyViewModel: HistoryViewModel = remember { HistoryViewModel() },
     onNavigateToHistory: () -> Unit = {},
-    onLogout: () -> Unit
+    onNavigateToOrderStatus: () -> Unit = {},
+    onLogout: () -> Unit,
+    onDeleteAccount: () -> Unit = {}
 ) {
     val currentUser = viewModel.currentUser.value
-    val userName = currentUser?.name ?: "Estero"
+    val userName = currentUser?.name ?: ""
     val userPhoto: Any = currentUser?.photo ?: R.drawable.images
 
     var showImagePreview by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
     var showHelpDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteConfirm2 by remember { mutableStateOf(false) }
+    val isDeletingAccount = viewModel.isDeletingAccount.value
+    var deleteErrorMsg by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         currentUser?.id?.let { userId ->
@@ -198,7 +204,7 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, Color(0xFFF3F4F6))
                 ) {
-                    Column {
+                    Column(modifier = Modifier.clip(RoundedCornerShape(20.dp))) {
                         // Status Pesanan
                         // Status Pesanan — driven by pendingOrders (not historyList)
                         val pendingOrders = historyViewModel.pendingOrders.value
@@ -235,7 +241,7 @@ fun ProfileScreen(
                             badgeText = badgeText,
                             badgeColor = badgeColor,
                             badgeTextColor = badgeTextColor,
-                            onClick = { if (pendingOrders.isNotEmpty()) showHistoryDialog = true }
+                            onClick = { onNavigateToOrderStatus() }
                         )
                         HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
                         // Riwayat Pesanan — only shows completed orders via history page
@@ -259,18 +265,29 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, Color(0xFFF3F4F6))
                 ) {
-                    ProfileMenuItem(
-                        icon = Icons.Default.Person,
-                        title = "Edit Profil",
-                        onClick = {
-                            navController.navigate("profileedit")
-                        }
-                    )
+                    Column(modifier = Modifier.clip(RoundedCornerShape(20.dp))) {
+                        ProfileMenuItem(
+                            icon = Icons.Default.Person,
+                            title = "Edit Profil",
+                            onClick = {
+                                navController.navigate("profileedit")
+                            }
+                        )
+                        HorizontalDivider(color = Color(0xFFF9FAFB), thickness = 1.dp)
+                        ProfileMenuItem(
+                            icon = Icons.Default.Security,
+                            title = "Kebijakan Privasi",
+                            onClick = {
+                                navController.navigate("privacypolicy")
+                            }
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(28.dp))
+                // Spacer(modifier = Modifier.height(28.dp))
 
-                // Bantuan Section
+                // Bantuan Section (Disembunyikan sementara)
+                /*
                 SectionTitle(text = "Bantuan")
                 Card(
                     modifier = Modifier
@@ -288,6 +305,7 @@ fun ProfileScreen(
                         }
                     )
                 }
+                */
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -323,6 +341,54 @@ fun ProfileScreen(
                             letterSpacing = 0.5.sp
                         )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // ======= Hapus Akun Button =======
+                OutlinedButton(
+                    onClick = { showDeleteDialog = true },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color(0xFFDC2626)
+                    ),
+                    border = BorderStroke(1.5.dp, Color(0xFFDC2626).copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DeleteForever,
+                            contentDescription = null,
+                            tint = Color(0xFFDC2626),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "HAPUS AKUN",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.5.sp,
+                            color = Color(0xFFDC2626)
+                        )
+                    }
+                }
+
+                // Error pesan jika hapus gagal
+                deleteErrorMsg?.let { errMsg ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = errMsg,
+                        color = Color(0xFFDC2626),
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }
@@ -599,6 +665,187 @@ fun ProfileScreen(
             shape = RoundedCornerShape(24.dp),
             containerColor = Color.White
         )
+    }
+
+    // ================= delete account dialog – step 1 =================
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(Color(0xFFFEE2E2), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DeleteForever,
+                        contentDescription = null,
+                        tint = Color(0xFFDC2626),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            },
+            title = {
+                Text(
+                    text = "Hapus Akun?",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 18.sp,
+                    color = Color(0xFF1F2937),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Tindakan ini akan menghapus akun dan seluruh data Anda secara permanen dari sistem kami, termasuk:",
+                        fontSize = 13.sp,
+                        color = Color(0xFF6B7280),
+                        lineHeight = 20.sp
+                    )
+                    val bullets = listOf(
+                        "Data profil & informasi akun",
+                        "Riwayat pemeriksaan",
+                        "Riwayat pesanan"
+                    )
+                    bullets.forEach { item ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(Color(0xFFDC2626), CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = item,
+                                fontSize = 13.sp,
+                                color = Color(0xFF374151),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFEE2E2), RoundedCornerShape(10.dp))
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = "⚠ Data yang dihapus tidak dapat dipulihkan kembali.",
+                            fontSize = 12.sp,
+                            color = Color(0xFFDC2626),
+                            fontWeight = FontWeight.SemiBold,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteDialog = false
+                        showDeleteConfirm2 = true
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFDC2626),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Lanjutkan", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Batal", color = Color(0xFF6B7280), fontWeight = FontWeight.Bold)
+                }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color.White
+        )
+    }
+
+    // ================= delete account dialog – step 2 (konfirmasi akhir) =================
+    if (showDeleteConfirm2) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm2 = false },
+            title = {
+                Text(
+                    text = "Konfirmasi Terakhir",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 18.sp,
+                    color = Color(0xFF1F2937)
+                )
+            },
+            text = {
+                Text(
+                    text = "Apakah Anda benar-benar yakin ingin menghapus akun ini? Proses ini tidak dapat diurungkan.",
+                    fontSize = 13.sp,
+                    color = Color(0xFF6B7280),
+                    lineHeight = 20.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirm2 = false
+                        deleteErrorMsg = null
+                        viewModel.deleteAccount(
+                            onSuccess = {
+                                onDeleteAccount()
+                            },
+                            onError = { err ->
+                                deleteErrorMsg = err
+                            }
+                        )
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFDC2626),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Ya, Hapus Akun", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirm2 = false }) {
+                    Text("Batal", color = Color(0xFF6B7280), fontWeight = FontWeight.Bold)
+                }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color.White
+        )
+    }
+
+    // ================= loading dialog saat hapus akun =================
+    if (isDeletingAccount) {
+        Dialog(onDismissRequest = {}) {
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(28.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator(
+                        color = Color(0xFFDC2626),
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Text(
+                        text = "Menghapus akun...",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF374151)
+                    )
+                }
+            }
+        }
     }
 }
 

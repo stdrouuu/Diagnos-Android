@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import org.ukrida.diagnos.di.Injection
 import org.ukrida.diagnos.ui.screen.LoginScreen
 import org.ukrida.diagnos.ui.screen.MainScreen
+import org.ukrida.diagnos.ui.screen.PrivacyPolicyScreen
 import org.ukrida.diagnos.ui.screen.RegisterScreen
 import org.ukrida.diagnos.ui.screen.WelcomeScreen
 import org.ukrida.diagnos.ui.theme.DiagnosTheme
@@ -78,6 +79,22 @@ class MainActivity : ComponentActivity() {
                         RegisterScreen(
                             viewModel = userViewModel,
                             onRegisterSuccess = {
+                                val popped = navController.popBackStack("login", false)
+                                if (!popped) {
+                                    navController.navigate("login") {
+                                        popUpTo("welcome") { inclusive = false }
+                                    }
+                                }
+                            },
+                            onNavigatePrivacyPolicy = {
+                                navController.navigate("privacypolicy")
+                            }
+                        )
+                    }
+                    // ================= PRIVACY POLICY =================
+                    composable("privacypolicy") {
+                        PrivacyPolicyScreen(
+                            onBack = {
                                 navController.popBackStack()
                             }
                         )
@@ -92,6 +109,13 @@ class MainActivity : ComponentActivity() {
                                 isLoggedIn = false
                                 role = ""
                                 userViewModel.currentUser.value = null
+                                navController.navigate("welcome") {
+                                    popUpTo("main") { inclusive = true }
+                                }
+                            },
+                            onDeleteAccount = {
+                                isLoggedIn = false
+                                role = ""
                                 navController.navigate("welcome") {
                                     popUpTo("main") { inclusive = true }
                                 }

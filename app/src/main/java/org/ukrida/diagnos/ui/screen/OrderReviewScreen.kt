@@ -44,7 +44,8 @@ fun OrderReviewScreen(
     bookingViewModel: BookingViewModel,
     userViewModel: org.ukrida.diagnos.viewmodel.UserViewModel,
     onBack: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToOrderStatus: () -> Unit = onNavigateToProfile
 ) {
     val test = bookingViewModel.selectedTest
 
@@ -206,7 +207,9 @@ fun OrderReviewScreen(
                                 imageVector = Icons.Default.LocationOn,
                                 contentDescription = null,
                                 tint = Color(0xFF374151),
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .offset(y = 1.dp)
                             )
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
@@ -223,56 +226,6 @@ fun OrderReviewScreen(
                                     lineHeight = 15.sp,
                                     modifier = Modifier.padding(top = 2.dp)
                                 )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // Dynamic Premium Map Mockup
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(96.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0xFFE5E7EB))
-                                        .border(0.5.dp, Color(0xFFD1D5DB), RoundedCornerShape(12.dp))
-                                ) {
-                                    // Custom map visual representation in canvas drawing
-                                    Canvas(modifier = Modifier.fillMaxSize()) {
-                                        // Draw stylized roads
-                                        val roadColor = Color.White
-                                        drawLine(
-                                            color = roadColor,
-                                            start = Offset(0f, size.height * 0.4f),
-                                            end = Offset(size.width, size.height * 0.5f),
-                                            strokeWidth = 16f
-                                        )
-                                        drawLine(
-                                            color = roadColor,
-                                            start = Offset(size.width * 0.3f, 0f),
-                                            end = Offset(size.width * 0.3f, size.height),
-                                            strokeWidth = 16f
-                                        )
-                                        drawLine(
-                                            color = roadColor,
-                                            start = Offset(size.width * 0.7f, 0f),
-                                            end = Offset(size.width * 0.7f, size.height),
-                                            strokeWidth = 16f
-                                        )
-                                    }
-
-                                    // Clinic pin locator in center
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.LocationOn,
-                                            contentDescription = "Clinic Pin",
-                                            tint = Color(0xFF3CB7A6),
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                }
                             }
                         }
 
@@ -288,7 +241,9 @@ fun OrderReviewScreen(
                                 imageVector = Icons.Default.Schedule,
                                 contentDescription = null,
                                 tint = Color(0xFF374151),
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .offset(y = 1.dp)
                             )
                             Column {
                                 Text(
@@ -348,14 +303,17 @@ fun OrderReviewScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.Top,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Description,
                                 contentDescription = null,
                                 tint = Color(0xFF4B5563),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .offset(y = 1.dp)
                             )
                             Column {
                                 Text(
@@ -652,7 +610,7 @@ fun OrderReviewScreen(
                         Button(
                             onClick = {
                                 bookingViewModel.resetOrderState()
-                                onNavigateToProfile()
+                                onNavigateToOrderStatus()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                             shape = RoundedCornerShape(12.dp),
@@ -661,7 +619,7 @@ fun OrderReviewScreen(
                                 .height(44.dp)
                         ) {
                             Text(
-                                text = "Lihat Status di Profil",
+                                text = "Lihat Status Pesanan",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
