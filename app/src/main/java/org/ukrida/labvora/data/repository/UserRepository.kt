@@ -1,0 +1,22 @@
+// Repository untuk mengelola sumber data User, menghubungkan ViewModel dengan ApiService
+package org.ukrida.labvora.data.repository
+
+import org.ukrida.labvora.data.api.ApiService
+import org.ukrida.labvora.data.model.User
+
+class UserRepository(private val api: ApiService) {
+    suspend fun getUsers() = api.getUsers()
+
+    suspend fun insert(user: User) = api.insertUser(user)
+
+    suspend fun update(user: User) = api.updateUser(user)
+
+    suspend fun delete(id: Int) = api.deleteUser(id)
+
+    suspend fun login(username: String, password: String): User {
+        return api.login(request = mapOf(
+            "username" to username,
+            "password" to password
+        ))
+    }
+}
