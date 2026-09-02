@@ -50,12 +50,12 @@ fun WelcomeScreen(
                     painter = painterResource(id = R.drawable.logofull),
                     contentDescription = "Labvora Logo",
                     modifier = Modifier
-                        .fillMaxWidth(0.55f)
-                        .height(200.dp),
+                        .fillMaxWidth(0.65f)
+                        .height(240.dp),
                     contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(0.dp))
 
                 // Subtitle
                 Text(

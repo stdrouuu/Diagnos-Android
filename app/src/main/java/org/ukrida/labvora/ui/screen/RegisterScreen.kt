@@ -166,7 +166,7 @@ fun RegisterScreen(
                 Image(
                     painter = painterResource(id = R.drawable.logoname),
                     contentDescription = "Labvora",
-                    modifier = Modifier.height(28.dp),
+                    modifier = Modifier.height(20.dp),
                     contentScale = ContentScale.Fit
                 )
                 Spacer(modifier = Modifier.width(48.dp))
