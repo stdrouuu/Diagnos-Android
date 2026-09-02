@@ -55,8 +55,6 @@ fun WelcomeScreen(
                     contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.height(0.dp))
-
                 // Subtitle
                 Text(
                     text = "Ketahui dan Temukan Diri Anda Sejak dini",
@@ -64,10 +62,9 @@ fun WelcomeScreen(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     letterSpacing = 0.5.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.offset(y = (-26).dp)
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
 
                 // Button Mulai Sekarang
                 Button(
@@ -80,6 +77,7 @@ fun WelcomeScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.66f)
                         .height(48.dp)
+                        .offset(y = (-18).dp)
                         .shadow(0.2.dp, shape = RoundedCornerShape(16.dp))
                 ) {
                     Text(
