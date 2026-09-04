@@ -1,5 +1,6 @@
 package org.ukrida.labvora.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -45,8 +46,14 @@ fun OrderReviewScreen(
     userViewModel: org.ukrida.labvora.viewmodel.UserViewModel,
     onBack: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    onNavigateToHome: () -> Unit = {},
     onNavigateToOrderStatus: () -> Unit = onNavigateToProfile
 ) {
+    BackHandler(enabled = bookingViewModel.isOrderCompleted || bookingViewModel.showSuccessModal) {
+        bookingViewModel.resetOrderState()
+        onNavigateToHome()
+    }
+
     val test = bookingViewModel.selectedTest
 
     if (test == null) {
@@ -83,7 +90,14 @@ fun OrderReviewScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = {
+                        if (bookingViewModel.isOrderCompleted) {
+                            bookingViewModel.resetOrderState()
+                            onNavigateToHome()
+                        } else {
+                            onBack()
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Kembali",
@@ -552,6 +566,7 @@ fun OrderReviewScreen(
         Dialog(
             onDismissRequest = {
                 bookingViewModel.resetOrderState()
+                onNavigateToHome()
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         ) {
@@ -629,6 +644,7 @@ fun OrderReviewScreen(
                         Button(
                             onClick = {
                                 bookingViewModel.resetOrderState()
+                                onNavigateToHome()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF9FAFB)),
                             border = BorderStroke(1.dp, Color(0xFFE5E7EB)),

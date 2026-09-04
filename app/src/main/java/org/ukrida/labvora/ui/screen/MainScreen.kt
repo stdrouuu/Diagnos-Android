@@ -326,8 +326,15 @@ fun MainScreen(
                             popUpTo("home") { inclusive = false }
                         }
                     },
+                    onNavigateToHome = {
+                        innerNavController.navigate("home") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
                     onNavigateToOrderStatus = {
-                        innerNavController.navigate("orderstatus")
+                        innerNavController.navigate("orderstatus") {
+                            popUpTo("home") { inclusive = false }
+                        }
                     }
                 )
             }
