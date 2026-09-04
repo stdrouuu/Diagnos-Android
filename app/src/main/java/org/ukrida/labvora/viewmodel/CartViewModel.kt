@@ -29,8 +29,28 @@ class CartViewModel : ViewModel() {
     val isAllChecked: Boolean
         get() = _cartItems.value.isNotEmpty() && _cartItems.value.all { it.isChecked }
 
-    val totalPriceVal: Int
+    val adminFeeVal: Int = 50000
+
+    val subtotalPriceVal: Int
         get() = _cartItems.value.filter { it.isChecked }.sumOf { it.test.priceVal }
+
+    val totalPriceVal: Int
+        get() {
+            val subtotal = subtotalPriceVal
+            return if (subtotal > 0) subtotal + adminFeeVal else 0
+        }
+
+    val subtotalPriceFormatted: String
+        get() {
+            val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+            return formatter.format(subtotalPriceVal).replace(",00", "")
+        }
+
+    val adminFeeFormatted: String
+        get() {
+            val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+            return formatter.format(adminFeeVal).replace(",00", "")
+        }
 
     val totalPriceFormatted: String
         get() {

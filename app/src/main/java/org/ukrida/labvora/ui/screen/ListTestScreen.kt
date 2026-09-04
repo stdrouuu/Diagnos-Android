@@ -70,7 +70,7 @@ fun ListTestScreen(
                 title = "Cek Hematologi (Lengkap)",
                 description = "tes darah menyeluruh termasuk sel darah merah, sel darah putih, dan trombosit.",
                 price = "Rp 2.000.000",
-                category = "DARAH",
+                category = "HEMATOLOGI",
                 icon = Icons.Default.WaterDrop,
                 iconBg = Color(0xFFFFEAEA),
                 iconColor = Color(0xFFFA6A71),
