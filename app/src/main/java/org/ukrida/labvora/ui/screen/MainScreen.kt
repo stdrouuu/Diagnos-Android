@@ -308,8 +308,15 @@ fun MainScreen(
                     onNavigateToListTest = {
                         innerNavController.navigate("listtest")
                     },
+                    onNavigateToHome = {
+                        innerNavController.navigate("home") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
                     onNavigateToOrderStatus = {
-                        innerNavController.navigate("orderstatus")
+                        innerNavController.navigate("orderstatus") {
+                            popUpTo("home") { inclusive = false }
+                        }
                     }
                 )
             }

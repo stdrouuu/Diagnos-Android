@@ -16,8 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Schedule
@@ -52,6 +54,14 @@ fun OrderReviewScreen(
     BackHandler(enabled = bookingViewModel.isOrderCompleted || bookingViewModel.showSuccessModal) {
         bookingViewModel.resetOrderState()
         onNavigateToHome()
+    }
+
+    var alertStep by remember { mutableIntStateOf(1) }
+
+    LaunchedEffect(bookingViewModel.showSuccessModal) {
+        if (bookingViewModel.showSuccessModal) {
+            alertStep = 1
+        }
     }
 
     val test = bookingViewModel.selectedTest
@@ -561,11 +571,12 @@ fun OrderReviewScreen(
         }
     }
 
-    // Success Modal Popup Dialog
+    // Success Modal Popup Dialog (2-Step Alert)
     if (bookingViewModel.showSuccessModal) {
         Dialog(
             onDismissRequest = {
                 bookingViewModel.resetOrderState()
+                alertStep = 1
                 onNavigateToHome()
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -583,49 +594,46 @@ fun OrderReviewScreen(
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .background(Color(0xFFE6F7F5), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Check",
-                            tint = Color(0xFF3CB7A6),
-                            modifier = Modifier.size(32.dp)
+                    if (alertStep == 1) {
+                        // Alert 1: Terima Kasih!
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(Color(0xFFE6F7F5), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Check",
+                                tint = Color(0xFF3CB7A6),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "Terima Kasih!",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1F2937)
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = "Terima Kasih!",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1F2937)
-                    )
+                        Text(
+                            text = "Pesanan Anda telah kami terima. Status pesanan dapat Anda pantau di halaman profil.",
+                            fontSize = 12.sp,
+                            color = Color(0xFF6B7280),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 18.sp
+                        )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    Text(
-                        text = "Pesanan Anda telah kami terima. Status pesanan dapat Anda pantau di halaman profil.",
-                        fontSize = 12.sp,
-                        color = Color(0xFF6B7280),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 18.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
                         Button(
                             onClick = {
-                                bookingViewModel.resetOrderState()
-                                onNavigateToOrderStatus()
+                                alertStep = 2
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
                             shape = RoundedCornerShape(12.dp),
@@ -633,32 +641,121 @@ fun OrderReviewScreen(
                                 .fillMaxWidth()
                                 .height(44.dp)
                         ) {
-                            Text(
-                                text = "Lihat Status Pesanan",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "Lanjut (Petunjuk Pembayaran)",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = "Next",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        // Alert 2: Petunjuk Pembayaran
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(Color(0xFFFEF3C7), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Info Administrasi",
+                                tint = Color(0xFFD97706),
+                                modifier = Modifier.size(32.dp)
                             )
                         }
 
-                        Button(
-                            onClick = {
-                                bookingViewModel.resetOrderState()
-                                onNavigateToHome()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF9FAFB)),
-                            border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(44.dp)
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "Petunjuk Pembayaran",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1F2937)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Silahkan ke klinik untuk melakukan pembayaran dan melengkapi kebutuhan administrasi di klinik.",
+                            fontSize = 12.sp,
+                            color = Color(0xFF4B5563),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 18.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Text(
-                                text = "Tutup",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF6B7280)
-                            )
+                            Button(
+                                onClick = {
+                                    bookingViewModel.resetOrderState()
+                                    alertStep = 1
+                                    onNavigateToOrderStatus()
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3CB7A6)),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(44.dp)
+                            ) {
+                                Text(
+                                    text = "Lihat Status Pesanan",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+
+                            Button(
+                                onClick = {
+                                    bookingViewModel.resetOrderState()
+                                    alertStep = 1
+                                    onNavigateToHome()
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF9FAFB)),
+                                border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(44.dp)
+                            ) {
+                                Text(
+                                    text = "Tutup",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF6B7280)
+                                )
+                            }
+
+                            TextButton(
+                                onClick = {
+                                    alertStep = 1
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Kembali ke Info Sebelumnya",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF9CA3AF)
+                                )
+                            }
                         }
                     }
                 }
