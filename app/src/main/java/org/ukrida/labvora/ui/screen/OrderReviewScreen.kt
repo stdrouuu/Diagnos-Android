@@ -74,9 +74,11 @@ fun OrderReviewScreen(
     }
 
     val clinicAddress = when (bookingViewModel.selectedClinic) {
-        "Klinik Citra Kasih PIK" -> "The Gallery Blok 8, No. EG,\nJl. Pantai Indah Utara"
-        "Klinik Citra Kasih Jakarta Selatan" -> "Jl. Wolter Monginsidi No. 59,\nKebayoran Baru, Jakarta Selatan"
-        else -> "Jl. Pluit Permai Raya No. 20,\nPenjaringan, Jakarta Utara"
+        "Klinik Cinta Kasih PIK" -> "The Gallery Blok 8, No. EG,\nJl. Pantai Indah Utara"
+        "Klinik Cinta Kasih Kebon Jeruk" -> "Jl. Panjang No. 18,\nKebon Jeruk, Jakarta Barat"
+        "Klinik Cinta Kasih Menteng" -> "Jl. Teuku Cik Ditiro No. 25,\nMenteng, Jakarta Pusat"
+        "Klinik Cinta Kasih Bintaro" -> "Ruko Kebayoran Arcade 1 Blok C1 No. 5,\nBintaro Jaya, Tangerang Selatan"
+        else -> "The Gallery Blok 8, No. EG,\nJl. Pantai Indah Utara"
     }
 
     // Calculate time range, e.g. slot 09:00 -> "09:00 - 10:00 WIB"
@@ -393,15 +395,16 @@ fun OrderReviewScreen(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
-                        // Item test base price
-                        val basePriceFormatted = String.format("%,d", test.priceVal).replace(",", ".")
+                        // Item test base check price (Total - 50.000)
+                        val checkFee = if (test.priceVal > 50000) test.priceVal - 50000 else test.priceVal
+                        val basePriceFormatted = String.format("%,d", checkFee).replace(",", ".")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.Top
                         ) {
                             Text(
-                                text = "Pengecekan ${test.title}",
+                                text = "Biaya Pengecekan (${test.title})",
                                 fontSize = 10.sp,
                                 color = Color(0xFF4B5563),
                                 fontFamily = FontFamily.Monospace,
@@ -459,7 +462,7 @@ fun OrderReviewScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Total Price
-                        val totalPriceFormatted = String.format("%,d", test.priceVal + 50000).replace(",", ".")
+                        val totalPriceFormatted = String.format("%,d", test.priceVal).replace(",", ".")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,

@@ -212,7 +212,7 @@ fun OrderStatusCard(order: TestHistoryItem) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = order.clinicName.ifBlank { "Klinik Citra Kasih PIK" },
+                    text = order.clinicName.ifBlank { "Klinik Cinta Kasih PIK" },
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF374151)

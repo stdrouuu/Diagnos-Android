@@ -291,15 +291,11 @@ fun HomeScreen(
                 label = "Pemeriksaan \nTerakhir",
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    val lastHistoryItem = historyViewModel.historyList.value.firstOrNull()
-                    if (lastHistoryItem != null) {
-                        if (lastHistoryItem.status == "Selesai") {
-                            onNavigateToResult(lastHistoryItem.id, lastHistoryItem.testId, lastHistoryItem.date)
-                        } else {
-                            Toast.makeText(context, "Hasil pemeriksaan terakhir belum selesai atau sedang diuji", Toast.LENGTH_SHORT).show()
-                        }
+                    val lastCompletedItem = historyViewModel.historyList.value.firstOrNull { it.status == "Selesai" }
+                    if (lastCompletedItem != null) {
+                        onNavigateToResult(lastCompletedItem.id, lastCompletedItem.testId, lastCompletedItem.date)
                     } else {
-                        Toast.makeText(context, "Anda belum memiliki data hasil pemeriksaan laboratorium.", Toast.LENGTH_SHORT).show()
+                        onNavigateToResult(0, 0, null)
                     }
                 }
             )

@@ -14,13 +14,17 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material.icons.outlined.WbTwilight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +43,7 @@ fun BookScheduleScreen(
     onNavigateToReview: () -> Unit,
     onNavigateToCart: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val today = remember { Calendar.getInstance() }
     val todayYear = today.get(Calendar.YEAR)
     val todayMonth = today.get(Calendar.MONTH)
@@ -51,7 +56,12 @@ fun BookScheduleScreen(
     val minYear = todayYear
     val minMonth = todayMonth
 
-    val clinics = listOf("Klinik Citra Kasih PIK", "Klinik Citra Kasih Jakarta Selatan", "Klinik Citra Kasih Jakarta Utara")
+    val clinics = listOf(
+        "Klinik Cinta Kasih PIK",
+        "Klinik Cinta Kasih Kebon Jeruk",
+        "Klinik Cinta Kasih Menteng",
+        "Klinik Cinta Kasih Bintaro"
+    )
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     val monthsIndo = listOf(
@@ -336,25 +346,28 @@ fun BookScheduleScreen(
                     .padding(horizontal = 20.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Section: Pagi
+                // Section: Pagi (Sunrise)
                 TimeSlotSection(
                     title = "Pagi",
+                    icon = Icons.Outlined.WbTwilight,
                     slots = listOf("08:00", "09:00", "10:00", "11:00"),
                     selectedSlot = bookingViewModel.selectedTimeSlot,
                     onSlotSelected = { bookingViewModel.selectedTimeSlot = it }
                 )
 
-                // Section: Siang
+                // Section: Siang (Matahari)
                 TimeSlotSection(
                     title = "Siang",
+                    icon = Icons.Outlined.WbSunny,
                     slots = listOf("13:00", "14:00", "15:00", "16:00"),
                     selectedSlot = bookingViewModel.selectedTimeSlot,
                     onSlotSelected = { bookingViewModel.selectedTimeSlot = it }
                 )
 
-                // Section: Malam
+                // Section: Malam (Bulan)
                 TimeSlotSection(
                     title = "Malam",
+                    icon = Icons.Outlined.DarkMode,
                     slots = listOf("18:00", "19:00", "20:00"),
                     selectedSlot = bookingViewModel.selectedTimeSlot,
                     onSlotSelected = { bookingViewModel.selectedTimeSlot = it }
@@ -433,7 +446,8 @@ fun BookScheduleScreen(
                                 clinicName = bookingViewModel.selectedClinic,
                                 bookingDate = bookingViewModel.selectedDate,
                                 bookingTime = bookingViewModel.selectedTimeSlot,
-                                hasDoctorReferral = bookingViewModel.hasDoctorReferral
+                                hasDoctorReferral = bookingViewModel.hasDoctorReferral,
+                                context = context
                             )
                             onNavigateToCart()
                         }
@@ -475,6 +489,7 @@ fun BookScheduleScreen(
 @Composable
 fun TimeSlotSection(
     title: String,
+    icon: ImageVector = Icons.Outlined.WbSunny,
     slots: List<String>,
     selectedSlot: String,
     onSlotSelected: (String) -> Unit
@@ -486,16 +501,16 @@ fun TimeSlotSection(
             modifier = Modifier.padding(bottom = 12.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.WbSunny,
-                contentDescription = null,
-                tint = Color(0xFF4B5563),
+                imageVector = icon,
+                contentDescription = title,
+                tint = Color(0xFF374151),
                 modifier = Modifier.size(16.dp)
             )
             Text(
                 text = title,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF4B5563)
+                color = Color(0xFF374151)
             )
         }
 

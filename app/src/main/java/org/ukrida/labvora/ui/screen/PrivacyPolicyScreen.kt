@@ -1,4 +1,4 @@
-// View: Layar Kebijakan Privasi (Privacy Policy) Diagnōs
+// View: Layar Kebijakan Privasi (Privacy Policy) Labvōra
 package org.ukrida.labvora.ui.screen
 
 import androidx.compose.foundation.BorderStroke
@@ -106,7 +106,7 @@ fun PrivacyPolicyScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Kebijakan Privasi Diagnōs",
+                            text = "Kebijakan Privasi Labvōra",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color(0xFF1F2937),
@@ -139,7 +139,7 @@ fun PrivacyPolicyScreen(
                 // Section 1: Pendahuluan
                 PrivacyPolicySection(
                     title = "1. Pendahuluan",
-                    content = "Selamat datang di aplikasi Diagnōs. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi pengguna saat mendaftar, menggunakan layanan pemesanan tes laboratorium, serta mengunggah surat rujukan medis."
+                    content = "Selamat datang di aplikasi Labvōra. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi pengguna saat mendaftar, menggunakan layanan pemesanan tes laboratorium, serta mengunggah surat rujukan medis."
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -147,7 +147,7 @@ fun PrivacyPolicyScreen(
                 // Section 2: Data yang Diumpulkan
                 PrivacyPolicySection(
                     title = "2. Informasi yang Kami Kumpulkan",
-                    content = "Saat Anda membuat akun dan menggunakan aplikasi Diagnōs, kami mengumpulkan beberapa data pribadi yang Anda berikan secara sadar, antara lain:",
+                    content = "Saat Anda membuat akun dan menggunakan aplikasi Labvōra, kami mengumpulkan beberapa data pribadi yang Anda berikan secara sadar, antara lain:",
                     bulletPoints = listOf(
                         "Identitas Diri: Nama lengkap, Username, Jenis Kelamin, dan Tanggal Lahir.",
                         "Kontak & Komunikasi: Alamat Email dan Nomor Telepon (+62).",
@@ -184,7 +184,7 @@ fun PrivacyPolicyScreen(
                 // Section 5: Pembagian Pihak Ketiga
                 PrivacyPolicySection(
                     title = "5. Pembagian Data ke Pihak Ketiga",
-                    content = "Diagnōs TIDAK AKAN PERNAH menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga untuk kepentingan komersial atau iklan. Data Anda hanya dibagikan secara terbatas kepada klinik mitra resmi tempat Anda mendaftar pemeriksaan laboratorium."
+                    content = "Labvōra TIDAK AKAN PERNAH menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga untuk kepentingan komersial atau iklan. Data Anda hanya dibagikan secara terbatas kepada klinik mitra resmi tempat Anda mendaftar pemeriksaan laboratorium."
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -219,7 +219,7 @@ fun PrivacyPolicyScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Dengan mencentang kotak persetujuan pada halaman pendaftaran akun, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan dalam Kebijakan Privasi Diagnōs ini.",
+                            text = "Dengan mencentang kotak persetujuan pada halaman pendaftaran akun, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan dalam Kebijakan Privasi Labvōra ini.",
                             fontSize = 12.sp,
                             color = Color(0xFF374151),
                             lineHeight = 18.sp

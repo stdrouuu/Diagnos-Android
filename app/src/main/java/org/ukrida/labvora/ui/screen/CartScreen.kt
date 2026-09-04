@@ -19,12 +19,15 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material.icons.outlined.WbTwilight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -119,13 +122,13 @@ fun CartScreen(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.clickable {
-                                cartViewModel.toggleSelectAll(!cartViewModel.isAllChecked)
+                                cartViewModel.toggleSelectAll(!cartViewModel.isAllChecked, context)
                             }
                         ) {
                             Checkbox(
                                 checked = cartViewModel.isAllChecked,
                                 onCheckedChange = { checked ->
-                                    cartViewModel.toggleSelectAll(checked)
+                                    cartViewModel.toggleSelectAll(checked, context)
                                 },
                                 colors = CheckboxDefaults.colors(checkedColor = Color(0xFF3CB7A6))
                             )
@@ -161,7 +164,7 @@ fun CartScreen(
 
                         Button(
                             onClick = {
-                                cartViewModel.checkoutCheckedItems(userId)
+                                cartViewModel.checkoutCheckedItems(userId, context)
                             },
                             enabled = cartViewModel.checkedCount > 0 && !cartViewModel.isCheckingOut.value,
                             colors = ButtonDefaults.buttonColors(
@@ -254,9 +257,9 @@ fun CartScreen(
                     items(cartItems, key = { it.id }) { item ->
                         CartItemCard(
                             item = item,
-                            onToggleCheck = { cartViewModel.toggleItemChecked(item.id) },
+                            onToggleCheck = { cartViewModel.toggleItemChecked(item.id, context) },
                             onEditSchedule = { editingCartItem = item },
-                            onRemove = { cartViewModel.removeFromCart(item.id) }
+                            onRemove = { cartViewModel.removeFromCart(item.id, context) }
                         )
                     }
 
@@ -287,7 +290,7 @@ fun CartScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            text = "Subtotal Tes (${cartViewModel.checkedCount} item)",
+                                            text = "Biaya Pengecekan (${cartViewModel.checkedCount} item)",
                                             fontSize = 12.sp,
                                             color = Color(0xFF4B5563)
                                         )
@@ -304,7 +307,7 @@ fun CartScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            text = "Biaya Layanan & Admin",
+                                            text = "Biaya Layanan & Administrasi",
                                             fontSize = 12.sp,
                                             color = Color(0xFF4B5563)
                                         )
@@ -338,7 +341,7 @@ fun CartScreen(
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "* Termasuk biaya admin sebesar Rp 50.000 untuk pendaftaran & pemrosesan lab.",
+                                        text = "* Total sudah termasuk biaya pengecekan dan biaya administrasi Rp 50.000.",
                                         fontSize = 10.sp,
                                         color = Color(0xFF6B7280),
                                         fontStyle = FontStyle.Italic
@@ -358,7 +361,7 @@ fun CartScreen(
             item = editingCartItem!!,
             onDismiss = { editingCartItem = null },
             onConfirm = { clinic, date, time ->
-                cartViewModel.updateItemSchedule(editingCartItem!!.id, clinic, date, time)
+                cartViewModel.updateItemSchedule(editingCartItem!!.id, clinic, date, time, context)
                 editingCartItem = null
             }
         )
@@ -747,10 +750,10 @@ fun EditScheduleDialog(
     var isClinicDropdownExpanded by remember { mutableStateOf(false) }
 
     val clinics = listOf(
-        "Klinik Citra Kasih PIK",
-        "Klinik Diagnos Kebon Jeruk",
-        "Klinik Diagnos Menteng",
-        "Klinik Diagnos Bintaro"
+        "Klinik Cinta Kasih PIK",
+        "Klinik Cinta Kasih Kebon Jeruk",
+        "Klinik Cinta Kasih Menteng",
+        "Klinik Cinta Kasih Bintaro"
     )
 
     val timeSlotsPagi = listOf("08:00", "09:00", "10:00", "11:00")
@@ -780,12 +783,12 @@ fun EditScheduleDialog(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            // Slot Pagi
+            // Slot Pagi (Sunrise)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.WbSunny,
+                    imageVector = Icons.Outlined.WbTwilight,
                     contentDescription = "Pagi",
-                    tint = Color(0xFFF59E0B),
+                    tint = Color(0xFF374151),
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -813,12 +816,12 @@ fun EditScheduleDialog(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Slot Siang
+            // Slot Siang (Matahari)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.WbSunny,
+                    imageVector = Icons.Outlined.WbSunny,
                     contentDescription = "Siang",
-                    tint = Color(0xFF3CB7A6),
+                    tint = Color(0xFF374151),
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -846,12 +849,12 @@ fun EditScheduleDialog(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Slot Malam
+            // Slot Malam (Bulan)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.WbSunny,
+                    imageVector = Icons.Outlined.DarkMode,
                     contentDescription = "Malam",
-                    tint = Color(0xFF6366F1),
+                    tint = Color(0xFF374151),
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ fun MainScreen(
     onDeleteAccount: () -> Unit = onLogout
 ) {
     val innerNavController = rememberNavController()
+    val context = LocalContext.current
     val bookingViewModel = remember { BookingViewModel() }
     val historyViewModel = remember { HistoryViewModel() }
     val resultViewModel = remember { ResultViewModel() }
@@ -47,6 +49,11 @@ fun MainScreen(
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
 
     val userId = userViewModel.currentUser.value?.id ?: 0
+    LaunchedEffect(userId) {
+        if (userId > 0) {
+            cartViewModel.initCartForUser(context, userId)
+        }
+    }
     LaunchedEffect(userId, bookingViewModel.isOrderCompleted) {
         if (userId > 0) {
             historyViewModel.getHistoryList(userId)
