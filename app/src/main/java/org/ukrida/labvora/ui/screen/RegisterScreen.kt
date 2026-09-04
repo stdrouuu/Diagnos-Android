@@ -670,29 +670,36 @@ fun RegisterScreen(
                                     uncheckedColor = Color(0xFF9CA3AF)
                                 )
                             )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Saya menyetujui ",
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF6B7280),
-                                    modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
-                                )
-                                Text(
-                                    text = "Kebijakan Privasi",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF3CAEA3),
-                                    modifier = Modifier.clickable { onNavigatePrivacyPolicy() }
-                                )
-                                Text(
-                                    text = " Diagnōs.",
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF6B7280),
-                                    modifier = Modifier.clickable { isTermsChecked = !isTermsChecked }
-                                )
+                            val termsText = remember {
+                                buildAnnotatedString {
+                                    append("Saya menyetujui ")
+                                    pushStringAnnotation(tag = "PRIVACY", annotation = "privacy")
+                                    withStyle(style = SpanStyle(color = Color(0xFF3CAEA3), fontWeight = FontWeight.Bold)) {
+                                        append("Kebijakan Privasi")
+                                    }
+                                    pop()
+                                    append(" Labvora.")
+                                }
                             }
+
+                            androidx.compose.foundation.text.ClickableText(
+                                text = termsText,
+                                style = androidx.compose.ui.text.TextStyle(
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF6B7280)
+                                ),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 4.dp),
+                                onClick = { offset ->
+                                    termsText.getStringAnnotations(tag = "PRIVACY", start = offset, end = offset)
+                                        .firstOrNull()?.let {
+                                            onNavigatePrivacyPolicy()
+                                        } ?: run {
+                                            isTermsChecked = !isTermsChecked
+                                        }
+                                }
+                            )
                         }
                     }
                 }

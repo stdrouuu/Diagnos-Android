@@ -118,7 +118,7 @@ fun HomeScreen(
                 )
             }
             Text(
-                text = "Siap untuk mengoptimalkan kesehatan Anda hari ini di Diagnōs?",
+                text = "Siap untuk mengoptimalkan kesehatan Anda hari ini di Labvora?",
                 fontSize = 12.sp,
                 color = Color(0xFF6B7280),
                 modifier = Modifier.padding(top = 6.dp),
