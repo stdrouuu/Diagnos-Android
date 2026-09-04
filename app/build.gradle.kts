@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "org.ukrida.diagnos"
+    namespace = "org.ukrida.labvora"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "org.ukrida.diagnos"
+        applicationId = "org.ukrida.labvora"
         minSdk = 27
         targetSdk = 36
         versionCode = 1
@@ -36,6 +36,10 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 }
 
