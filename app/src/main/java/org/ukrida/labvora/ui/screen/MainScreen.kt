@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -152,7 +153,13 @@ fun MainScreen(
                     bookingViewModel = bookingViewModel,
                     historyViewModel = historyViewModel,
                     onNavigateToListTest = {
-                        innerNavController.navigate("listtest")
+                        innerNavController.navigate("listtest") {
+                            popUpTo(innerNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     },
                     onNavigateToDetail = { testId ->
                         innerNavController.navigate("detailtest/$testId")
@@ -313,7 +320,13 @@ fun MainScreen(
                         }
                     },
                     onNavigateToListTest = {
-                        innerNavController.navigate("listtest")
+                        innerNavController.navigate("listtest") {
+                            popUpTo(innerNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     },
                     onNavigateToHome = {
                         innerNavController.navigate("home") {
@@ -361,7 +374,13 @@ fun MainScreen(
                         innerNavController.popBackStack()
                     },
                     onNavigateToListTest = {
-                        innerNavController.navigate("listtest")
+                        innerNavController.navigate("listtest") {
+                            popUpTo(innerNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 )
             }

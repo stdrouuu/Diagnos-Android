@@ -181,7 +181,7 @@ fun ProfileScreen(
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
-                                    text = "DIAGNOS MEMBER",
+                                    text = "LABVORA MEMBER",
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFF3CB7A6),

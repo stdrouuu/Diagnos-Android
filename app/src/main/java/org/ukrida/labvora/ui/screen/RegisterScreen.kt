@@ -59,6 +59,10 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,29 +73,35 @@ fun RegisterScreen(
 ) {
     val context = LocalContext.current
 
-    var name by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var isTermsChecked by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("Laki-laki") }
-    var dob by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var isTermsChecked by rememberSaveable { mutableStateOf(false) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf("") }
+    var gender by rememberSaveable { mutableStateOf("Laki-laki") }
+    var dob by rememberSaveable { mutableStateOf("") }
+    var address by rememberSaveable { mutableStateOf("") }
 
     // ROLE DEFAULT USER
     val role = "user"
 
-    // URI gambar utama
-    var imageUri by remember {
-        mutableStateOf<Uri?>(null)
+    // URI gambar utama (disimpan sebagai String agar kompatibel dengan rememberSaveable)
+    var imageUriString by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+    val imageUri = remember(imageUriString) {
+        imageUriString?.let { Uri.parse(it) }
     }
 
     // URI sementara kamera
-    var cameraImageUri by remember {
-        mutableStateOf<Uri?>(null)
+    var cameraImageUriString by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+    var cameraImageUri = remember(cameraImageUriString) {
+        cameraImageUriString?.let { Uri.parse(it) }
     }
 
     // ================= GALERI =================
@@ -99,7 +109,7 @@ fun RegisterScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            imageUri = it
+            imageUriString = it.toString()
         }
     }
 
@@ -108,7 +118,7 @@ fun RegisterScreen(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            imageUri = cameraImageUri
+            imageUriString = cameraImageUriString
         }
     }
 
@@ -121,14 +131,13 @@ fun RegisterScreen(
                 context.cacheDir,
                 "camera_photo.jpg"
             )
-            cameraImageUri = FileProvider.getUriForFile(
+            val uri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.provider",
                 file
             )
-            cameraImageUri?.let {
-                cameraLauncher.launch(it)
-            }
+            cameraImageUriString = uri.toString()
+            cameraLauncher.launch(uri)
         }
     }
 
@@ -442,7 +451,11 @@ fun RegisterScreen(
                             )
                             TextField(
                                 value = email,
-                                onValueChange = { email = it },
+                                onValueChange = { email = it.trim() },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Email,
+                                    imeAction = ImeAction.Next
+                                ),
                                 placeholder = { Text("contoh@email.com", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
                                 leadingIcon = {
                                     Icon(
@@ -493,7 +506,13 @@ fun RegisterScreen(
                                 }
                                 TextField(
                                     value = phone,
-                                    onValueChange = { phone = it },
+                                    onValueChange = { input ->
+                                        phone = input.filter { it.isDigit() }
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Next
+                                    ),
                                     placeholder = { Text("812 3456 7890", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
                                     leadingIcon = {
                                         Icon(
@@ -721,9 +740,17 @@ fun RegisterScreen(
             // Button Daftar
             Button(
                 onClick = {
+                    val trimmedEmail = email.trim()
+                    val emailPattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,8}$".toRegex()
+                    val domainPart = trimmedEmail.substringAfter("@", "")
+                    val tld = domainPart.substringAfterLast(".", "")
+                    val domainName = domainPart.substringBeforeLast(".", "")
+
                     if (name.isBlank() || username.isBlank() || password.isBlank() || email.isBlank() || phone.isBlank() || dob.isBlank() || address.isBlank()) {
                         errorMessage = "Semua field input harus diisi!"
-                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    } else if (phone.length < 9 || phone.length > 14) {
+                        errorMessage = "Nomor telepon harus berupa 9-14 digit angka!"
+                    } else if (!emailPattern.matches(trimmedEmail) || !tld.all { it.isLetter() } || domainName.isBlank() || domainName.all { it.isDigit() } || domainPart.length < 4 || !android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
                         errorMessage = "Format alamat email tidak valid!"
                     } else if (!isTermsChecked) {
                         errorMessage = "Anda harus menyetujui Kebijakan Privasi!"

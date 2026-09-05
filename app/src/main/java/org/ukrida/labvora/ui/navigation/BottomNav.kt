@@ -72,6 +72,17 @@ fun BottomNav(navController: NavHostController, role: String) {
                             val currentDest = navController.currentBackStackEntry?.destination?.route
                             if (screen == Screen.ListTest && currentDest == "cart") {
                                 navController.popBackStack(Screen.ListTest.route, false)
+                            } else if (screen == Screen.Home && currentDest != Screen.Home.route) {
+                                val popped = navController.popBackStack(Screen.Home.route, false)
+                                if (!popped) {
+                                    navController.navigate(Screen.Home.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
                             } else if (currentDest != screen.route) {
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {

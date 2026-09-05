@@ -69,24 +69,12 @@ class UserViewModel(private val repo: UserRepository) : ViewModel() {
                 }
             } catch (e: java.io.IOException) {
                 e.printStackTrace()
-                // Offline fallback ONLY on connection errors
-                val matched = users.value.find { it.username == username && it.password == password }
-                if (matched != null) {
-                    currentUser.value = matched
-                } else {
-                    // Fallback to auto-generate a user for testing if not found
-                    val userRole = if (username == "admin") "admin" else "user"
-                    currentUser.value = User(
-                        id = 0,
-                        name = username,
-                        username = username,
-                        password = password,
-                        role = userRole
-                    )
-                }
+                loginError.value = "Tidak dapat terhubung ke server. Periksa koneksi internet Anda."
+                currentUser.value = null
             } catch (e: Exception) {
                 e.printStackTrace()
-                loginError.value = "Terjadi kesalahan tidak dikenal."
+                loginError.value = "Terjadi kesalahan: ${e.localizedMessage ?: "Coba lagi nanti."}"
+                currentUser.value = null
             }
         }
     }
