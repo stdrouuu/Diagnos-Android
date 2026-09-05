@@ -320,12 +320,12 @@ fun MainScreen(
                         }
                     },
                     onNavigateToListTest = {
-                        innerNavController.navigate("listtest") {
-                            popUpTo(innerNavController.graph.findStartDestination().id) {
-                                saveState = true
+                        val popped = innerNavController.popBackStack("listtest", false)
+                        if (!popped) {
+                            innerNavController.navigate("listtest") {
+                                popUpTo("cart") { inclusive = true }
+                                launchSingleTop = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     },
                     onNavigateToHome = {
@@ -374,12 +374,12 @@ fun MainScreen(
                         innerNavController.popBackStack()
                     },
                     onNavigateToListTest = {
-                        innerNavController.navigate("listtest") {
-                            popUpTo(innerNavController.graph.findStartDestination().id) {
-                                saveState = true
+                        val popped = innerNavController.popBackStack("listtest", false)
+                        if (!popped) {
+                            innerNavController.navigate("listtest") {
+                                popUpTo("orderstatus") { inclusive = true }
+                                launchSingleTop = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 )

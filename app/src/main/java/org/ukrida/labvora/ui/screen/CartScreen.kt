@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
@@ -691,17 +692,33 @@ fun CartItemCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = "Jadwal",
+                            contentDescription = "Tanggal",
                             tint = Color(0xFF6B7280),
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${item.bookingDate} · Jam ${item.bookingTime}",
+                            text = item.bookingDate,
+                            fontSize = 10.sp,
+                            color = Color(0xFF6B7280),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.AccessTime,
+                            contentDescription = "Waktu Pemeriksaan",
+                            tint = Color(0xFF6B7280),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Jam ${item.bookingTime}",
                             fontSize = 10.sp,
                             color = Color(0xFF6B7280),
                             fontWeight = FontWeight.Medium

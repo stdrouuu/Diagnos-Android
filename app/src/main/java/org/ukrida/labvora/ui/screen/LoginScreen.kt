@@ -13,6 +13,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -326,6 +328,9 @@ fun LoginScreen(
                     }
 
                     // Button Masuk
+                    val loginInteractionSource = remember { MutableInteractionSource() }
+                    val isLoginPressed by loginInteractionSource.collectIsPressedAsState()
+
                     Button(
                         onClick = {
                             if (username.isBlank() || password.isBlank()) {
@@ -335,8 +340,9 @@ fun LoginScreen(
                                 viewModel.login(username, password)
                             }
                         },
+                        interactionSource = loginInteractionSource,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF3CAEA3),
+                            containerColor = if (isLoginPressed) Color(0xFF9CA3AF) else Color(0xFF3CAEA3),
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(16.dp),
